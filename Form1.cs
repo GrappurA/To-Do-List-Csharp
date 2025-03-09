@@ -88,7 +88,7 @@ namespace ToDoList_C_
 							form.Close();
 							break;
 						}
-						else if(!string.IsNullOrEmpty(listName) && !File.Exists(fileName))
+						else if (!string.IsNullOrEmpty(listName) && !File.Exists(fileName))
 						{
 							addButton.Enabled = true;
 							deleteButton.Enabled = true;
@@ -133,9 +133,9 @@ namespace ToDoList_C_
 			{
 				taskList.RemoveAt(gridView.CurrentCell.RowIndex);
 				UpdateGridView();
-
 			}
 			deleteButton.Enabled = taskList.Count > 0;
+			SaveButton.Enabled = taskList.Count > 0;
 		}
 
 		private void closeToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -171,6 +171,7 @@ namespace ToDoList_C_
 					taskList.Clear();
 					taskList = readFile(taskList, openedFilePath);
 
+					fileName = openedFilePath;
 					UpdateGridView();
 				}
 			}
