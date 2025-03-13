@@ -19,6 +19,7 @@ namespace ToDoList_C_
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
 			gridView.RowHeadersVisible = false;
+
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
@@ -44,6 +45,8 @@ namespace ToDoList_C_
 					SaveButton.Enabled = true;
 
 					taskList.Clear();
+					Task task = new Task(99, "something", true);
+					taskList.Add(task);
 					taskList = readFile(taskList, latestFilePath);
 
 					fileName = latestFilePath;
@@ -54,6 +57,7 @@ namespace ToDoList_C_
 
 		private void UpdateGridView()
 		{
+			if (taskList == null) taskList = new List<Task>();
 			gridView.DataSource = null;
 			gridView.DataSource = taskList;
 			AdjustGridViewSizesLooks();
@@ -62,13 +66,18 @@ namespace ToDoList_C_
 
 		private void AdjustGridViewSizesLooks()
 		{
-			gridView.SuspendLayout();
-			gridView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-			gridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-			gridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-			gridView.Columns[0].Width = 30;
-			gridView.Columns[2].Width = 70;
+			gridView.SuspendLayout();
+			
+			
+				gridView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+				gridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+				gridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+				gridView.Columns[0].Width = 30;
+				gridView.Columns[2].Width = 70;
+
+			
 			gridView.ResumeLayout();
 			//
 			//gridView.Rows[1].Height = 100;

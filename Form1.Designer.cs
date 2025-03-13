@@ -136,6 +136,7 @@
 			deleteButton.TabIndex = 6;
 			deleteButton.Text = "DELETE";
 			deleteButton.UseVisualStyleBackColor = false;
+			deleteButton.Enabled = false;
 			deleteButton.Click += deleteButton_Click;
 			// 
 			// folderBrowserDialog1
