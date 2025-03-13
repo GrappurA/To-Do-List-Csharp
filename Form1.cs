@@ -92,10 +92,11 @@ namespace ToDoList_C_
 
 
 		//environment
-		private void addButton_Click(object sender, EventArgs e)
+		private async void addButton_Click(object sender, EventArgs e)
 		{
 			if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
 			{
+
 				int newId = taskList.Count != 0 ? taskList.Max(t => t.Id) + 1 : 1;
 
 				Task task = new Task(newId, "", false);
@@ -105,6 +106,10 @@ namespace ToDoList_C_
 
 				deleteButton.Enabled = taskList.Count > 0;
 
+				Color originalColor = addButton.BackColor;
+				addButton.BackColor = Color.DarkGreen;
+				await System.Threading.Tasks.Task.Delay(100);
+				addButton.BackColor = originalColor;
 			}
 		}
 
@@ -164,15 +169,21 @@ namespace ToDoList_C_
 			}
 		}
 
-		private void deleteButton_Click(object sender, EventArgs e)
+		private async void deleteButton_Click(object sender, EventArgs e)
 		{
+
 			if (taskList.Count > 0)
 			{
 				taskList.RemoveAt(gridView.CurrentCell.RowIndex);
 				UpdateGridView();
 			}
 			deleteButton.Enabled = taskList.Count > 0;
-			SaveButton.Enabled = taskList.Count > 0;
+			SaveButton.Enabled = true;
+
+			Color originalColor = deleteButton.BackColor;
+			deleteButton.BackColor = Color.Red;
+			await System.Threading.Tasks.Task.Delay(65);
+			deleteButton.BackColor = originalColor;
 		}
 
 		private void closeToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -186,11 +197,19 @@ namespace ToDoList_C_
 
 		}
 
-		private void SaveButton_Click_1(object sender, EventArgs e)
+		private async void SaveButton_Click_1(object sender, EventArgs e)
 		{
+			Color originalColor = SaveButton.BackColor;
+
+			SaveButton.BackColor = Color.DarkGreen;
+			await System.Threading.Tasks.Task.Delay(65);
+			SaveButton.BackColor = originalColor;
+
 			UpdateTasks();
 			string json = JsonConvert.SerializeObject(taskList, Formatting.Indented);
 			File.WriteAllText(fileName, json);
+
+
 			//latestPath = fileName;
 		}
 
