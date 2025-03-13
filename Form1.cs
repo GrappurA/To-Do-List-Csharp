@@ -11,6 +11,7 @@ namespace ToDoList_C_
 		string fileName;
 		string listName;
 
+
 		public mainForm()
 		{
 			InitializeComponent();
@@ -21,21 +22,33 @@ namespace ToDoList_C_
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
+			openLatestFile();
+
 		}
-
-		private void addButton_Click(object sender, EventArgs e)
+		//additional funcs
+		private void openLatestFile()
 		{
-			if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
+			if (!Directory.Exists(path))
 			{
-				int newId = taskList.Count != 0 ? taskList.Max(t => t.Id) + 1 : 1;
+				MessageBox.Show("Check the directory");
+				return;
+			}
+			else
+			{
+				var latestFile = new DirectoryInfo(path).GetFiles().OrderByDescending(f => f.LastAccessTime).FirstOrDefault();
+				if (latestFile != null)
+				{
+					string latestFilePath = latestFile.FullName;
+					addButton.Enabled = true;
+					deleteButton.Enabled = true;
+					SaveButton.Enabled = true;
 
-				Task task = new Task(newId, "", false);
-				taskList.Add(task);
+					taskList.Clear();
+					taskList = readFile(taskList, latestFilePath);
 
-				UpdateGridView();
-
-				deleteButton.Enabled = taskList.Count > 0;
-
+					fileName = latestFilePath;
+					UpdateGridView();
+				}
 			}
 		}
 
@@ -61,6 +74,11 @@ namespace ToDoList_C_
 			//gridView.Rows[1].Height = 100;
 		}
 
+		private List<Task> readFile(List<Task> taskList, string openedFilePath)
+		{
+			return taskList = JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(openedFilePath));
+		}
+
 		private void UpdateTasks()
 		{
 			for (int i = 0; i < taskList.Count; i++)
@@ -69,6 +87,24 @@ namespace ToDoList_C_
 				{
 					taskList[i].Name = gridView.Rows[i].Cells[1].Value.ToString();
 				}
+			}
+		}
+
+
+		//environment
+		private void addButton_Click(object sender, EventArgs e)
+		{
+			if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
+			{
+				int newId = taskList.Count != 0 ? taskList.Max(t => t.Id) + 1 : 1;
+
+				Task task = new Task(newId, "", false);
+				taskList.Add(task);
+
+				UpdateGridView();
+
+				deleteButton.Enabled = taskList.Count > 0;
+
 			}
 		}
 
@@ -83,6 +119,7 @@ namespace ToDoList_C_
 					{
 						listName = form.enteredName.Trim();
 						fileName = path + listName + ".json";
+						//latestPath = fileName;
 						if (listName == "L")
 						{
 							form.Close();
@@ -144,6 +181,7 @@ namespace ToDoList_C_
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			taskList.Clear();
+			//latestPath = fileName;
 			UpdateGridView();
 
 		}
@@ -153,6 +191,7 @@ namespace ToDoList_C_
 			UpdateTasks();
 			string json = JsonConvert.SerializeObject(taskList, Formatting.Indented);
 			File.WriteAllText(fileName, json);
+			//latestPath = fileName;
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -173,13 +212,9 @@ namespace ToDoList_C_
 
 					fileName = openedFilePath;
 					UpdateGridView();
+					//					latestPath = fileName;
 				}
 			}
-		}
-
-		private List<Task> readFile(List<Task> taskList, string openedFilePath)
-		{
-			return taskList = JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(openedFilePath));
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -212,5 +247,7 @@ namespace ToDoList_C_
 
 			}
 		}
+
+
 	}
 }
