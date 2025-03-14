@@ -31,7 +31,7 @@ namespace ToDoList_C_
 		{
 			if (!Directory.Exists(path))
 			{
-				MessageBox.Show("Check the directory");
+				MessageBox.Show("Check the directory, 'path' does not exist");
 				return;
 			}
 			else
@@ -45,8 +45,6 @@ namespace ToDoList_C_
 					SaveButton.Enabled = true;
 
 					taskList.Clear();
-					Task task = new Task(99, "something", true);
-					taskList.Add(task);
 					taskList = readFile(taskList, latestFilePath);
 
 					fileName = latestFilePath;
@@ -66,18 +64,15 @@ namespace ToDoList_C_
 
 		private void AdjustGridViewSizesLooks()
 		{
-
 			gridView.SuspendLayout();
-			
-			
-				gridView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-				gridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-				gridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-				gridView.Columns[0].Width = 30;
-				gridView.Columns[2].Width = 70;
+			gridView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+			gridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+			gridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-			
+			gridView.Columns[0].Width = 30;
+			gridView.Columns[2].Width = 70;
+
 			gridView.ResumeLayout();
 			//
 			//gridView.Rows[1].Height = 100;
@@ -101,11 +96,10 @@ namespace ToDoList_C_
 
 
 		//environment
-		private async void addButton_Click(object sender, EventArgs e)
+		private void addButton_Click(object sender, EventArgs e)
 		{
 			if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
 			{
-
 				int newId = taskList.Count != 0 ? taskList.Max(t => t.Id) + 1 : 1;
 
 				Task task = new Task(newId, "", false);
@@ -115,10 +109,10 @@ namespace ToDoList_C_
 
 				deleteButton.Enabled = taskList.Count > 0;
 
-				Color originalColor = addButton.BackColor;
-				addButton.BackColor = Color.DarkGreen;
-				await System.Threading.Tasks.Task.Delay(100);
-				addButton.BackColor = originalColor;
+				// Color originalColor = addButton.BackColor;
+				// addButton.BackColor = Color.DarkGreen;
+				// await System.Threading.Tasks.Task.Delay(100);
+				// addButton.BackColor = originalColor;
 			}
 		}
 
@@ -178,21 +172,22 @@ namespace ToDoList_C_
 			}
 		}
 
-		private async void deleteButton_Click(object sender, EventArgs e)
+		private void deleteButton_Click(object sender, EventArgs e)
 		{
+			//if (gridView.CurrentCell == null || taskList.Count == 0) return;
 
 			if (taskList.Count > 0)
 			{
-				taskList.RemoveAt(gridView.CurrentCell.RowIndex);
+				taskList.RemoveAt(gridView.RowCount - 1);
 				UpdateGridView();
 			}
 			deleteButton.Enabled = taskList.Count > 0;
 			SaveButton.Enabled = true;
 
-			Color originalColor = deleteButton.BackColor;
-			deleteButton.BackColor = Color.Red;
-			await System.Threading.Tasks.Task.Delay(65);
-			deleteButton.BackColor = originalColor;
+			//Color originalColor = deleteButton.BackColor;
+			//deleteButton.BackColor = Color.Red;
+			//await System.Threading.Tasks.Task.Delay(65);
+			//deleteButton.BackColor = originalColor;
 		}
 
 		private void closeToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -206,13 +201,13 @@ namespace ToDoList_C_
 
 		}
 
-		private async void SaveButton_Click_1(object sender, EventArgs e)
+		private void SaveButton_Click_1(object sender, EventArgs e)
 		{
-			Color originalColor = SaveButton.BackColor;
+			//Color originalColor = SaveButton.BackColor;
 
-			SaveButton.BackColor = Color.DarkGreen;
-			await System.Threading.Tasks.Task.Delay(65);
-			SaveButton.BackColor = originalColor;
+			// SaveButton.BackColor = Color.DarkGreen;
+			// await System.Threading.Tasks.Task.Delay(65);
+			// SaveButton.BackColor = originalColor;
 
 			UpdateTasks();
 			string json = JsonConvert.SerializeObject(taskList, Formatting.Indented);
@@ -247,32 +242,29 @@ namespace ToDoList_C_
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (taskList.Count < 1)//ask user 
+			using (approveClosingList form = new approveClosingList())
 			{
-				using (OpenFileDialog fd = new OpenFileDialog())
+				if (form.DialogResult == DialogResult.OK)//ask user 
 				{
-					fd.Multiselect = false;
-					fd.Filter = "Json Files (*.json)|*.json";
-
-					if (fd.ShowDialog() == DialogResult.OK)
+					using (OpenFileDialog fd = new OpenFileDialog())
 					{
-						string toDeletePath = fd.FileName;
+						fd.Multiselect = false;
+						fd.Filter = "Json Files (*.json)|*.json";
 
-						using (approveClosingList form = new approveClosingList())
+						if (fd.ShowDialog() == DialogResult.OK)
 						{
-							if (form.DialogResult == DialogResult.OK)
-							{
-								File.Delete(toDeletePath);
-							}
-							//else if (form.DialogResult == DialogResult.Cancel)
-							//{
-							//
-							//}
+							string toDeletePath = fd.FileName;
+							File.Delete(toDeletePath);
+
 						}
+
 					}
 
 				}
+				else
+				{
 
+				}
 			}
 		}
 
