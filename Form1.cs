@@ -40,12 +40,15 @@ namespace ToDoList_C_
 				if (latestFile != null)
 				{
 					string latestFilePath = latestFile.FullName;
+					string formName = latestFile.Name;
+
 					addButton.Enabled = true;
 					deleteButton.Enabled = true;
 					SaveButton.Enabled = true;
+					this.Text = formName;
 
 					taskList.Clear();
-					taskList = readFile(taskList, latestFilePath);
+					taskList = readFile(latestFilePath);
 
 					fileName = latestFilePath;
 					UpdateGridView();
@@ -78,9 +81,9 @@ namespace ToDoList_C_
 			//gridView.Rows[1].Height = 100;
 		}
 
-		private List<Task> readFile(List<Task> taskList, string openedFilePath)
+		private List<Task> readFile(string openedFilePath)
 		{
-			return taskList = JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(openedFilePath));
+			return JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(openedFilePath));
 		}
 
 		private void UpdateTasks()
@@ -91,9 +94,12 @@ namespace ToDoList_C_
 				{
 					taskList[i].Name = gridView.Rows[i].Cells[1].Value.ToString();
 				}
+				if (gridView.Rows[i].Cells[0].Value != null)
+				{
+					taskList[i].Id = (int)gridView.Rows[i].Cells[0].Value;
+				}
 			}
 		}
-
 
 		//environment
 		private void addButton_Click(object sender, EventArgs e)
@@ -231,43 +237,37 @@ namespace ToDoList_C_
 					SaveButton.Enabled = true;
 					string openedFilePath = openFileDialog.FileName;
 					taskList.Clear();
-					taskList = readFile(taskList, openedFilePath);
+					taskList = readFile(openedFilePath);
 
 					fileName = openedFilePath;
 					UpdateGridView();
-					//					latestPath = fileName;
+					//latestPath = fileName;
 				}
 			}
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (approveClosingList form = new approveClosingList())
+			using (OpenFileDialog fd = new OpenFileDialog())
 			{
-				if (form.DialogResult == DialogResult.OK)//ask user 
+				fd.Multiselect = false;
+				fd.Filter = "Json Files (*.json)|*.json";
+				using (approveClosingList form = new approveClosingList())
 				{
-					using (OpenFileDialog fd = new OpenFileDialog())
+					if (fd.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
 					{
-						fd.Multiselect = false;
-						fd.Filter = "Json Files (*.json)|*.json";
+						taskList.Clear();
+						UpdateGridView();
 
-						if (fd.ShowDialog() == DialogResult.OK)
-						{
-							string toDeletePath = fd.FileName;
-							File.Delete(toDeletePath);
 
-						}
 
+						string toDeletePath = fd.FileName;
+						File.Delete(toDeletePath);
 					}
-
 				}
-				else
-				{
 
-				}
 			}
 		}
-
-
 	}
 }
+
