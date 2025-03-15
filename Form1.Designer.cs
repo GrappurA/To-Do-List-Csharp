@@ -67,28 +67,28 @@
 			// createToolStripItem
 			// 
 			createToolStripItem.Name = "createToolStripItem";
-			createToolStripItem.Size = new Size(136, 26);
+			createToolStripItem.Size = new Size(224, 26);
 			createToolStripItem.Text = "Create";
-			createToolStripItem.Click += exitToolStripMenuItem_Click;
+			createToolStripItem.Click += createToolStripMenuItem_Click;
 			// 
 			// openToolStripMenuItem
 			// 
 			openToolStripMenuItem.Name = "openToolStripMenuItem";
-			openToolStripMenuItem.Size = new Size(136, 26);
+			openToolStripMenuItem.Size = new Size(224, 26);
 			openToolStripMenuItem.Text = "Open";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
 			// closeToolStripMenuItem1
 			// 
 			closeToolStripMenuItem1.Name = "closeToolStripMenuItem1";
-			closeToolStripMenuItem1.Size = new Size(136, 26);
+			closeToolStripMenuItem1.Size = new Size(224, 26);
 			closeToolStripMenuItem1.Text = "Close";
 			closeToolStripMenuItem1.Click += closeToolStripMenuItem1_Click;
 			// 
 			// deleteToolStripMenuItem
 			// 
 			deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-			deleteToolStripMenuItem.Size = new Size(136, 26);
+			deleteToolStripMenuItem.Size = new Size(224, 26);
 			deleteToolStripMenuItem.Text = "Delete";
 			deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
 			// 
@@ -142,7 +142,7 @@
 			// 
 			// folderBrowserDialog1
 			// 
-			folderBrowserDialog1.InitialDirectory = "G:\\\\Main\\\\ToDoLists";
+			folderBrowserDialog1.InitialDirectory = "G:\\Main\\ToDoLists";
 			// 
 			// SaveButton
 			// 

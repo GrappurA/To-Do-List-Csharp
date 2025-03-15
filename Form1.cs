@@ -10,6 +10,7 @@ namespace ToDoList_C_
 		string path = "G:\\Main\\ToDoLists\\";
 		string fileName;
 		string listName;
+		string directoryPath;
 
 
 		public mainForm()
@@ -65,7 +66,9 @@ namespace ToDoList_C_
 			}
 			else
 			{
-				var latestFile = new DirectoryInfo(path).GetFiles().OrderByDescending(f => f.LastAccessTime).FirstOrDefault();
+				//var latestFile = new DirectoryInfo(path).GetFiles().OrderByDescending(f => f.LastAccessTime).FirstOrDefault();
+				var latestFile = new DirectoryInfo(path).GetDirectories().OrderByDescending(f => f.LastAccessTime).FirstOrDefault().GetFiles().OrderByDescending(f => f.LastAccessTime).FirstOrDefault();
+				//var latestFile
 				if (latestFile != null)
 				{
 					string latestFilePath = latestFile.FullName;
@@ -115,6 +118,19 @@ namespace ToDoList_C_
 			return JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(openedFilePath));
 		}
 
+		private void CreateDirectory(string directoryPath)
+		{
+			if (Directory.Exists(directoryPath))
+			{
+				MessageBox.Show("File with this name already exsits");
+				return;
+			}
+			else
+			{
+				Directory.CreateDirectory(directoryPath);
+			}
+		}
+
 		private void UpdateTasks()
 		{
 			for (int i = 0; i < taskList.Count; i++)
@@ -151,7 +167,7 @@ namespace ToDoList_C_
 			}
 		}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)//createToolStrip
+		private void createToolStripMenuItem_Click(object sender, EventArgs e)//createToolStrip
 		{
 			while (true)
 			{
@@ -162,9 +178,11 @@ namespace ToDoList_C_
 					{
 						taskList.Clear();
 						UpdateGridView();
+
 						listName = form.enteredName.Trim();
-						fileName = path + listName + ".json";
-						//latestPath = fileName;
+						directoryPath = path + listName + "\\";
+						fileName = directoryPath + listName + ".json";
+
 						if (listName == "L")
 						{
 							form.Close();
@@ -175,6 +193,7 @@ namespace ToDoList_C_
 							addButton.Enabled = true;
 							deleteButton.Enabled = true;
 							SaveButton.Enabled = true;
+							CreateDirectory(directoryPath);
 							File.Create(fileName).Close();
 							this.Text = listName;
 
@@ -247,16 +266,24 @@ namespace ToDoList_C_
 
 			UpdateTasks();
 			string json = JsonConvert.SerializeObject(taskList, Formatting.Indented);
-			File.WriteAllText(fileName, json);
+			if (!File.Exists(fileName))
+			{
+				MessageBox.Show("File is deleted");
+				return;
+			}
+			else
+			{
+				File.WriteAllText(fileName, json);
 
+			}
 
-			//latestPath = fileName;
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (OpenFileDialog openFileDialog = new OpenFileDialog())
 			{
+				openFileDialog.InitialDirectory = path;
 				openFileDialog.Multiselect = false;
 				openFileDialog.Filter = "Json Files (*.json)|*.json|All Files (*.*)| *.*";
 
@@ -309,7 +336,6 @@ namespace ToDoList_C_
 				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 			}
 		}
-
 
 	}
 }
