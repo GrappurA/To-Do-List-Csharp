@@ -20,6 +20,7 @@ namespace ToDoList_C_
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
 			gridView.RowHeadersVisible = false;
+			infoTextBox.ReadOnly = true;
 
 			openLatestFile();
 
@@ -27,22 +28,31 @@ namespace ToDoList_C_
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
-			gridView.CellValueChanged += gridView_CellValueChanged;
 
 		}
 
 		//additional funcs
 		int calculatePercentageByList(List<Task> taskList)
 		{
+			if (taskList.Count == 0 || taskList == null) { return 0; }
+
 			int oneTaskPecentage = 100 / taskList.Count;
 			int donePercentage = 0;
-			for (int i = 0; i < taskList.Count() - 1; i++)
+			int counter = 0;
+
+			for (int i = 0; i < taskList.Count(); i++)
 			{
 				if (taskList[i].Status == true)
 				{
 					donePercentage += oneTaskPecentage;
+					counter++;
 				}
 			}
+			if (counter == taskList.Count)
+			{
+				return 100;
+			}
+
 			return donePercentage;
 		}
 
@@ -205,13 +215,8 @@ namespace ToDoList_C_
 
 			if (taskList.Count > 0)
 			{
-				int selectedRowIndex = gridView.CurrentCell.RowIndex;
-				if (selectedRowIndex >= 0)
-				{
-					taskList.RemoveAt(selectedRowIndex);
-					UpdateGridView();
-				}
-
+				taskList.RemoveAt(gridView.RowCount - 1);
+				UpdateGridView();
 			}
 			deleteButton.Enabled = taskList.Count > 0;
 			SaveButton.Enabled = true;
@@ -228,7 +233,6 @@ namespace ToDoList_C_
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			taskList.Clear();
-			//latestPath = fileName;
 			UpdateGridView();
 
 		}
@@ -267,7 +271,7 @@ namespace ToDoList_C_
 
 					fileName = openedFilePath;
 					UpdateGridView();
-					//latestPath = fileName;
+					this.Text = openFileDialog.FileName;
 				}
 			}
 		}
@@ -302,14 +306,6 @@ namespace ToDoList_C_
 				// Commit the edit so that CellValueChanged is triggered immediately
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
-				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
-			}
-		}
-
-		private void gridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-		{
-			if (e.RowIndex >= 0 && e.ColumnIndex == 2)
-			{
 				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 			}
 		}
