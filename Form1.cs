@@ -15,18 +15,37 @@ namespace ToDoList_C_
 		public mainForm()
 		{
 			InitializeComponent();
+
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
 			gridView.RowHeadersVisible = false;
 
+			openLatestFile();
+
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
-			openLatestFile();
+			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
+			gridView.CellValueChanged += gridView_CellValueChanged;
 
 		}
+
 		//additional funcs
+		int calculatePercentageByList(List<Task> taskList)
+		{
+			int oneTaskPecentage = 100 / taskList.Count;
+			int donePercentage = 0;
+			for (int i = 0; i < taskList.Count() - 1; i++)
+			{
+				if (taskList[i].Status == true)
+				{
+					donePercentage += oneTaskPecentage;
+				}
+			}
+			return donePercentage;
+		}
+
 		private void openLatestFile()
 		{
 			if (!Directory.Exists(path))
@@ -122,7 +141,7 @@ namespace ToDoList_C_
 			}
 		}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e)//createToolStrip
 		{
 			while (true)
 			{
@@ -131,6 +150,8 @@ namespace ToDoList_C_
 
 					if (form.ShowDialog() == DialogResult.OK)
 					{
+						taskList.Clear();
+						UpdateGridView();
 						listName = form.enteredName.Trim();
 						fileName = path + listName + ".json";
 						//latestPath = fileName;
@@ -184,8 +205,13 @@ namespace ToDoList_C_
 
 			if (taskList.Count > 0)
 			{
-				taskList.RemoveAt(gridView.RowCount - 1);
-				UpdateGridView();
+				int selectedRowIndex = gridView.CurrentCell.RowIndex;
+				if (selectedRowIndex >= 0)
+				{
+					taskList.RemoveAt(selectedRowIndex);
+					UpdateGridView();
+				}
+
 			}
 			deleteButton.Enabled = taskList.Count > 0;
 			SaveButton.Enabled = true;
@@ -259,8 +285,6 @@ namespace ToDoList_C_
 						taskList.Clear();
 						UpdateGridView();
 
-
-
 						string toDeletePath = fd.FileName;
 						File.Delete(toDeletePath);
 					}
@@ -268,6 +292,29 @@ namespace ToDoList_C_
 
 			}
 		}
+
+		private void gridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+		{
+			int doneColumnIndex = 2;
+
+			if (gridView.CurrentCell != null && gridView.CurrentCell.ColumnIndex == doneColumnIndex)
+			{
+				// Commit the edit so that CellValueChanged is triggered immediately
+				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+
+				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+			}
+		}
+
+		private void gridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+			if (e.RowIndex >= 0 && e.ColumnIndex == 2)
+			{
+				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+			}
+		}
+
+
 	}
 }
 

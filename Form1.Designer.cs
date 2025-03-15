@@ -42,6 +42,7 @@
 			deleteButton = new Button();
 			folderBrowserDialog1 = new FolderBrowserDialog();
 			SaveButton = new Button();
+			infoTextBox = new TextBox();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
 			SuspendLayout();
@@ -128,6 +129,7 @@
 			// deleteButton
 			// 
 			deleteButton.BackColor = Color.Transparent;
+			deleteButton.Enabled = false;
 			deleteButton.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
 			deleteButton.ForeColor = Color.Red;
 			deleteButton.Location = new Point(143, 32);
@@ -136,7 +138,6 @@
 			deleteButton.TabIndex = 6;
 			deleteButton.Text = "DELETE";
 			deleteButton.UseVisualStyleBackColor = false;
-			deleteButton.Enabled = false;
 			deleteButton.Click += deleteButton_Click;
 			// 
 			// folderBrowserDialog1
@@ -156,11 +157,19 @@
 			SaveButton.UseVisualStyleBackColor = false;
 			SaveButton.Click += SaveButton_Click_1;
 			// 
+			// infoTextBox
+			// 
+			infoTextBox.Location = new Point(355, 48);
+			infoTextBox.Name = "infoTextBox";
+			infoTextBox.Size = new Size(125, 27);
+			infoTextBox.TabIndex = 8;
+			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
+			Controls.Add(infoTextBox);
 			Controls.Add(SaveButton);
 			Controls.Add(deleteButton);
 			Controls.Add(addButton);
@@ -189,5 +198,6 @@
 		private FolderBrowserDialog folderBrowserDialog1;
 		private Button SaveButton;
 		private ToolStripMenuItem deleteToolStripMenuItem;
+		private TextBox infoTextBox;
 	}
 }
