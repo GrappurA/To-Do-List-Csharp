@@ -8,9 +8,10 @@ namespace ToDoList_C_
 	{
 		List<Task> taskList = new List<Task>();
 		string path = "G:\\Main\\ToDoLists\\";
-		string fileName;
-		string listName;
 		string directoryPath;
+		string fileNameList;
+		string fileNameInfo;
+		string listName;
 
 
 		public mainForm()
@@ -22,13 +23,14 @@ namespace ToDoList_C_
 			SaveButton.Enabled = false;
 			gridView.RowHeadersVisible = false;
 			infoTextBox.ReadOnly = true;
-
 			openLatestFile();
 
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
+			calculatePercentageByList(taskList);
+
 
 		}
 
@@ -66,13 +68,22 @@ namespace ToDoList_C_
 			}
 			else
 			{
-				//var latestFile = new DirectoryInfo(path).GetFiles().OrderByDescending(f => f.LastAccessTime).FirstOrDefault();
-				var latestFile = new DirectoryInfo(path).GetDirectories().OrderByDescending(f => f.LastAccessTime).FirstOrDefault().GetFiles().OrderByDescending(f => f.LastAccessTime).FirstOrDefault();
+				var latestDir = new DirectoryInfo(path)
+				.GetDirectories()
+				.OrderByDescending(f => f.LastAccessTime)
+				.FirstOrDefault();
+
+				var latestListFile = latestDir?.GetFiles()
+					.Where(f => !f.Name.Contains("Info")).FirstOrDefault();
+
+				var latestInfoFile = latestDir?.GetFiles()
+					.Where(f => f.Name.Contains("Info")).FirstOrDefault();
+
 				//var latestFile
-				if (latestFile != null)
+				if (latestListFile != null)
 				{
-					string latestFilePath = latestFile.FullName;
-					string formName = latestFile.Name;
+					string latestFilePath = latestListFile.FullName;
+					string formName = latestListFile.Name;
 
 					addButton.Enabled = true;
 					deleteButton.Enabled = true;
@@ -80,9 +91,12 @@ namespace ToDoList_C_
 					this.Text = formName;
 
 					taskList.Clear();
-					taskList = readFile(latestFilePath);
+					taskList = readListFile(latestFilePath);
+					infoTextBox.Text = readJson(latestInfoFile.FullName);
 
-					fileName = latestFilePath;
+					fileNameList = latestFilePath;
+
+
 					UpdateGridView();
 				}
 			}
@@ -113,10 +127,17 @@ namespace ToDoList_C_
 			//gridView.Rows[1].Height = 100;
 		}
 
-		private List<Task> readFile(string openedFilePath)
+		private List<Task> readListFile(string filePath)
 		{
-			return JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(openedFilePath));
+			return JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(filePath));
 		}
+
+		private string readJson(string filePath)
+		{
+			return JsonConvert.DeserializeObject<string>(File.ReadAllText(filePath));
+		}
+
+		//private int readInfoFile(string )
 
 		private void CreateDirectory(string directoryPath)
 		{
@@ -149,7 +170,7 @@ namespace ToDoList_C_
 		//environment
 		private void addButton_Click(object sender, EventArgs e)
 		{
-			if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
+			if (!string.IsNullOrEmpty(fileNameList) && File.Exists(fileNameList))
 			{
 				int newId = taskList.Count != 0 ? taskList.Max(t => t.Id) + 1 : 1;
 
@@ -181,20 +202,23 @@ namespace ToDoList_C_
 
 						listName = form.enteredName.Trim();
 						directoryPath = path + listName + "\\";
-						fileName = directoryPath + listName + ".json";
+
+						fileNameList = directoryPath + listName + ".json";
+						fileNameInfo = directoryPath + listName + "_Info.json";
 
 						if (listName == "L")
 						{
 							form.Close();
 							break;
 						}
-						else if (!string.IsNullOrEmpty(listName) && !File.Exists(fileName))
+						else if (!string.IsNullOrEmpty(listName) && !File.Exists(fileNameList))
 						{
 							addButton.Enabled = true;
 							deleteButton.Enabled = true;
 							SaveButton.Enabled = true;
 							CreateDirectory(directoryPath);
-							File.Create(fileName).Close();
+							File.Create(fileNameList).Close();
+							File.Create(fileNameInfo).Close();
 							this.Text = listName;
 
 							break;
@@ -256,25 +280,30 @@ namespace ToDoList_C_
 
 		}
 
-		private void SaveButton_Click_1(object sender, EventArgs e)
+		private void SaveButton_Click(object sender, EventArgs e)
 		{
-			//Color originalColor = SaveButton.BackColor;
-
-			// SaveButton.BackColor = Color.DarkGreen;
-			// await System.Threading.Tasks.Task.Delay(65);
-			// SaveButton.BackColor = originalColor;
-
 			UpdateTasks();
-			string json = JsonConvert.SerializeObject(taskList, Formatting.Indented);
-			if (!File.Exists(fileName))
+			string jsonList = JsonConvert.SerializeObject(taskList, Formatting.Indented);
+			string jsonInfo = JsonConvert.SerializeObject(infoTextBox.Text, Formatting.Indented);
+
+			var latestDir = new DirectoryInfo(path)
+				.GetDirectories()
+				.OrderByDescending(f => f.LastAccessTime)
+				.FirstOrDefault();
+
+			var latestInfoFile = latestDir?.GetFiles()
+					.Where(f => f.Name.Contains("Info")).FirstOrDefault();
+
+			if (!File.Exists(fileNameList))
 			{
 				MessageBox.Show("File is deleted");
 				return;
 			}
 			else
 			{
-				File.WriteAllText(fileName, json);
-
+				fileNameInfo = latestInfoFile.FullName;
+				File.WriteAllText(fileNameList, jsonList);
+				File.WriteAllText(fileNameInfo, jsonInfo);
 			}
 
 		}
@@ -294,9 +323,9 @@ namespace ToDoList_C_
 					SaveButton.Enabled = true;
 					string openedFilePath = openFileDialog.FileName;
 					taskList.Clear();
-					taskList = readFile(openedFilePath);
+					taskList = readListFile(openedFilePath);
 
-					fileName = openedFilePath;
+					fileNameList = openedFilePath;
 					UpdateGridView();
 					this.Text = openFileDialog.FileName;
 				}
@@ -334,6 +363,7 @@ namespace ToDoList_C_
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
 				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+
 			}
 		}
 
