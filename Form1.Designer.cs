@@ -43,6 +43,8 @@
 			folderBrowserDialog1 = new FolderBrowserDialog();
 			SaveButton = new Button();
 			infoTextBox = new TextBox();
+			dayInfoTextBox = new TextBox();
+			textBox1 = new TextBox();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
 			SuspendLayout();
@@ -161,16 +163,39 @@
 			// 
 			infoTextBox.BackColor = SystemColors.Menu;
 			infoTextBox.BorderStyle = BorderStyle.None;
-			infoTextBox.Location = new Point(355, 48);
+			infoTextBox.Location = new Point(405, 45);
 			infoTextBox.Name = "infoTextBox";
 			infoTextBox.Size = new Size(125, 20);
 			infoTextBox.TabIndex = 8;
+			infoTextBox.Text = "null";
+			// 
+			// dayInfoTextBox
+			// 
+			dayInfoTextBox.BackColor = SystemColors.Menu;
+			dayInfoTextBox.BorderStyle = BorderStyle.None;
+			dayInfoTextBox.Location = new Point(274, 45);
+			dayInfoTextBox.Name = "dayInfoTextBox";
+			dayInfoTextBox.Size = new Size(125, 20);
+			dayInfoTextBox.TabIndex = 9;
+			dayInfoTextBox.Text = "Tasks Done Today:";
+			// 
+			// textBox1
+			// 
+			textBox1.BackColor = SystemColors.Menu;
+			textBox1.BorderStyle = BorderStyle.None;
+			textBox1.Location = new Point(430, 45);
+			textBox1.Name = "textBox1";
+			textBox1.Size = new Size(125, 20);
+			textBox1.TabIndex = 10;
+			textBox1.Text = "%";
 			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
+			Controls.Add(textBox1);
+			Controls.Add(dayInfoTextBox);
 			Controls.Add(infoTextBox);
 			Controls.Add(SaveButton);
 			Controls.Add(deleteButton);
@@ -201,5 +226,7 @@
 		private Button SaveButton;
 		private ToolStripMenuItem deleteToolStripMenuItem;
 		private TextBox infoTextBox;
+		private TextBox dayInfoTextBox;
+		private TextBox textBox1;
 	}
 }

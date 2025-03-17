@@ -13,6 +13,8 @@ namespace ToDoList_C_
 		string fileNameInfo;
 		string listName;
 
+		string openedFilePath;
+		string openedFileName;
 
 		public mainForm()
 		{
@@ -83,7 +85,7 @@ namespace ToDoList_C_
 				if (latestListFile != null)
 				{
 					string latestFilePath = latestListFile.FullName;
-					string formName = latestListFile.Name;
+					string formName = Path.GetFileNameWithoutExtension(latestFilePath);
 
 					addButton.Enabled = true;
 					deleteButton.Enabled = true;
@@ -180,7 +182,7 @@ namespace ToDoList_C_
 				UpdateGridView();
 
 				deleteButton.Enabled = taskList.Count > 0;
-
+				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 				// Color originalColor = addButton.BackColor;
 				// addButton.BackColor = Color.DarkGreen;
 				// await System.Threading.Tasks.Task.Delay(100);
@@ -254,8 +256,6 @@ namespace ToDoList_C_
 
 		private void deleteButton_Click(object sender, EventArgs e)
 		{
-			//if (gridView.CurrentCell == null || taskList.Count == 0) return;
-
 			if (taskList.Count > 0)
 			{
 				taskList.RemoveAt(gridView.RowCount - 1);
@@ -264,10 +264,7 @@ namespace ToDoList_C_
 			deleteButton.Enabled = taskList.Count > 0;
 			SaveButton.Enabled = true;
 
-			//Color originalColor = deleteButton.BackColor;
-			//deleteButton.BackColor = Color.Red;
-			//await System.Threading.Tasks.Task.Delay(65);
-			//deleteButton.BackColor = originalColor;
+			infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 		}
 
 		private void closeToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -277,7 +274,6 @@ namespace ToDoList_C_
 			deleteButton.Enabled = false;
 			taskList.Clear();
 			UpdateGridView();
-
 		}
 
 		private void SaveButton_Click(object sender, EventArgs e)
@@ -301,7 +297,11 @@ namespace ToDoList_C_
 			}
 			else
 			{
-				fileNameInfo = latestInfoFile.FullName;
+				if (latestInfoFile == null)
+					fileNameInfo = openedFilePath;
+				else
+					fileNameInfo = latestInfoFile.FullName;
+
 				File.WriteAllText(fileNameList, jsonList);
 				File.WriteAllText(fileNameInfo, jsonInfo);
 			}
@@ -321,13 +321,17 @@ namespace ToDoList_C_
 					addButton.Enabled = true;
 					deleteButton.Enabled = true;
 					SaveButton.Enabled = true;
-					string openedFilePath = openFileDialog.FileName;
+
+					openedFilePath = openFileDialog.FileName;
+					openedFileName = Path.GetFileNameWithoutExtension(openedFilePath);
+
 					taskList.Clear();
 					taskList = readListFile(openedFilePath);
+					infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 
 					fileNameList = openedFilePath;
 					UpdateGridView();
-					this.Text = openFileDialog.FileName;
+					this.Text = openedFileName;
 				}
 			}
 		}
@@ -336,7 +340,7 @@ namespace ToDoList_C_
 		{
 			using (OpenFileDialog fd = new OpenFileDialog())
 			{
-				fd.Multiselect = false;
+				fd.Multiselect = true;
 				fd.Filter = "Json Files (*.json)|*.json";
 				using (approveClosingList form = new approveClosingList())
 				{
@@ -369,4 +373,3 @@ namespace ToDoList_C_
 
 	}
 }
-
