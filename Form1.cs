@@ -32,8 +32,6 @@ namespace ToDoList_C_
 
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 			calculatePercentageByList(taskList);
-
-
 		}
 
 		//additional funcs
@@ -199,6 +197,7 @@ namespace ToDoList_C_
 
 					if (form.ShowDialog() == DialogResult.OK)
 					{
+						List<Task> taskList = new List<Task>();
 						taskList.Clear();
 						UpdateGridView();
 
