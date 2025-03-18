@@ -43,8 +43,8 @@
 			folderBrowserDialog1 = new FolderBrowserDialog();
 			SaveButton = new Button();
 			infoTextBox = new TextBox();
-			dayInfoTextBox = new TextBox();
-			textBox1 = new TextBox();
+			textbox2 = new TextBox();
+			textbox1 = new TextBox();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
 			SuspendLayout();
@@ -163,45 +163,49 @@
 			// 
 			infoTextBox.BackColor = SystemColors.Menu;
 			infoTextBox.BorderStyle = BorderStyle.None;
+			infoTextBox.Font = new Font("Segoe UI Emoji", 9F);
 			infoTextBox.Location = new Point(405, 45);
 			infoTextBox.Name = "infoTextBox";
 			infoTextBox.Size = new Size(125, 20);
 			infoTextBox.TabIndex = 8;
 			infoTextBox.Text = "null";
 			// 
-			// dayInfoTextBox
+			// textbox2
 			// 
-			dayInfoTextBox.BackColor = SystemColors.Menu;
-			dayInfoTextBox.BorderStyle = BorderStyle.None;
-			dayInfoTextBox.Location = new Point(274, 45);
-			dayInfoTextBox.Name = "dayInfoTextBox";
-			dayInfoTextBox.Size = new Size(125, 20);
-			dayInfoTextBox.TabIndex = 9;
-			dayInfoTextBox.Text = "Tasks Done Today:";
+			textbox2.BackColor = SystemColors.Menu;
+			textbox2.BorderStyle = BorderStyle.None;
+			textbox2.Font = new Font("Segoe UI Emoji", 9F);
+			textbox2.Location = new Point(274, 45);
+			textbox2.Name = "textbox2";
+			textbox2.Size = new Size(125, 20);
+			textbox2.TabIndex = 9;
+			textbox2.Text = "Tasks Done Today:";
 			// 
-			// textBox1
+			// textbox1
 			// 
-			textBox1.BackColor = SystemColors.Menu;
-			textBox1.BorderStyle = BorderStyle.None;
-			textBox1.Location = new Point(430, 45);
-			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(125, 20);
-			textBox1.TabIndex = 10;
-			textBox1.Text = "%";
+			textbox1.BackColor = SystemColors.Menu;
+			textbox1.BorderStyle = BorderStyle.None;
+			textbox1.Font = new Font("Segoe UI Emoji", 9F);
+			textbox1.Location = new Point(430, 45);
+			textbox1.Name = "textbox1";
+			textbox1.Size = new Size(125, 20);
+			textbox1.TabIndex = 10;
+			textbox1.Text = "%";
 			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
-			Controls.Add(textBox1);
-			Controls.Add(dayInfoTextBox);
+			Controls.Add(textbox1);
+			Controls.Add(textbox2);
 			Controls.Add(infoTextBox);
 			Controls.Add(SaveButton);
 			Controls.Add(deleteButton);
 			Controls.Add(addButton);
 			Controls.Add(gridView);
 			Controls.Add(menuStrip1);
+			Font = new Font("Segoe UI Emoji", 9F);
 			Icon = (Icon)resources.GetObject("$this.Icon");
 			MainMenuStrip = menuStrip1;
 			Name = "mainForm";
@@ -226,7 +230,7 @@
 		private Button SaveButton;
 		private ToolStripMenuItem deleteToolStripMenuItem;
 		private TextBox infoTextBox;
-		private TextBox dayInfoTextBox;
-		private TextBox textBox1;
+		private TextBox textbox2;
+		private TextBox textbox1;
 	}
 }

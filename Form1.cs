@@ -1,4 +1,5 @@
-using System.IO;
+﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
@@ -7,6 +8,9 @@ namespace ToDoList_C_
 	public partial class mainForm : Form
 	{
 		List<Task> taskList = new List<Task>();
+		Inventory inventory = new Inventory();
+
+
 		string path = "G:\\Main\\ToDoLists\\";
 		string directoryPath;
 		string fileNameList;
@@ -16,10 +20,14 @@ namespace ToDoList_C_
 		string openedFilePath;
 		string openedFileName;
 
+		const int percentageToGetAStar = 50;
+
+
 		public mainForm()
 		{
 			InitializeComponent();
 
+			textbox1.Font = new Font("Segoe UI Emoji", 9);
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
@@ -35,6 +43,18 @@ namespace ToDoList_C_
 		}
 
 		//additional funcs
+		async void AnimateButton(Button button, Color color, int delay)
+		{
+			Color originalColor = button.BackColor;
+			button.BackColor = color;
+			await System.Threading.Tasks.Task.Delay(delay);
+			button.BackColor = originalColor;
+		}
+		// Color originalColor = addButton.BackColor;
+		// addButton.BackColor = Color.DarkGreen;
+		// await System.Threading.Tasks.Task.Delay(100);
+		// addButton.BackColor = originalColor;
+
 		int calculatePercentageByList(List<Task> taskList)
 		{
 			if (taskList.Count == 0 || taskList == null) { return 0; }
@@ -53,7 +73,17 @@ namespace ToDoList_C_
 			}
 			if (counter == taskList.Count)
 			{
-				return 100;
+				donePercentage = 100;
+			}
+
+			//string textBoxOldText = textbox1.Text;
+			if (donePercentage > 50 && !textbox1.Text.Contains("🔥"))
+			{
+				textbox1.Text += "🔥";
+			}
+			else
+			{
+				textbox1.Text = "%";
 			}
 
 			return donePercentage;
@@ -181,10 +211,8 @@ namespace ToDoList_C_
 
 				deleteButton.Enabled = taskList.Count > 0;
 				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
-				// Color originalColor = addButton.BackColor;
-				// addButton.BackColor = Color.DarkGreen;
-				// await System.Threading.Tasks.Task.Delay(100);
-				// addButton.BackColor = originalColor;
+
+				AnimateButton(addButton, Color.Green, 60);
 			}
 		}
 
@@ -264,6 +292,7 @@ namespace ToDoList_C_
 			SaveButton.Enabled = true;
 
 			infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+			AnimateButton(deleteButton, Color.DarkRed, 60);
 		}
 
 		private void closeToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -304,6 +333,7 @@ namespace ToDoList_C_
 				File.WriteAllText(fileNameList, jsonList);
 				File.WriteAllText(fileNameInfo, jsonInfo);
 			}
+			AnimateButton(SaveButton, Color.ForestGreen, 60);
 
 		}
 
