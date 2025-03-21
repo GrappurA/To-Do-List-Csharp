@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Web.WebView2.WinForms;
 using Newtonsoft.Json;
 
 namespace ToDoList_C_
@@ -8,8 +9,8 @@ namespace ToDoList_C_
 	public partial class mainForm : Form
 	{
 		List<Task> taskList = new List<Task>();
-		Inventory inventory = new Inventory();
 
+		List<Star> starList = new List<Star>();
 
 		string path = "G:\\Main\\ToDoLists\\";
 		string directoryPath;
@@ -22,27 +23,49 @@ namespace ToDoList_C_
 
 		const int percentageToGetAStar = 50;
 
-
 		public mainForm()
 		{
 			InitializeComponent();
-
-			textbox1.Font = new Font("Segoe UI Emoji", 9);
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
 			gridView.RowHeadersVisible = false;
 			infoTextBox.ReadOnly = true;
+
 			openLatestFile();
 
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
+			HideBars();
+
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 			calculatePercentageByList(taskList);
 		}
 
+		private async void mainForm_Load(object sender, EventArgs e)
+		{
+			//await webView2.EnsureCoreWebView2Async();
+
+			//await webView2.ExecuteScriptAsync(@"
+			//document.documentElement.style.overflow = 'hidden';
+			//document.body.style.overflow = 'hidden';
+			//	");
+
+			//webView2.NavigateToString("<html><body style='font-size:10px;'>🔥</body></html>");
+			//HideBars();
+		}
+
 		//additional funcs
+		private async void HideBars()
+		{
+			await webView2.EnsureCoreWebView2Async();
+			await webView2.ExecuteScriptAsync(@"
+			document.documentElement.style.overflow = 'hidden';
+			document.body.style.overflow = 'hidden';
+			");
+		}
+
 		async void AnimateButton(Button button, Color color, int delay)
 		{
 			Color originalColor = button.BackColor;
@@ -50,12 +73,13 @@ namespace ToDoList_C_
 			await System.Threading.Tasks.Task.Delay(delay);
 			button.BackColor = originalColor;
 		}
-		// Color originalColor = addButton.BackColor;
-		// addButton.BackColor = Color.DarkGreen;
-		// await System.Threading.Tasks.Task.Delay(100);
-		// addButton.BackColor = originalColor;
 
-		int calculatePercentageByList(List<Task> taskList)
+		private void GiveStar(int size)
+		{
+			starList.Add(new Star(size));
+		}
+
+		private int calculatePercentageByList(List<Task> taskList)
 		{
 			if (taskList.Count == 0 || taskList == null) { return 0; }
 
@@ -76,17 +100,32 @@ namespace ToDoList_C_
 				donePercentage = 100;
 			}
 
-			//string textBoxOldText = textbox1.Text;
-			if (donePercentage > 50 && !textbox1.Text.Contains("🔥"))
+			if (donePercentage >= 50)
 			{
-				textbox1.Text += "🔥";
+				SetFireEmoji();
+				HideBars();
+				GiveStar(1);
 			}
 			else
 			{
-				textbox1.Text = "%";
+				setDefaultEmoji();
+				HideBars();
+			
 			}
 
 			return donePercentage;
+		}
+
+		async void SetFireEmoji()
+		{
+			await webView2.EnsureCoreWebView2Async();
+			webView2.NavigateToString("<html><body style='font-size:12px;'>🔥</body></html>");
+		}
+
+		async void setDefaultEmoji()
+		{
+			await webView2.EnsureCoreWebView2Async();
+			webView2.NavigateToString("<html><body style='font-size:12px;'></body></html>");
 		}
 
 		private void openLatestFile()
@@ -396,7 +435,6 @@ namespace ToDoList_C_
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
 				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
-
 			}
 		}
 

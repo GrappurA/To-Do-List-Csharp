@@ -21,7 +21,6 @@ namespace ToDoList_C_
 		{
 			if (Size < 0 || Size > 3) { return; }
 			else { this.Size = Size; }
-
 		}
 
 

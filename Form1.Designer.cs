@@ -31,6 +31,7 @@
 			DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
 			DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
+			webView2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			menuStrip1 = new MenuStrip();
 			fileToolStripMenuItem = new ToolStripMenuItem();
 			createToolStripItem = new ToolStripMenuItem();
@@ -44,10 +45,23 @@
 			SaveButton = new Button();
 			infoTextBox = new TextBox();
 			textbox2 = new TextBox();
-			textbox1 = new TextBox();
+			((System.ComponentModel.ISupportInitialize)webView2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
 			SuspendLayout();
+			// 
+			// webView2
+			// 
+			webView2.AllowExternalDrop = false;
+			webView2.BackgroundImageLayout = ImageLayout.None;
+			webView2.CreationProperties = null;
+			webView2.DefaultBackgroundColor = Color.Transparent;
+			webView2.Enabled = false;
+			webView2.Location = new Point(415, 38);
+			webView2.Name = "webView2";
+			webView2.Size = new Size(109, 32);
+			webView2.TabIndex = 11;
+			webView2.ZoomFactor = 1D;
 			// 
 			// menuStrip1
 			// 
@@ -181,23 +195,12 @@
 			textbox2.TabIndex = 9;
 			textbox2.Text = "Tasks Done Today:";
 			// 
-			// textbox1
-			// 
-			textbox1.BackColor = SystemColors.Menu;
-			textbox1.BorderStyle = BorderStyle.None;
-			textbox1.Font = new Font("Segoe UI Emoji", 9F);
-			textbox1.Location = new Point(430, 45);
-			textbox1.Name = "textbox1";
-			textbox1.Size = new Size(125, 20);
-			textbox1.TabIndex = 10;
-			textbox1.Text = "%";
-			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
-			Controls.Add(textbox1);
+			Controls.Add(webView2);
 			Controls.Add(textbox2);
 			Controls.Add(infoTextBox);
 			Controls.Add(SaveButton);
@@ -210,6 +213,8 @@
 			MainMenuStrip = menuStrip1;
 			Name = "mainForm";
 			Text = "To Do List";
+			Load += mainForm_Load;
+			((System.ComponentModel.ISupportInitialize)webView2).EndInit();
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).EndInit();
@@ -231,6 +236,6 @@
 		private ToolStripMenuItem deleteToolStripMenuItem;
 		private TextBox infoTextBox;
 		private TextBox textbox2;
-		private TextBox textbox1;
+		private Microsoft.Web.WebView2.WinForms.WebView2 webView2;
 	}
 }
