@@ -31,7 +31,7 @@
 			DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
 			DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
-			webView2 = new Microsoft.Web.WebView2.WinForms.WebView2();
+			showingFireWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			menuStrip1 = new MenuStrip();
 			fileToolStripMenuItem = new ToolStripMenuItem();
 			createToolStripItem = new ToolStripMenuItem();
@@ -45,23 +45,25 @@
 			SaveButton = new Button();
 			infoTextBox = new TextBox();
 			textbox2 = new TextBox();
-			((System.ComponentModel.ISupportInitialize)webView2).BeginInit();
+			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
+			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
+			((System.ComponentModel.ISupportInitialize)showingStarsWV2).BeginInit();
 			SuspendLayout();
 			// 
-			// webView2
+			// showingFireWV2
 			// 
-			webView2.AllowExternalDrop = false;
-			webView2.BackgroundImageLayout = ImageLayout.None;
-			webView2.CreationProperties = null;
-			webView2.DefaultBackgroundColor = Color.Transparent;
-			webView2.Enabled = false;
-			webView2.Location = new Point(415, 38);
-			webView2.Name = "webView2";
-			webView2.Size = new Size(109, 32);
-			webView2.TabIndex = 11;
-			webView2.ZoomFactor = 1D;
+			showingFireWV2.AllowExternalDrop = false;
+			showingFireWV2.BackgroundImageLayout = ImageLayout.None;
+			showingFireWV2.CreationProperties = null;
+			showingFireWV2.DefaultBackgroundColor = Color.Transparent;
+			showingFireWV2.Enabled = false;
+			showingFireWV2.Location = new Point(420, 36);
+			showingFireWV2.Name = "showingFireWV2";
+			showingFireWV2.Size = new Size(66, 29);
+			showingFireWV2.TabIndex = 11;
+			showingFireWV2.ZoomFactor = 1D;
 			// 
 			// menuStrip1
 			// 
@@ -117,7 +119,7 @@
 			gridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
 			dataGridViewCellStyle2.BackColor = SystemColors.Window;
-			dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+			dataGridViewCellStyle2.Font = new Font("Segoe UI Emoji", 9F);
 			dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
 			dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
 			dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
@@ -195,12 +197,24 @@
 			textbox2.TabIndex = 9;
 			textbox2.Text = "Tasks Done Today:";
 			// 
+			// showingStarsWV2
+			// 
+			showingStarsWV2.AllowExternalDrop = true;
+			showingStarsWV2.CreationProperties = null;
+			showingStarsWV2.DefaultBackgroundColor = Color.White;
+			showingStarsWV2.Location = new Point(492, 45);
+			showingStarsWV2.Name = "showingStarsWV2";
+			showingStarsWV2.Size = new Size(135, 29);
+			showingStarsWV2.TabIndex = 12;
+			showingStarsWV2.ZoomFactor = 1D;
+			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
-			Controls.Add(webView2);
+			Controls.Add(showingStarsWV2);
+			Controls.Add(showingFireWV2);
 			Controls.Add(textbox2);
 			Controls.Add(infoTextBox);
 			Controls.Add(SaveButton);
@@ -214,10 +228,11 @@
 			Name = "mainForm";
 			Text = "To Do List";
 			Load += mainForm_Load;
-			((System.ComponentModel.ISupportInitialize)webView2).EndInit();
+			((System.ComponentModel.ISupportInitialize)showingFireWV2).EndInit();
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).EndInit();
+			((System.ComponentModel.ISupportInitialize)showingStarsWV2).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -236,6 +251,7 @@
 		private ToolStripMenuItem deleteToolStripMenuItem;
 		private TextBox infoTextBox;
 		private TextBox textbox2;
-		private Microsoft.Web.WebView2.WinForms.WebView2 webView2;
+		private Microsoft.Web.WebView2.WinForms.WebView2 showingFireWV2;
+		private Microsoft.Web.WebView2.WinForms.WebView2 showingStarsWV2;
 	}
 }

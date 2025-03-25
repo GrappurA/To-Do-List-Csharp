@@ -9,10 +9,10 @@ namespace ToDoList_C_
 	public partial class mainForm : Form
 	{
 		List<Task> taskList = new List<Task>();
-
 		List<Star> starList = new List<Star>();
 
 		string path = "G:\\Main\\ToDoLists\\";
+		string pathToAccountFile;
 		string directoryPath;
 		string fileNameList;
 		string fileNameInfo;
@@ -22,6 +22,7 @@ namespace ToDoList_C_
 		string openedFileName;
 
 		const int percentageToGetAStar = 50;
+		bool gotStar = false;
 
 		public mainForm()
 		{
@@ -31,9 +32,10 @@ namespace ToDoList_C_
 			SaveButton.Enabled = false;
 			gridView.RowHeadersVisible = false;
 			infoTextBox.ReadOnly = true;
+			pathToAccountFile = path + "Info.json";
 
 			openLatestFile();
-
+			CreateFile(pathToAccountFile);
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
@@ -45,25 +47,42 @@ namespace ToDoList_C_
 
 		private async void mainForm_Load(object sender, EventArgs e)
 		{
-			//await webView2.EnsureCoreWebView2Async();
+			PrintStarsCount();
 
-			//await webView2.ExecuteScriptAsync(@"
-			//document.documentElement.style.overflow = 'hidden';
-			//document.body.style.overflow = 'hidden';
-			//	");
-
-			//webView2.NavigateToString("<html><body style='font-size:10px;'>🔥</body></html>");
-			//HideBars();
 		}
 
 		//additional funcs
+		private void CreateFile(string pathToFile)
+		{
+			if (!File.Exists(pathToFile))
+			{
+				File.Create(pathToFile);
+			}
+
+		}
+
+		private void ChangeAccountInfoFile()
+		{
+			string starAmount = starList.Count.ToString();
+			var json = JsonConvert.SerializeObject(starAmount, Formatting.Indented);
+
+			File.WriteAllText(json, pathToAccountFile);
+		}
+
 		private async void HideBars()
 		{
-			await webView2.EnsureCoreWebView2Async();
-			await webView2.ExecuteScriptAsync(@"
+			await showingFireWV2.EnsureCoreWebView2Async();
+			await showingStarsWV2.EnsureCoreWebView2Async();
+
+			await showingFireWV2.ExecuteScriptAsync(@"
 			document.documentElement.style.overflow = 'hidden';
 			document.body.style.overflow = 'hidden';
 			");
+			await showingStarsWV2.ExecuteScriptAsync(@"
+			document.documentElement.style.overflow = 'hidden';
+			document.body.style.overflow = 'hidden';
+			");
+
 		}
 
 		async void AnimateButton(Button button, Color color, int delay)
@@ -100,17 +119,25 @@ namespace ToDoList_C_
 				donePercentage = 100;
 			}
 
-			if (donePercentage >= 50)
+			if (donePercentage >= percentageToGetAStar)
 			{
 				SetFireEmoji();
 				HideBars();
-				GiveStar(1);
+				if (gotStar == true)
+				{
+					return donePercentage;
+				}
+				else
+				{
+					GiveStar(1);
+					gotStar = true;
+				}
+
 			}
 			else
 			{
 				setDefaultEmoji();
 				HideBars();
-			
 			}
 
 			return donePercentage;
@@ -118,14 +145,20 @@ namespace ToDoList_C_
 
 		async void SetFireEmoji()
 		{
-			await webView2.EnsureCoreWebView2Async();
-			webView2.NavigateToString("<html><body style='font-size:12px;'>🔥</body></html>");
+			await showingFireWV2.EnsureCoreWebView2Async();
+			showingFireWV2.NavigateToString("<html><body style='font-size:12px;'>🔥</body></html>");
 		}
 
 		async void setDefaultEmoji()
 		{
-			await webView2.EnsureCoreWebView2Async();
-			webView2.NavigateToString("<html><body style='font-size:12px;'></body></html>");
+			await showingFireWV2.EnsureCoreWebView2Async();
+			showingFireWV2.NavigateToString("<html><body style='font-size:12px;'></body></html>");
+		}
+
+		async void PrintStarsCount()
+		{
+			await showingStarsWV2.EnsureCoreWebView2Async();
+			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {starList.Count} Stars</body></html>");
 		}
 
 		private void openLatestFile()
@@ -160,8 +193,8 @@ namespace ToDoList_C_
 					this.Text = formName;
 
 					taskList.Clear();
-					taskList = readListFile(latestFilePath);
-					infoTextBox.Text = readJson(latestInfoFile.FullName);
+					taskList = readFile<List<Task>>(latestFilePath);
+					infoTextBox.Text = readFile<string>(latestInfoFile.FullName);
 
 					fileNameList = latestFilePath;
 
@@ -196,17 +229,10 @@ namespace ToDoList_C_
 			//gridView.Rows[1].Height = 100;
 		}
 
-		private List<Task> readListFile(string filePath)
+		private static T readFile<T>(string filePath)
 		{
-			return JsonConvert.DeserializeObject<List<Task>>(File.ReadAllText(filePath));
+			return JsonConvert.DeserializeObject<T>(File.ReadAllText(filePath));
 		}
-
-		private string readJson(string filePath)
-		{
-			return JsonConvert.DeserializeObject<string>(File.ReadAllText(filePath));
-		}
-
-		//private int readInfoFile(string )
 
 		private void CreateDirectory(string directoryPath)
 		{
@@ -251,7 +277,7 @@ namespace ToDoList_C_
 				deleteButton.Enabled = taskList.Count > 0;
 				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 
-				AnimateButton(addButton, Color.Green, 60);
+				AnimateButton(addButton, Color.Green, 35);
 			}
 		}
 
@@ -394,7 +420,7 @@ namespace ToDoList_C_
 					openedFileName = Path.GetFileNameWithoutExtension(openedFilePath);
 
 					taskList.Clear();
-					taskList = readListFile(openedFilePath);
+					taskList = readFile<List<Task>>(openedFilePath);
 					infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 
 					fileNameList = openedFilePath;
@@ -437,6 +463,5 @@ namespace ToDoList_C_
 				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 			}
 		}
-
 	}
 }
