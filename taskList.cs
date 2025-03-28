@@ -21,6 +21,11 @@ namespace ToDoList_C_
 		{
 			this.gotStar = gotStar;
 		}
+		
+		public bool GetGotStarStatus()
+		{
+			return this.gotStar;
+		}
 
 		public void AddElement(Task elem)
 		{

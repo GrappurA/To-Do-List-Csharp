@@ -128,7 +128,7 @@ namespace ToDoList_C_
 			{
 				SetFireEmoji();
 				HideBars();
-				if (gotStar == true)
+				if (taskList.GetGotStarStatus() == true)
 				{
 					return donePercentage;
 				}
@@ -136,7 +136,9 @@ namespace ToDoList_C_
 				{
 					starList.AddStar(new Star(),1);
 					taskList.SetGotStarStatus(true);
-					var json = JsonConvert.SerializeObject(starList.GetSize());
+					var starsFromFile = readFile<int>(pathToAccountFile);
+
+					var json = JsonConvert.SerializeObject(starList.GetSize() + starsFromFile);
 
 					File.WriteAllText(pathToAccountFile, json);
 				}
