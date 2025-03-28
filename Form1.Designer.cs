@@ -46,6 +46,7 @@
 			infoTextBox = new TextBox();
 			textbox2 = new TextBox();
 			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
+			folderBrowserDialog2 = new FolderBrowserDialog();
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
@@ -85,28 +86,28 @@
 			// createToolStripItem
 			// 
 			createToolStripItem.Name = "createToolStripItem";
-			createToolStripItem.Size = new Size(136, 26);
+			createToolStripItem.Size = new Size(224, 26);
 			createToolStripItem.Text = "Create";
 			createToolStripItem.Click += createToolStripMenuItem_Click;
 			// 
 			// openToolStripMenuItem
 			// 
 			openToolStripMenuItem.Name = "openToolStripMenuItem";
-			openToolStripMenuItem.Size = new Size(136, 26);
+			openToolStripMenuItem.Size = new Size(224, 26);
 			openToolStripMenuItem.Text = "Open";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
 			// closeToolStripMenuItem1
 			// 
 			closeToolStripMenuItem1.Name = "closeToolStripMenuItem1";
-			closeToolStripMenuItem1.Size = new Size(136, 26);
+			closeToolStripMenuItem1.Size = new Size(224, 26);
 			closeToolStripMenuItem1.Text = "Close";
 			closeToolStripMenuItem1.Click += closeToolStripMenuItem1_Click;
 			// 
 			// deleteToolStripMenuItem
 			// 
 			deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-			deleteToolStripMenuItem.Size = new Size(136, 26);
+			deleteToolStripMenuItem.Size = new Size(224, 26);
 			deleteToolStripMenuItem.Text = "Delete";
 			deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
 			// 
@@ -253,5 +254,6 @@
 		private TextBox textbox2;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingFireWV2;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingStarsWV2;
+		private FolderBrowserDialog folderBrowserDialog2;
 	}
 }

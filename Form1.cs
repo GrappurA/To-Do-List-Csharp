@@ -9,7 +9,8 @@ namespace ToDoList_C_
 	public partial class mainForm : Form
 	{
 		List<Task> taskList = new List<Task>();
-		List<Star> starList = new List<Star>();
+		StarList starList = new StarList();
+		
 
 		string path = "G:\\Main\\ToDoLists\\";
 		string pathToAccountFile;
@@ -34,8 +35,11 @@ namespace ToDoList_C_
 			infoTextBox.ReadOnly = true;
 			pathToAccountFile = path + "Info.json";
 
+			
 			openLatestFile();
 			CreateFile(pathToAccountFile);
+
+
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
@@ -63,7 +67,8 @@ namespace ToDoList_C_
 
 		private void ChangeAccountInfoFile()
 		{
-			string starAmount = starList.Count.ToString();
+
+			string starAmount = starList.GetSize().ToString();
 			var json = JsonConvert.SerializeObject(starAmount, Formatting.Indented);
 
 			File.WriteAllText(json, pathToAccountFile);
@@ -95,12 +100,12 @@ namespace ToDoList_C_
 
 		private void GiveStar(int size)
 		{
-			starList.Add(new Star(size));
+			starList.AddStar(new Star(size),size);
 		}
 
 		private int calculatePercentageByList(List<Task> taskList)
 		{
-			if (taskList.Count == 0 || taskList == null) { return 0; }
+			if (taskList == null || taskList.Count == 0) { return 0; }
 
 			int oneTaskPecentage = 100 / taskList.Count;
 			int donePercentage = 0;
@@ -111,7 +116,7 @@ namespace ToDoList_C_
 				if (taskList[i].Status == true)
 				{
 					donePercentage += oneTaskPecentage;
-					counter++;
+					counfer++;
 				}
 			}
 			if (counter == taskList.Count)
@@ -131,6 +136,9 @@ namespace ToDoList_C_
 				{
 					GiveStar(1);
 					gotStar = true;
+					var json = JsonConvert.SerializeObject(starList.GetSize());
+
+					File.WriteAllText(pathToAccountFile, json);
 				}
 
 			}
@@ -158,7 +166,7 @@ namespace ToDoList_C_
 		async void PrintStarsCount()
 		{
 			await showingStarsWV2.EnsureCoreWebView2Async();
-			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {starList.Count} Stars</body></html>");
+			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {starList.GetSize()} Stars</body></html>");
 		}
 
 		private void openLatestFile()
@@ -180,6 +188,9 @@ namespace ToDoList_C_
 
 				var latestInfoFile = latestDir?.GetFiles()
 					.Where(f => f.Name.Contains("Info")).FirstOrDefault();
+
+				string numberOfStars = readFile<string>(pathToAccountFile);
+
 
 				//var latestFile
 				if (latestListFile != null)
@@ -432,19 +443,18 @@ namespace ToDoList_C_
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog fd = new OpenFileDialog())
+			using (folderBrowserDialog2)
 			{
-				fd.Multiselect = true;
-				fd.Filter = "Json Files (*.json)|*.json";
+				folderBrowserDialog2.InitialDirectory = path;
 				using (approveClosingList form = new approveClosingList())
 				{
-					if (fd.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
+					if (folderBrowserDialog2.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
 					{
 						taskList.Clear();
 						UpdateGridView();
 
-						string toDeletePath = fd.FileName;
-						File.Delete(toDeletePath);
+						string toDeleteDirectoryPath = folderBrowserDialog2.SelectedPath;
+						Directory.Delete(toDeleteDirectoryPath, true);
 					}
 				}
 

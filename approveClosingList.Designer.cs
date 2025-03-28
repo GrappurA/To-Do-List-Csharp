@@ -56,7 +56,7 @@
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(363, 105);
+			ClientSize = new Size(426, 105);
 			Controls.Add(NoButton);
 			Controls.Add(OkButton);
 			Name = "approveClosingList";
