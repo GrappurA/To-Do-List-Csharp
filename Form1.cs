@@ -46,7 +46,7 @@ namespace ToDoList_C_
 			HideBars();
 
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
-			calculatePercentageByList(taskList.GetList());
+			calculatePercentageByList(taskList);
 		}
 
 		private async void mainForm_Load(object sender, EventArgs e)
@@ -103,23 +103,23 @@ namespace ToDoList_C_
 			starList.AddStar(new Star(size),size);
 		}
 
-		private int calculatePercentageByList(List<Task> taskList)
+		private int calculatePercentageByList(TaskList taskList)
 		{
-			if (taskList == null || taskList.Count == 0) { return 0; }
+			if (taskList == null || taskList.Count() == 0) { return 0; }
 
-			int oneTaskPecentage = 100 / taskList.Count;
+			int oneTaskPecentage = 100 / taskList.Count();
 			int donePercentage = 0;
 			int counter = 0;
 
 			for (int i = 0; i < taskList.Count(); i++)
 			{
-				if (taskList[i].Status == true)
+				if (taskList.GetList()[i].Status == true)
 				{
 					donePercentage += oneTaskPecentage;
 					counter++;
 				}
 			}
-			if (counter == taskList.Count)
+			if (counter == taskList.Count())
 			{
 				donePercentage = 100;
 			}
@@ -134,8 +134,8 @@ namespace ToDoList_C_
 				}
 				else
 				{
-					GiveStar(1);
-					gotStar = true;
+					starList.AddStar(new Star(),1);
+					taskList.SetGotStarStatus(true);
 					var json = JsonConvert.SerializeObject(starList.GetSize());
 
 					File.WriteAllText(pathToAccountFile, json);
@@ -286,7 +286,7 @@ namespace ToDoList_C_
 				UpdateGridView();
 
 				deleteButton.Enabled = taskList.Count() > 0;
-				infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
+				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 
 				AnimateButton(addButton, Color.Green, 35);
 			}
@@ -367,7 +367,7 @@ namespace ToDoList_C_
 			deleteButton.Enabled = taskList.Count() > 0;
 			SaveButton.Enabled = true;
 
-			infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
+			infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 			AnimateButton(deleteButton, Color.DarkRed, 60);
 		}
 
@@ -432,7 +432,7 @@ namespace ToDoList_C_
 
 					taskList.Clear();
 					taskList.SetList(readFile<List<Task>>(openedFilePath));
-					infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
+					infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 
 					fileNameList = openedFilePath;
 					UpdateGridView();
@@ -470,7 +470,7 @@ namespace ToDoList_C_
 				// Commit the edit so that CellValueChanged is triggered immediately
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
-				infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
+				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 			}
 		}
 	}
