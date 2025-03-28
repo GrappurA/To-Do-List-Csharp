@@ -8,7 +8,7 @@ namespace ToDoList_C_
 {
 	public partial class mainForm : Form
 	{
-		List<Task> taskList = new List<Task>();
+		TaskList taskList = new TaskList();
 		StarList starList = new StarList();
 		
 
@@ -46,7 +46,7 @@ namespace ToDoList_C_
 			HideBars();
 
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
-			calculatePercentageByList(taskList);
+			calculatePercentageByList(taskList.GetList());
 		}
 
 		private async void mainForm_Load(object sender, EventArgs e)
@@ -116,7 +116,7 @@ namespace ToDoList_C_
 				if (taskList[i].Status == true)
 				{
 					donePercentage += oneTaskPecentage;
-					counfer++;
+					counter++;
 				}
 			}
 			if (counter == taskList.Count)
@@ -204,7 +204,7 @@ namespace ToDoList_C_
 					this.Text = formName;
 
 					taskList.Clear();
-					taskList = readFile<List<Task>>(latestFilePath);
+					taskList.SetList(readFile<List<Task>>(latestFilePath));
 					infoTextBox.Text = readFile<string>(latestInfoFile.FullName);
 
 					fileNameList = latestFilePath;
@@ -217,9 +217,9 @@ namespace ToDoList_C_
 
 		private void UpdateGridView()
 		{
-			if (taskList == null) taskList = new List<Task>();
+			if (taskList == null) taskList.SetList(new List<Task>());
 			gridView.DataSource = null;
-			gridView.DataSource = taskList;
+			gridView.DataSource = taskList.GetList();
 			AdjustGridViewSizesLooks();
 			gridView.Refresh();
 		}
@@ -260,15 +260,15 @@ namespace ToDoList_C_
 
 		private void UpdateTasks()
 		{
-			for (int i = 0; i < taskList.Count; i++)
+			for (int i = 0; i < taskList.Count(); i++)
 			{
 				if (gridView.Rows[i].Cells[1].Value != null)
 				{
-					taskList[i].Name = gridView.Rows[i].Cells[1].Value.ToString();
+					taskList.GetList()[i].Name = gridView.Rows[i].Cells[1].Value.ToString();
 				}
 				if (gridView.Rows[i].Cells[0].Value != null)
 				{
-					taskList[i].Id = (int)gridView.Rows[i].Cells[0].Value;
+					taskList.GetList()[i].Id = (int)gridView.Rows[i].Cells[0].Value;
 				}
 			}
 		}
@@ -278,15 +278,15 @@ namespace ToDoList_C_
 		{
 			if (!string.IsNullOrEmpty(fileNameList) && File.Exists(fileNameList))
 			{
-				int newId = taskList.Count != 0 ? taskList.Max(t => t.Id) + 1 : 1;
+				int newId = taskList.Count() != 0 ? taskList.GetList().Max(t => t.Id) + 1 : 1;
 
 				Task task = new Task(newId, "", false);
-				taskList.Add(task);
+				taskList.AddElement(task);
 
 				UpdateGridView();
 
-				deleteButton.Enabled = taskList.Count > 0;
-				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+				deleteButton.Enabled = taskList.Count() > 0;
+				infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
 
 				AnimateButton(addButton, Color.Green, 35);
 			}
@@ -346,7 +346,7 @@ namespace ToDoList_C_
 			if (gridView.SelectedRows.Count > 0)
 			{
 				int index = gridView.SelectedRows[0].Index;
-				if (index >= 0 && index < taskList.Count)
+				if (index >= 0 && index < taskList.Count())
 				{
 					deleteButton.Enabled = true;
 				}
@@ -359,15 +359,15 @@ namespace ToDoList_C_
 
 		private void deleteButton_Click(object sender, EventArgs e)
 		{
-			if (taskList.Count > 0)
+			if (taskList.Count() > 0)
 			{
-				taskList.RemoveAt(gridView.RowCount - 1);
+				taskList.GetList().RemoveAt(gridView.RowCount - 1);
 				UpdateGridView();
 			}
-			deleteButton.Enabled = taskList.Count > 0;
+			deleteButton.Enabled = taskList.Count() > 0;
 			SaveButton.Enabled = true;
 
-			infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+			infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
 			AnimateButton(deleteButton, Color.DarkRed, 60);
 		}
 
@@ -383,7 +383,7 @@ namespace ToDoList_C_
 		private void SaveButton_Click(object sender, EventArgs e)
 		{
 			UpdateTasks();
-			string jsonList = JsonConvert.SerializeObject(taskList, Formatting.Indented);
+			string jsonList = JsonConvert.SerializeObject(taskList.GetList(), Formatting.Indented);
 			string jsonInfo = JsonConvert.SerializeObject(infoTextBox.Text, Formatting.Indented);
 
 			var latestDir = new DirectoryInfo(path)
@@ -431,8 +431,8 @@ namespace ToDoList_C_
 					openedFileName = Path.GetFileNameWithoutExtension(openedFilePath);
 
 					taskList.Clear();
-					taskList = readFile<List<Task>>(openedFilePath);
-					infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+					taskList.SetList(readFile<List<Task>>(openedFilePath));
+					infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
 
 					fileNameList = openedFilePath;
 					UpdateGridView();
@@ -470,7 +470,7 @@ namespace ToDoList_C_
 				// Commit the edit so that CellValueChanged is triggered immediately
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
-				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+				infoTextBox.Text = calculatePercentageByList(taskList.GetList()).ToString();
 			}
 		}
 	}

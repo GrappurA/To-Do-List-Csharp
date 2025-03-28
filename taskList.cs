@@ -32,5 +32,25 @@ namespace ToDoList_C_
 			taskList.Remove(elem);
 		}
 
+		public int Count()
+		{
+			return taskList.Count();
+		}
+
+		public void Clear()
+		{
+			taskList.Clear();
+		}
+
+		public List<Task> GetList()
+		{
+			return taskList;
+		}
+
+		public void SetList(List<Task> taskList)
+		{
+			this.taskList = taskList;
+		}
+
 	}
 }
