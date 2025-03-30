@@ -10,7 +10,7 @@ namespace ToDoList_C_
 	{
 		TaskList taskList = new TaskList();
 		StarList starList = new StarList();
-		
+
 
 		string path = "G:\\Main\\ToDoLists\\";
 		string pathToAccountFile;
@@ -35,7 +35,7 @@ namespace ToDoList_C_
 			infoTextBox.ReadOnly = true;
 			pathToAccountFile = path + "Info.json";
 
-			
+
 			openLatestFile();
 			CreateFile(pathToAccountFile);
 
@@ -65,15 +65,6 @@ namespace ToDoList_C_
 
 		}
 
-		private void ChangeAccountInfoFile()
-		{
-
-			string starAmount = starList.GetSize().ToString();
-			var json = JsonConvert.SerializeObject(starAmount, Formatting.Indented);
-
-			File.WriteAllText(json, pathToAccountFile);
-		}
-
 		private async void HideBars()
 		{
 			await showingFireWV2.EnsureCoreWebView2Async();
@@ -96,11 +87,6 @@ namespace ToDoList_C_
 			button.BackColor = color;
 			await System.Threading.Tasks.Task.Delay(delay);
 			button.BackColor = originalColor;
-		}
-
-		private void GiveStar(int size)
-		{
-			starList.AddStar(new Star(size),size);
 		}
 
 		private int calculatePercentageByList(TaskList taskList)
@@ -134,7 +120,7 @@ namespace ToDoList_C_
 				}
 				else
 				{
-					starList.AddStar(new Star(),1);
+					starList.AddStar(new Star(), 1);
 					taskList.SetGotStarStatus(true);
 					var starsFromFile = readFile<int>(pathToAccountFile);
 
