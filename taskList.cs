@@ -10,11 +10,33 @@ namespace ToDoList_C_
 	{
 		bool gotStar;
 		List<Task> taskList;
+		string pathToList;
+		string pathToInfo;
 		
 		public TaskList()
 		{
 			taskList = new List<Task>();
 			gotStar = false;
+		}
+
+		public void setPathToList(string path)
+		{
+			this.pathToList = path;			
+		}
+		
+		public void setPathToInfo(string path)
+		{
+			this.pathToInfo = path;			
+		}
+
+		public string GetPathToList()
+		{
+			return this.pathToList;
+		}
+		
+		public string GetPathToInfo()
+		{
+			return this.pathToInfo;
 		}
 
 		public void SetGotStarStatus(bool gotStar)

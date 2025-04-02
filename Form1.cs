@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.WinForms;
@@ -10,9 +11,9 @@ namespace ToDoList_C_
 	{
 		TaskList taskList = new TaskList();
 		StarList starList = new StarList();
+		ListInfo listInfo = new ListInfo();
 
-
-		string path = "G:\\Main\\ToDoLists\\";
+		const string path = "G:\\Main\\ToDoLists\\";
 		string pathToAccountFile;
 		string directoryPath;
 		string fileNameList;
@@ -23,7 +24,6 @@ namespace ToDoList_C_
 		string openedFileName;
 
 		const int percentageToGetAStar = 50;
-		bool gotStar = false;
 
 		public mainForm()
 		{
@@ -35,8 +35,7 @@ namespace ToDoList_C_
 			infoTextBox.ReadOnly = true;
 			pathToAccountFile = path + "Info.json";
 
-
-			openLatestFile();
+			OpenLatestFile();
 			CreateFile(pathToAccountFile);
 
 
@@ -91,6 +90,8 @@ namespace ToDoList_C_
 
 		private int calculatePercentageByList(TaskList taskList)
 		{
+			listInfo = new ListInfo(taskList);
+
 			if (taskList == null || taskList.Count() == 0) { return 0; }
 
 			int oneTaskPecentage = 100 / taskList.Count();
@@ -114,19 +115,31 @@ namespace ToDoList_C_
 			{
 				SetFireEmoji();
 				HideBars();
-				if (taskList.GetGotStarStatus() == true)
+
+				if (!taskList.GetGotStarStatus())
 				{
-					return donePercentage;
+					Star smallStar = new Star();
+					starList.AddStar(smallStar, 1);
+
+					taskList.SetGotStarStatus(true);
+					listInfo.DonePercentage = donePercentage;
+					listInfo.GotStar = taskList.GetGotStarStatus();
+
+					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
+
+					if (!string.IsNullOrEmpty(taskList.GetPathToInfo()))
+					{
+						File.WriteAllText(taskList.GetPathToInfo(), json);
+					}
+					else
+					{
+						MessageBox.Show("Error: No file path set for task info.");
+					}
+
 				}
 				else
 				{
-					starList.AddStar(new Star(), 1);
-					taskList.SetGotStarStatus(true);
-					var starsFromFile = readFile<int>(pathToAccountFile);
-
-					var json = JsonConvert.SerializeObject(starList.GetSize() + starsFromFile);
-
-					File.WriteAllText(pathToAccountFile, json);
+					return donePercentage;
 				}
 
 			}
@@ -157,7 +170,7 @@ namespace ToDoList_C_
 			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {starList.GetSize()} Stars</body></html>");
 		}
 
-		private void openLatestFile()
+		private void OpenLatestFile()
 		{
 			if (!Directory.Exists(path))
 			{
@@ -193,9 +206,15 @@ namespace ToDoList_C_
 
 					taskList.Clear();
 					taskList.SetList(readFile<List<Task>>(latestFilePath));
-					infoTextBox.Text = readFile<string>(latestInfoFile.FullName);
+
+					var json = File.ReadAllText(latestInfoFile.FullName);
+					ListInfo info = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
+
+					infoTextBox.Text = info.DonePercentage.ToString();
 
 					fileNameList = latestFilePath;
+					taskList.setPathToInfo(latestInfoFile.FullName);
+					taskList.setPathToList(latestListFile.FullName);
 
 
 					UpdateGridView();
@@ -279,7 +298,7 @@ namespace ToDoList_C_
 				AnimateButton(addButton, Color.Green, 35);
 			}
 		}
-
+		//somehow file creates with gotStar = true;
 		private void createToolStripMenuItem_Click(object sender, EventArgs e)//createToolStrip
 		{
 			while (true)
@@ -289,7 +308,7 @@ namespace ToDoList_C_
 
 					if (form.ShowDialog() == DialogResult.OK)
 					{
-						List<Task> taskList = new List<Task>();
+						TaskList taskList = new TaskList();
 						taskList.Clear();
 						UpdateGridView();
 
@@ -298,6 +317,9 @@ namespace ToDoList_C_
 
 						fileNameList = directoryPath + listName + ".json";
 						fileNameInfo = directoryPath + listName + "_Info.json";
+
+						taskList.setPathToList(fileNameList);
+						taskList.setPathToInfo(fileNameInfo);
 
 						if (listName == "L")
 						{
@@ -372,7 +394,7 @@ namespace ToDoList_C_
 		{
 			UpdateTasks();
 			string jsonList = JsonConvert.SerializeObject(taskList.GetList(), Formatting.Indented);
-			string jsonInfo = JsonConvert.SerializeObject(infoTextBox.Text, Formatting.Indented);
+			string jsonInfo = JsonConvert.SerializeObject(listInfo, Formatting.Indented);
 
 			var latestDir = new DirectoryInfo(path)
 				.GetDirectories()
