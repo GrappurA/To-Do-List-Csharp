@@ -9,13 +9,23 @@ namespace ToDoList_C_
 	internal class ListInfo
 	{
 		public int DonePercentage { get; set; } 
-		public bool GotStar { get; set; }  
+		public bool GotStar { get; set; }
+		public List<Star> starList { get; set; }
 
 		public ListInfo(TaskList taskList)
 		{
 			this.GotStar = taskList.GetGotStarStatus();
+			starList = new List<Star>();
 		}
 
-		public ListInfo() { }  
+		public ListInfo()
+		{
+			starList = new List<Star>();
+		}
+
+		public List<Star> getStarList()
+		{
+			return this.starList;
+		}
 	}
 }

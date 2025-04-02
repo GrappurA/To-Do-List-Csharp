@@ -119,13 +119,15 @@ namespace ToDoList_C_
 				if (!taskList.GetGotStarStatus())
 				{
 					Star smallStar = new Star();
-					starList.AddStar(smallStar, 1);
+					listInfo.starList.Add(smallStar);
 
 					taskList.SetGotStarStatus(true);
+
 					listInfo.DonePercentage = donePercentage;
 					listInfo.GotStar = taskList.GetGotStarStatus();
 
-					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
+					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true});
+									
 
 					if (!string.IsNullOrEmpty(taskList.GetPathToInfo()))
 					{
@@ -208,9 +210,11 @@ namespace ToDoList_C_
 					taskList.SetList(readFile<List<Task>>(latestFilePath));
 
 					var json = File.ReadAllText(latestInfoFile.FullName);
+					//MessageBox.Show(File.ReadAllText(latestInfoFile.FullName));
 					ListInfo info = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
 
 					infoTextBox.Text = info.DonePercentage.ToString();
+
 
 					fileNameList = latestFilePath;
 					taskList.setPathToInfo(latestInfoFile.FullName);
@@ -439,6 +443,9 @@ namespace ToDoList_C_
 
 					openedFilePath = openFileDialog.FileName;
 					openedFileName = Path.GetFileNameWithoutExtension(openedFilePath);
+					
+					string PathToCurrentDirectory = Path.GetDirectoryName(openedFilePath);
+					Directory.SetLastAccessTime(PathToCurrentDirectory, DateTime.Now);
 
 					taskList.Clear();
 					taskList.SetList(readFile<List<Task>>(openedFilePath));
