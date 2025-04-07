@@ -86,28 +86,28 @@
 			// createToolStripItem
 			// 
 			createToolStripItem.Name = "createToolStripItem";
-			createToolStripItem.Size = new Size(224, 26);
+			createToolStripItem.Size = new Size(136, 26);
 			createToolStripItem.Text = "Create";
 			createToolStripItem.Click += createToolStripMenuItem_Click;
 			// 
 			// openToolStripMenuItem
 			// 
 			openToolStripMenuItem.Name = "openToolStripMenuItem";
-			openToolStripMenuItem.Size = new Size(224, 26);
+			openToolStripMenuItem.Size = new Size(136, 26);
 			openToolStripMenuItem.Text = "Open";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
 			// closeToolStripMenuItem1
 			// 
 			closeToolStripMenuItem1.Name = "closeToolStripMenuItem1";
-			closeToolStripMenuItem1.Size = new Size(224, 26);
+			closeToolStripMenuItem1.Size = new Size(136, 26);
 			closeToolStripMenuItem1.Text = "Close";
 			closeToolStripMenuItem1.Click += closeToolStripMenuItem1_Click;
 			// 
 			// deleteToolStripMenuItem
 			// 
 			deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-			deleteToolStripMenuItem.Size = new Size(224, 26);
+			deleteToolStripMenuItem.Size = new Size(136, 26);
 			deleteToolStripMenuItem.Text = "Delete";
 			deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
 			// 
@@ -201,11 +201,13 @@
 			// showingStarsWV2
 			// 
 			showingStarsWV2.AllowExternalDrop = true;
+			showingStarsWV2.BackColor = SystemColors.ButtonFace;
+			showingStarsWV2.BackgroundImageLayout = ImageLayout.Center;
 			showingStarsWV2.CreationProperties = null;
 			showingStarsWV2.DefaultBackgroundColor = Color.White;
-			showingStarsWV2.Location = new Point(492, 45);
+			showingStarsWV2.Location = new Point(492, 36);
 			showingStarsWV2.Name = "showingStarsWV2";
-			showingStarsWV2.Size = new Size(135, 29);
+			showingStarsWV2.Size = new Size(157, 49);
 			showingStarsWV2.TabIndex = 12;
 			showingStarsWV2.ZoomFactor = 1D;
 			// 

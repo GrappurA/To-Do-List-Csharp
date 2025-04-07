@@ -94,21 +94,23 @@ namespace ToDoList_C_
 
 			if (taskList == null || taskList.Count() == 0) { return 0; }
 
-			int oneTaskPecentage = 100 / taskList.Count();
+			int oneTaskPercentage = 100 / taskList.Count();
 			int donePercentage = 0;
 			int counter = 0;
 
-			for (int i = 0; i < taskList.Count(); i++)
+			foreach (var task in taskList.GetList())
 			{
-				if (taskList.GetList()[i].Status == true)
+				if (task.Status)
 				{
-					donePercentage += oneTaskPecentage;
+					donePercentage += oneTaskPercentage;
 					counter++;
 				}
 			}
+			listInfo.DonePercentage = donePercentage;
+
 			if (counter == taskList.Count())
 			{
-				donePercentage = 100;
+				listInfo.DonePercentage = 100;
 			}
 
 			if (donePercentage >= percentageToGetAStar)
@@ -123,11 +125,10 @@ namespace ToDoList_C_
 
 					taskList.SetGotStarStatus(true);
 
-					listInfo.DonePercentage = donePercentage;
 					listInfo.GotStar = taskList.GetGotStarStatus();
 
-					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true});
-									
+					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
+
 
 					if (!string.IsNullOrEmpty(taskList.GetPathToInfo()))
 					{
@@ -194,8 +195,7 @@ namespace ToDoList_C_
 
 				string numberOfStars = readFile<string>(pathToAccountFile);
 
-
-				//var latestFile
+							
 				if (latestListFile != null)
 				{
 					string latestFilePath = latestListFile.FullName;
@@ -214,7 +214,6 @@ namespace ToDoList_C_
 					ListInfo info = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
 
 					infoTextBox.Text = info.DonePercentage.ToString();
-
 
 					fileNameList = latestFilePath;
 					taskList.setPathToInfo(latestInfoFile.FullName);
@@ -302,7 +301,7 @@ namespace ToDoList_C_
 				AnimateButton(addButton, Color.Green, 35);
 			}
 		}
-		//somehow file creates with gotStar = true;
+
 		private void createToolStripMenuItem_Click(object sender, EventArgs e)//createToolStrip
 		{
 			while (true)
@@ -312,9 +311,9 @@ namespace ToDoList_C_
 
 					if (form.ShowDialog() == DialogResult.OK)
 					{
-						TaskList taskList = new TaskList();
 						taskList.Clear();
 						UpdateGridView();
+						
 
 						listName = form.enteredName.Trim();
 						directoryPath = path + listName + "\\";
@@ -335,6 +334,10 @@ namespace ToDoList_C_
 							addButton.Enabled = true;
 							deleteButton.Enabled = true;
 							SaveButton.Enabled = true;
+
+							taskList.Clear();
+							UpdateGridView();
+
 							CreateDirectory(directoryPath);
 							File.Create(fileNameList).Close();
 							File.Create(fileNameInfo).Close();
@@ -408,8 +411,13 @@ namespace ToDoList_C_
 			var latestInfoFile = latestDir?.GetFiles()
 					.Where(f => f.Name.Contains("Info")).FirstOrDefault();
 
-			if (!File.Exists(fileNameList))
+			if (!File.Exists(taskList.GetPathToList()))
 			{
+				//potentially dangerous code
+				this.Name = "To-Do List";
+				taskList.Clear();
+
+
 				MessageBox.Show("File is deleted");
 				return;
 			}
@@ -420,7 +428,7 @@ namespace ToDoList_C_
 				else
 					fileNameInfo = latestInfoFile.FullName;
 
-				File.WriteAllText(fileNameList, jsonList);
+				File.WriteAllText(taskList.GetPathToList(), jsonList);
 				File.WriteAllText(fileNameInfo, jsonInfo);
 			}
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
@@ -441,14 +449,15 @@ namespace ToDoList_C_
 					deleteButton.Enabled = true;
 					SaveButton.Enabled = true;
 
-					openedFilePath = openFileDialog.FileName;
-					openedFileName = Path.GetFileNameWithoutExtension(openedFilePath);
-					
-					string PathToCurrentDirectory = Path.GetDirectoryName(openedFilePath);
-					Directory.SetLastAccessTime(PathToCurrentDirectory, DateTime.Now);
+					taskList.setPathToList(openFileDialog.FileName);
+
+					openedFileName = Path.GetFileNameWithoutExtension(taskList.GetPathToList());
+
+					string PathToCurrentDirectory = Path.GetDirectoryName(taskList.GetPathToList());
+					Directory.SetLastAccessTime(taskList.GetPathToList(), DateTime.Now);
 
 					taskList.Clear();
-					taskList.SetList(readFile<List<Task>>(openedFilePath));
+					taskList.SetList(readFile<List<Task>>(taskList.GetPathToList()));
 					infoTextBox.Text = calculatePercentageByList(taskList).ToString();
 
 					fileNameList = openedFilePath;
@@ -466,8 +475,7 @@ namespace ToDoList_C_
 				using (approveClosingList form = new approveClosingList())
 				{
 					if (folderBrowserDialog2.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
-					{
-						taskList.Clear();
+					{					
 						UpdateGridView();
 
 						string toDeleteDirectoryPath = folderBrowserDialog2.SelectedPath;
@@ -487,7 +495,9 @@ namespace ToDoList_C_
 				// Commit the edit so that CellValueChanged is triggered immediately
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
-				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+
+				listInfo.DonePercentage = calculatePercentageByList(taskList);
+				infoTextBox.Text = listInfo.DonePercentage.ToString();
 			}
 		}
 	}
