@@ -286,7 +286,7 @@ namespace ToDoList_C_
 		//environment
 		private void addButton_Click(object sender, EventArgs e)
 		{
-			if (!string.IsNullOrEmpty(fileNameList) && File.Exists(fileNameList))
+			if (!string.IsNullOrEmpty(taskList.GetPathToList()) && File.Exists(taskList.GetPathToList()))
 			{
 				int newId = taskList.Count() != 0 ? taskList.GetList().Max(t => t.Id) + 1 : 1;
 
@@ -323,6 +323,7 @@ namespace ToDoList_C_
 
 						taskList.setPathToList(fileNameList);
 						taskList.setPathToInfo(fileNameInfo);
+
 
 						if (listName == "L")
 						{
