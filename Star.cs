@@ -10,6 +10,8 @@ namespace ToDoList_C_
 	{
 		public int Size { get; private set; }
 
+		public DateTime gotStarDT { get; private set; }
+
 		public Star() { }
 
 		public Star(int Size)
@@ -19,10 +21,19 @@ namespace ToDoList_C_
 
 		public void SetSize(int Size)
 		{
-			if (Size < 0 || Size > 3) { return; }
+			if (Size < 0 | Size > 3) { return; }
 			else { this.Size = Size; }
 		}
-		
+
+		public int GetSize() { return this.Size; }
+
+		public void SetGotStarDT(DateTime dt)
+		{
+			this.gotStarDT = dt;
+		}
+
+
+
 
 
 	}

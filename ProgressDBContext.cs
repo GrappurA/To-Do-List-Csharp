@@ -9,7 +9,7 @@ namespace ToDoList_C_
 {
 	internal class ProgressDBContext : DbContext
 	{
-		public DbSet<Progress> progresses { get; set; }
+		public DbSet<ListInfo> progresses { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

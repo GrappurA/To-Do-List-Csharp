@@ -50,10 +50,15 @@
 			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			folderBrowserDialog2 = new FolderBrowserDialog();
 			button1 = new Button();
+			mainTabControl = new TabControl();
+			tabPage2 = new TabPage();
+			tabPage1 = new TabPage();
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
 			((System.ComponentModel.ISupportInitialize)showingStarsWV2).BeginInit();
+			mainTabControl.SuspendLayout();
+			tabPage2.SuspendLayout();
 			SuspendLayout();
 			// 
 			// showingFireWV2
@@ -63,7 +68,7 @@
 			showingFireWV2.CreationProperties = null;
 			showingFireWV2.DefaultBackgroundColor = Color.Transparent;
 			showingFireWV2.Enabled = false;
-			showingFireWV2.Location = new Point(420, 36);
+			showingFireWV2.Location = new Point(414, 10);
 			showingFireWV2.Name = "showingFireWV2";
 			showingFireWV2.Size = new Size(66, 29);
 			showingFireWV2.TabIndex = 11;
@@ -71,11 +76,12 @@
 			// 
 			// menuStrip1
 			// 
+			menuStrip1.BackColor = SystemColors.ButtonFace;
 			menuStrip1.ImageScalingSize = new Size(20, 20);
 			menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, databaseToolStripMenuItem });
 			menuStrip1.Location = new Point(0, 0);
 			menuStrip1.Name = "menuStrip1";
-			menuStrip1.Size = new Size(800, 28);
+			menuStrip1.Size = new Size(818, 28);
 			menuStrip1.TabIndex = 3;
 			menuStrip1.Text = "menuStrip1";
 			// 
@@ -143,18 +149,18 @@
 			dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
 			dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
 			gridView.DefaultCellStyle = dataGridViewCellStyle2;
-			gridView.Location = new Point(12, 91);
+			gridView.Location = new Point(0, 65);
 			gridView.Name = "gridView";
 			gridView.RowHeadersVisible = false;
 			gridView.RowHeadersWidth = 51;
-			gridView.Size = new Size(776, 347);
+			gridView.Size = new Size(806, 375);
 			gridView.TabIndex = 4;
 			// 
 			// addButton
 			// 
 			addButton.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
 			addButton.ForeColor = Color.Green;
-			addButton.Location = new Point(12, 32);
+			addButton.Location = new Point(0, 6);
 			addButton.Name = "addButton";
 			addButton.Size = new Size(125, 53);
 			addButton.TabIndex = 6;
@@ -168,7 +174,7 @@
 			deleteButton.Enabled = false;
 			deleteButton.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
 			deleteButton.ForeColor = Color.Red;
-			deleteButton.Location = new Point(143, 32);
+			deleteButton.Location = new Point(131, 6);
 			deleteButton.Name = "deleteButton";
 			deleteButton.Size = new Size(125, 53);
 			deleteButton.TabIndex = 6;
@@ -185,7 +191,7 @@
 			SaveButton.BackColor = Color.FromArgb(128, 255, 128);
 			SaveButton.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
 			SaveButton.ForeColor = Color.Black;
-			SaveButton.Location = new Point(655, 32);
+			SaveButton.Location = new Point(673, 10);
 			SaveButton.Name = "SaveButton";
 			SaveButton.Size = new Size(133, 53);
 			SaveButton.TabIndex = 7;
@@ -195,10 +201,10 @@
 			// 
 			// infoTextBox
 			// 
-			infoTextBox.BackColor = SystemColors.Menu;
+			infoTextBox.BackColor = SystemColors.ControlLightLight;
 			infoTextBox.BorderStyle = BorderStyle.None;
 			infoTextBox.Font = new Font("Segoe UI Emoji", 9F);
-			infoTextBox.Location = new Point(405, 45);
+			infoTextBox.Location = new Point(399, 19);
 			infoTextBox.Name = "infoTextBox";
 			infoTextBox.Size = new Size(125, 20);
 			infoTextBox.TabIndex = 8;
@@ -206,10 +212,10 @@
 			// 
 			// textbox2
 			// 
-			textbox2.BackColor = SystemColors.Menu;
+			textbox2.BackColor = SystemColors.ControlLightLight;
 			textbox2.BorderStyle = BorderStyle.None;
 			textbox2.Font = new Font("Segoe UI Emoji", 9F);
-			textbox2.Location = new Point(274, 45);
+			textbox2.Location = new Point(268, 19);
 			textbox2.Name = "textbox2";
 			textbox2.Size = new Size(125, 20);
 			textbox2.TabIndex = 9;
@@ -218,19 +224,19 @@
 			// showingStarsWV2
 			// 
 			showingStarsWV2.AllowExternalDrop = true;
-			showingStarsWV2.BackColor = SystemColors.ButtonFace;
+			showingStarsWV2.BackColor = SystemColors.Control;
 			showingStarsWV2.BackgroundImageLayout = ImageLayout.Center;
 			showingStarsWV2.CreationProperties = null;
 			showingStarsWV2.DefaultBackgroundColor = Color.White;
-			showingStarsWV2.Location = new Point(492, 36);
+			showingStarsWV2.Location = new Point(510, 10);
 			showingStarsWV2.Name = "showingStarsWV2";
-			showingStarsWV2.Size = new Size(157, 49);
+			showingStarsWV2.Size = new Size(157, 53);
 			showingStarsWV2.TabIndex = 12;
 			showingStarsWV2.ZoomFactor = 1D;
 			// 
 			// button1
 			// 
-			button1.Location = new Point(669, 379);
+			button1.Location = new Point(683, 374);
 			button1.Name = "button1";
 			button1.Size = new Size(119, 59);
 			button1.TabIndex = 13;
@@ -238,25 +244,60 @@
 			button1.UseVisualStyleBackColor = true;
 			button1.Click += button1_Click;
 			// 
+			// mainTabControl
+			// 
+			mainTabControl.Controls.Add(tabPage2);
+			mainTabControl.Controls.Add(tabPage1);
+			mainTabControl.Location = new Point(0, 28);
+			mainTabControl.Name = "mainTabControl";
+			mainTabControl.SelectedIndex = 0;
+			mainTabControl.Size = new Size(817, 469);
+			mainTabControl.SizeMode = TabSizeMode.FillToRight;
+			mainTabControl.TabIndex = 14;
+			// 
+			// tabPage2
+			// 
+			tabPage2.Controls.Add(addButton);
+			tabPage2.Controls.Add(button1);
+			tabPage2.Controls.Add(gridView);
+			tabPage2.Controls.Add(showingStarsWV2);
+			tabPage2.Controls.Add(deleteButton);
+			tabPage2.Controls.Add(showingFireWV2);
+			tabPage2.Controls.Add(SaveButton);
+			tabPage2.Controls.Add(textbox2);
+			tabPage2.Controls.Add(infoTextBox);
+			tabPage2.Location = new Point(4, 29);
+			tabPage2.Name = "tabPage2";
+			tabPage2.Padding = new Padding(3);
+			tabPage2.Size = new Size(809, 436);
+			tabPage2.TabIndex = 1;
+			tabPage2.Text = "List";
+			tabPage2.UseVisualStyleBackColor = true;
+			// 
+			// tabPage1
+			// 
+			tabPage1.Location = new Point(4, 29);
+			tabPage1.Name = "tabPage1";
+			tabPage1.Padding = new Padding(3);
+			tabPage1.Size = new Size(809, 436);
+			tabPage1.TabIndex = 2;
+			tabPage1.Text = "Graph";
+			tabPage1.UseVisualStyleBackColor = true;
+			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(800, 450);
-			Controls.Add(button1);
-			Controls.Add(showingStarsWV2);
-			Controls.Add(showingFireWV2);
-			Controls.Add(textbox2);
-			Controls.Add(infoTextBox);
-			Controls.Add(SaveButton);
-			Controls.Add(deleteButton);
-			Controls.Add(addButton);
-			Controls.Add(gridView);
+			BackColor = SystemColors.ButtonFace;
+			ClientSize = new Size(818, 498);
+			Controls.Add(mainTabControl);
 			Controls.Add(menuStrip1);
 			Font = new Font("Segoe UI Emoji", 9F);
+			FormBorderStyle = FormBorderStyle.Fixed3D;
 			Icon = (Icon)resources.GetObject("$this.Icon");
 			MainMenuStrip = menuStrip1;
 			Name = "mainForm";
+			RightToLeft = RightToLeft.No;
 			Text = "To Do List";
 			Load += mainForm_Load;
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).EndInit();
@@ -264,6 +305,9 @@
 			menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).EndInit();
 			((System.ComponentModel.ISupportInitialize)showingStarsWV2).EndInit();
+			mainTabControl.ResumeLayout(false);
+			tabPage2.ResumeLayout(false);
+			tabPage2.PerformLayout();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -288,5 +332,8 @@
 		private Button button1;
 		private ToolStripMenuItem databaseToolStripMenuItem;
 		private ToolStripMenuItem clearDatabaseToolStripMenuItem;
+		private TabControl mainTabControl;
+		private TabPage tabPage2;
+		private TabPage tabPage1;
 	}
 }

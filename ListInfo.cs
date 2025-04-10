@@ -8,24 +8,27 @@ namespace ToDoList_C_
 {
 	internal class ListInfo
 	{
-		public int DonePercentage { get; set; } 
+		public int Id { get; set; }
+
+		public int DonePercentage { get; set; }
+
+		public DateTime dateTime { get; set; }
+
 		public bool GotStar { get; set; }
-		public List<Star> starList { get; set; }
+
+
+		public ListInfo() { }
 
 		public ListInfo(TaskList taskList)
 		{
 			this.GotStar = taskList.GetGotStarStatus();
-			starList = new List<Star>();
 		}
 
-		public ListInfo()
+		public ListInfo(int donePercentage, DateTime dt)
 		{
-			starList = new List<Star>();
+			this.DonePercentage = donePercentage;
+			this.dateTime = dt;
 		}
 
-		public List<Star> getStarList()
-		{
-			return this.starList;
-		}
 	}
 }

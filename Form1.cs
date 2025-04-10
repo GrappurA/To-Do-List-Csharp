@@ -12,8 +12,8 @@ namespace ToDoList_C_
 	public partial class mainForm : Form
 	{
 		TaskList taskList = new TaskList();
-		StarList starList = new StarList(); // no need for starlist
 		ListInfo listInfo = new ListInfo();
+		List<Star> starList = new List<Star>();
 
 		const string path = "G:\\Main\\ToDoLists\\";
 		string pathToAccountFile;
@@ -121,7 +121,7 @@ namespace ToDoList_C_
 				if (!taskList.GetGotStarStatus())
 				{
 					Star smallStar = new Star();
-					listInfo.starList.Add(smallStar);
+					starList.Add(smallStar);
 
 					taskList.SetGotStarStatus(true);
 
@@ -170,7 +170,7 @@ namespace ToDoList_C_
 		async void PrintStarsCount()
 		{
 			await showingStarsWV2.EnsureCoreWebView2Async();
-			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {starList.GetSize()} Stars</body></html>");
+			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {starList.Count} Stars</body></html>");
 		}
 
 		private void OpenLatestFile()
@@ -209,7 +209,7 @@ namespace ToDoList_C_
 					taskList.SetList(readFile<List<Task>>(latestFilePath));
 
 					var json = File.ReadAllText(latestInfoFile.FullName);
-					
+
 					try
 					{
 						listInfo = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
@@ -446,16 +446,19 @@ namespace ToDoList_C_
 
 				using (var progress = new ProgressDBContext())
 				{
-					Progress currentProgress = new Progress(DateTime.Now, listInfo.DonePercentage);
+					DateTime today = DateTime.Today;
+					DateTime tommorow = today.AddDays(1);
 
-					Progress existing = progress.progresses.FirstOrDefault(p => p.dateTime == currentProgress.dateTime);
+					ListInfo existing = progress.progresses.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow);
 
 					if (existing != null)
 					{
 						existing.DonePercentage = listInfo.DonePercentage;
+						existing.GotStar = listInfo.GotStar;
 					}
 					else
 					{
+						ListInfo currentProgress = new ListInfo(listInfo.DonePercentage, DateTime.Now);
 						progress.progresses.Add(currentProgress);
 					}
 					progress.SaveChanges();
@@ -536,12 +539,10 @@ namespace ToDoList_C_
 			{
 				foreach (var p in progress.progresses)
 				{
-					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime}");
+					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime.Date.ToString("dd/MM/yyyy")}");
 				}
 			}
 		}
-		//wassup with ids??
-		//write data -> use later
 
 		private void ClearDatabase()
 		{
