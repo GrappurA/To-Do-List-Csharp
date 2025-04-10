@@ -12,13 +12,14 @@ namespace ToDoList_C_
 		List<Task> taskList;
 		string pathToList;
 		string pathToInfo;
+		public int donePercentage { get; set; }
 		
 		public TaskList()
 		{
 			taskList = new List<Task>();
 			gotStar = false;
 		}
-
+				
 		public void setPathToList(string path)
 		{
 			this.pathToList = path;			

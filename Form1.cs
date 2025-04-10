@@ -2,6 +2,8 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Web.WebView2.WinForms;
 using Newtonsoft.Json;
 
@@ -10,7 +12,7 @@ namespace ToDoList_C_
 	public partial class mainForm : Form
 	{
 		TaskList taskList = new TaskList();
-		StarList starList = new StarList();
+		StarList starList = new StarList(); // no need for starlist
 		ListInfo listInfo = new ListInfo();
 
 		const string path = "G:\\Main\\ToDoLists\\";
@@ -51,7 +53,6 @@ namespace ToDoList_C_
 		private async void mainForm_Load(object sender, EventArgs e)
 		{
 			PrintStarsCount();
-
 		}
 
 		//additional funcs
@@ -95,25 +96,24 @@ namespace ToDoList_C_
 			if (taskList == null || taskList.Count() == 0) { return 0; }
 
 			int oneTaskPercentage = 100 / taskList.Count();
-			int donePercentage = 0;
 			int counter = 0;
 
 			foreach (var task in taskList.GetList())
 			{
 				if (task.Status)
 				{
-					donePercentage += oneTaskPercentage;
+					listInfo.DonePercentage += oneTaskPercentage;
 					counter++;
 				}
 			}
-			listInfo.DonePercentage = donePercentage;
+			listInfo.DonePercentage = listInfo.DonePercentage;
 
 			if (counter == taskList.Count())
 			{
 				listInfo.DonePercentage = 100;
 			}
 
-			if (donePercentage >= percentageToGetAStar)
+			if (listInfo.DonePercentage >= percentageToGetAStar)
 			{
 				SetFireEmoji();
 				HideBars();
@@ -142,7 +142,7 @@ namespace ToDoList_C_
 				}
 				else
 				{
-					return donePercentage;
+					return listInfo.DonePercentage;
 				}
 
 			}
@@ -152,7 +152,7 @@ namespace ToDoList_C_
 				HideBars();
 			}
 
-			return donePercentage;
+			return listInfo.DonePercentage;
 		}
 
 		async void SetFireEmoji()
@@ -195,7 +195,6 @@ namespace ToDoList_C_
 
 				string numberOfStars = readFile<string>(pathToAccountFile);
 
-							
 				if (latestListFile != null)
 				{
 					string latestFilePath = latestListFile.FullName;
@@ -210,15 +209,28 @@ namespace ToDoList_C_
 					taskList.SetList(readFile<List<Task>>(latestFilePath));
 
 					var json = File.ReadAllText(latestInfoFile.FullName);
-					//MessageBox.Show(File.ReadAllText(latestInfoFile.FullName));
-					ListInfo info = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
+					
+					try
+					{
+						listInfo = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
 
-					infoTextBox.Text = info.DonePercentage.ToString();
+					}
+					catch (Exception)
+					{
+						MessageBox.Show("open vs, bratha");
+					}
+
+					infoTextBox.Text = listInfo.DonePercentage.ToString();
 
 					fileNameList = latestFilePath;
 					taskList.setPathToInfo(latestInfoFile.FullName);
 					taskList.setPathToList(latestListFile.FullName);
 
+					using (var progress = new ProgressDBContext())
+					{
+						progress.Database.EnsureCreated();
+
+					}
 
 					UpdateGridView();
 				}
@@ -313,7 +325,7 @@ namespace ToDoList_C_
 					{
 						taskList.Clear();
 						UpdateGridView();
-						
+
 
 						listName = form.enteredName.Trim();
 						directoryPath = path + listName + "\\";
@@ -431,9 +443,25 @@ namespace ToDoList_C_
 
 				File.WriteAllText(taskList.GetPathToList(), jsonList);
 				File.WriteAllText(fileNameInfo, jsonInfo);
+
+				using (var progress = new ProgressDBContext())
+				{
+					Progress currentProgress = new Progress(DateTime.Now, listInfo.DonePercentage);
+
+					Progress existing = progress.progresses.FirstOrDefault(p => p.dateTime == currentProgress.dateTime);
+
+					if (existing != null)
+					{
+						existing.DonePercentage = listInfo.DonePercentage;
+					}
+					else
+					{
+						progress.progresses.Add(currentProgress);
+					}
+					progress.SaveChanges();
+				}
 			}
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
-
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -476,7 +504,7 @@ namespace ToDoList_C_
 				using (approveClosingList form = new approveClosingList())
 				{
 					if (folderBrowserDialog2.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
-					{					
+					{
 						UpdateGridView();
 
 						string toDeleteDirectoryPath = folderBrowserDialog2.SelectedPath;
@@ -500,6 +528,52 @@ namespace ToDoList_C_
 				listInfo.DonePercentage = calculatePercentageByList(taskList);
 				infoTextBox.Text = listInfo.DonePercentage.ToString();
 			}
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			using (var progress = new ProgressDBContext())
+			{
+				foreach (var p in progress.progresses)
+				{
+					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime}");
+				}
+			}
+		}
+		//wassup with ids??
+		//write data -> use later
+
+		private void ClearDatabase()
+		{
+			using (var progress = new ProgressDBContext())
+			{
+				using (var transaction = progress.Database.BeginTransaction())
+				{
+					try
+					{
+						// Remove all records from the progresses table
+						progress.progresses.RemoveRange(progress.progresses);
+						progress.SaveChanges();
+
+						// Reset the auto-incrementing ID (set it back to 1)
+						progress.Database.ExecuteSqlRaw("DELETE FROM SQLITE_SEQUENCE WHERE NAME = 'Progresses'");
+
+						// Commit the transaction
+						transaction.Commit();
+					}
+					catch (Exception ex)
+					{
+						// Rollback the transaction in case of error
+						transaction.Rollback();
+						MessageBox.Show($"Error clearing database: {ex.Message}");
+					}
+				}
+			}
+		}
+
+		private void clearDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ClearDatabase();
 		}
 	}
 }

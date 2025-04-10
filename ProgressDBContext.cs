@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ToDoList_C_
 {
-	internal class TasksDBContext : DbContext
+	internal class ProgressDBContext : DbContext
 	{
-		DbSet<Task> Tasks { get; set; }
+		public DbSet<Progress> progresses { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

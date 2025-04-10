@@ -38,6 +38,8 @@
 			openToolStripMenuItem = new ToolStripMenuItem();
 			closeToolStripMenuItem1 = new ToolStripMenuItem();
 			deleteToolStripMenuItem = new ToolStripMenuItem();
+			databaseToolStripMenuItem = new ToolStripMenuItem();
+			clearDatabaseToolStripMenuItem = new ToolStripMenuItem();
 			gridView = new DataGridView();
 			addButton = new Button();
 			deleteButton = new Button();
@@ -47,6 +49,7 @@
 			textbox2 = new TextBox();
 			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			folderBrowserDialog2 = new FolderBrowserDialog();
+			button1 = new Button();
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
@@ -69,7 +72,7 @@
 			// menuStrip1
 			// 
 			menuStrip1.ImageScalingSize = new Size(20, 20);
-			menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+			menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, databaseToolStripMenuItem });
 			menuStrip1.Location = new Point(0, 0);
 			menuStrip1.Name = "menuStrip1";
 			menuStrip1.Size = new Size(800, 28);
@@ -110,6 +113,20 @@
 			deleteToolStripMenuItem.Size = new Size(136, 26);
 			deleteToolStripMenuItem.Text = "Delete";
 			deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
+			// 
+			// databaseToolStripMenuItem
+			// 
+			databaseToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { clearDatabaseToolStripMenuItem });
+			databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
+			databaseToolStripMenuItem.Size = new Size(86, 24);
+			databaseToolStripMenuItem.Text = "Database";
+			// 
+			// clearDatabaseToolStripMenuItem
+			// 
+			clearDatabaseToolStripMenuItem.Name = "clearDatabaseToolStripMenuItem";
+			clearDatabaseToolStripMenuItem.Size = new Size(193, 26);
+			clearDatabaseToolStripMenuItem.Text = "Clear Database";
+			clearDatabaseToolStripMenuItem.Click += clearDatabaseToolStripMenuItem_Click;
 			// 
 			// gridView
 			// 
@@ -211,11 +228,22 @@
 			showingStarsWV2.TabIndex = 12;
 			showingStarsWV2.ZoomFactor = 1D;
 			// 
+			// button1
+			// 
+			button1.Location = new Point(669, 379);
+			button1.Name = "button1";
+			button1.Size = new Size(119, 59);
+			button1.TabIndex = 13;
+			button1.Text = "showDatabase";
+			button1.UseVisualStyleBackColor = true;
+			button1.Click += button1_Click;
+			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
+			Controls.Add(button1);
 			Controls.Add(showingStarsWV2);
 			Controls.Add(showingFireWV2);
 			Controls.Add(textbox2);
@@ -257,5 +285,8 @@
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingFireWV2;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingStarsWV2;
 		private FolderBrowserDialog folderBrowserDialog2;
+		private Button button1;
+		private ToolStripMenuItem databaseToolStripMenuItem;
+		private ToolStripMenuItem clearDatabaseToolStripMenuItem;
 	}
 }
