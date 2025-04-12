@@ -59,6 +59,7 @@
 			ClientSize = new Size(426, 105);
 			Controls.Add(NoButton);
 			Controls.Add(OkButton);
+			FormBorderStyle = FormBorderStyle.FixedToolWindow;
 			Name = "approveClosingList";
 			Text = "Are you sure to close the list?";
 			ResumeLayout(false);

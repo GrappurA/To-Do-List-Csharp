@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,15 +9,21 @@ namespace ToDoList_C_
 {
 	class Star
 	{
-		public int Size { get; private set; }
+		[Key]
+		public int Id { get; set; }
 
-		public DateTime gotStarDT { get; private set; }
+		public int Size { get; set; }
+
+		public DateTime earnDate { get; set; }
+
+		public string? ListName { get; set; }
 
 		public Star() { }
 
-		public Star(int Size)
+		public Star(int Size, DateTime dt)
 		{
 			this.Size = Size;
+			this.earnDate = dt;
 		}
 
 		public void SetSize(int Size)
@@ -26,15 +33,7 @@ namespace ToDoList_C_
 		}
 
 		public int GetSize() { return this.Size; }
-
-		public void SetGotStarDT(DateTime dt)
-		{
-			this.gotStarDT = dt;
-		}
-
-
-
-
+		
 
 	}
 }

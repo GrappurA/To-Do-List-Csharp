@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,9 +13,9 @@ namespace ToDoList_C_
 {
 	public partial class mainForm : Form
 	{
-		TaskList taskList = new TaskList();
-		ListInfo listInfo = new ListInfo();
-		List<Star> starList = new List<Star>();
+		TaskList taskList;
+		ListInfo listInfo;
+		UserInfo userInfo;
 
 		const string path = "G:\\Main\\ToDoLists\\";
 		string pathToAccountFile;
@@ -37,6 +39,10 @@ namespace ToDoList_C_
 			infoTextBox.ReadOnly = true;
 			pathToAccountFile = path + "Info.json";
 
+			taskList = new TaskList();
+			listInfo = new ListInfo();
+			userInfo = new UserInfo(1);
+
 			OpenLatestFile();
 			CreateFile(pathToAccountFile);
 
@@ -48,6 +54,7 @@ namespace ToDoList_C_
 
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 			calculatePercentageByList(taskList);
+
 		}
 
 		private async void mainForm_Load(object sender, EventArgs e)
@@ -60,7 +67,7 @@ namespace ToDoList_C_
 		{
 			if (!File.Exists(pathToFile))
 			{
-				File.Create(pathToFile);
+				File.Create(pathToFile).Close();
 			}
 
 		}
@@ -91,7 +98,7 @@ namespace ToDoList_C_
 
 		private int calculatePercentageByList(TaskList taskList)
 		{
-			listInfo = new ListInfo(taskList);
+			listInfo = new ListInfo();
 
 			if (taskList == null || taskList.Count() == 0) { return 0; }
 
@@ -106,7 +113,6 @@ namespace ToDoList_C_
 					counter++;
 				}
 			}
-			listInfo.DonePercentage = listInfo.DonePercentage;
 
 			if (counter == taskList.Count())
 			{
@@ -118,17 +124,19 @@ namespace ToDoList_C_
 				SetFireEmoji();
 				HideBars();
 
-				if (!taskList.GetGotStarStatus())
+				string currentListName = Path.GetFileNameWithoutExtension(taskList.GetPathToList());
+				if (!userInfo.stars.Any(s => s.ListName == currentListName))
 				{
-					Star smallStar = new Star();
-					starList.Add(smallStar);
-
-					taskList.SetGotStarStatus(true);
-
-					listInfo.GotStar = taskList.GetGotStarStatus();
+					listInfo.GotStar = true;
+					Star smallStar = new Star
+					{
+						Size = 1,
+						earnDate = DateTime.Today,
+						ListName = currentListName
+					};
+					userInfo.stars.Add(smallStar);
 
 					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
-
 
 					if (!string.IsNullOrEmpty(taskList.GetPathToInfo()))
 					{
@@ -152,6 +160,7 @@ namespace ToDoList_C_
 				HideBars();
 			}
 
+			PrintStarsCount();
 			return listInfo.DonePercentage;
 		}
 
@@ -170,7 +179,7 @@ namespace ToDoList_C_
 		async void PrintStarsCount()
 		{
 			await showingStarsWV2.EnsureCoreWebView2Async();
-			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {starList.Count} Stars</body></html>");
+			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {userInfo.stars.Count} Stars</body></html>");
 		}
 
 		private void OpenLatestFile()
@@ -197,6 +206,24 @@ namespace ToDoList_C_
 
 				if (latestListFile != null)
 				{
+					using (var progress = new ProgressDBContext())
+					{
+						progress.Database.EnsureCreated();
+					}
+
+					using (var user = new UsersDBContext())
+					{
+						user.Database.EnsureCreated();
+						try
+						{
+							//userInfo.SetStarList(user.users.FirstOrDefault(p => p.Id == 1).stars);
+						}
+						catch (Exception e)
+						{
+							MessageBox.Show(e.Message);
+						}
+					}
+
 					string latestFilePath = latestListFile.FullName;
 					string formName = Path.GetFileNameWithoutExtension(latestFilePath);
 
@@ -213,7 +240,6 @@ namespace ToDoList_C_
 					try
 					{
 						listInfo = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
-
 					}
 					catch (Exception)
 					{
@@ -226,12 +252,7 @@ namespace ToDoList_C_
 					taskList.setPathToInfo(latestInfoFile.FullName);
 					taskList.setPathToList(latestListFile.FullName);
 
-					using (var progress = new ProgressDBContext())
-					{
-						progress.Database.EnsureCreated();
-
-					}
-
+					PrintStarsCount();
 					UpdateGridView();
 				}
 			}
@@ -318,56 +339,60 @@ namespace ToDoList_C_
 		{
 			while (true)
 			{
-				using (GetListNameForm form = new GetListNameForm())
+				using (PickDateForm pickDateForm = new PickDateForm())
 				{
-
-					if (form.ShowDialog() == DialogResult.OK)
+					using (GetListNameForm form = new GetListNameForm())
 					{
-						taskList.Clear();
-						UpdateGridView();
-
-
-						listName = form.enteredName.Trim();
-						directoryPath = path + listName + "\\";
-
-						fileNameList = directoryPath + listName + ".json";
-						fileNameInfo = directoryPath + listName + "_Info.json";
-
-						taskList.setPathToList(fileNameList);
-						taskList.setPathToInfo(fileNameInfo);
-
-
-						if (listName == "L")
+						if (form.ShowDialog() == DialogResult.OK)
 						{
-							form.Close();
-							break;
-						}
-						else if (!string.IsNullOrEmpty(listName) && !File.Exists(fileNameList))
-						{
-							addButton.Enabled = true;
-							deleteButton.Enabled = true;
-							SaveButton.Enabled = true;
-
 							taskList.Clear();
 							UpdateGridView();
 
-							CreateDirectory(directoryPath);
-							File.Create(fileNameList).Close();
-							File.Create(fileNameInfo).Close();
-							this.Text = listName;
+							listName = form.enteredName.Trim();
+							directoryPath = path + listName + "\\";
 
-							break;
+							fileNameList = directoryPath + listName + ".json";
+							fileNameInfo = directoryPath + listName + "_Info.json";
+
+							taskList.setPathToList(fileNameList);
+							taskList.setPathToInfo(fileNameInfo);
+
+
+							if (listName == "L")
+							{
+								form.Close();
+								break;
+							}
+							else if (!string.IsNullOrEmpty(listName) && !File.Exists(fileNameList))
+							{
+								addButton.Enabled = true;
+								deleteButton.Enabled = true;
+								SaveButton.Enabled = true;
+
+								taskList.Clear();
+								UpdateGridView();
+
+								CreateDirectory(directoryPath);
+								File.Create(fileNameList).Close();
+								File.Create(fileNameInfo).Close();
+								this.Text = listName;
+								listInfo.dateTime = DateTime.Today;
+
+								break;
+							}
+							else
+							{
+								MessageBox.Show("Invalid name");
+							}
 						}
 						else
 						{
-							MessageBox.Show("Invalid name");
+							MessageBox.Show("Something went wrong...");
 						}
-					}
-					else
-					{
-						MessageBox.Show("Something went wrong...");
+
 					}
 				}
+
 			}
 		}
 
@@ -430,7 +455,6 @@ namespace ToDoList_C_
 				this.Name = "To-Do List";
 				taskList.Clear();
 
-
 				MessageBox.Show("File is deleted");
 				return;
 			}
@@ -463,6 +487,24 @@ namespace ToDoList_C_
 					}
 					progress.SaveChanges();
 				}
+				using (var user = new UsersDBContext())
+				{
+					UserInfo existing = new UserInfo();
+					existing = user.users.FirstOrDefault(u => u.Id == 1);
+
+					if (existing != null)
+					{
+						existing.SetStarList(userInfo.stars);
+					}
+					else
+					{
+						UserInfo currentProgress = new UserInfo();
+						currentProgress.SetStarList(userInfo.stars);
+						user.Add(currentProgress);
+					}
+					user.SaveChanges();
+				}
+
 			}
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
 		}
@@ -544,7 +586,7 @@ namespace ToDoList_C_
 			}
 		}
 
-		private void ClearDatabase()
+		private void listInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (var progress = new ProgressDBContext())
 			{
@@ -572,9 +614,13 @@ namespace ToDoList_C_
 			}
 		}
 
-		private void clearDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+		private void userInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ClearDatabase();
+			using (var user = new UsersDBContext())
+			{
+				user.users.RemoveRange(user.users);
+				user.SaveChanges();
+			}
 		}
 	}
 }

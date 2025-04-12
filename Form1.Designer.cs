@@ -40,6 +40,8 @@
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			databaseToolStripMenuItem = new ToolStripMenuItem();
 			clearDatabaseToolStripMenuItem = new ToolStripMenuItem();
+			userInfoToolStripMenuItem = new ToolStripMenuItem();
+			listInfoToolStripMenuItem = new ToolStripMenuItem();
 			gridView = new DataGridView();
 			addButton = new Button();
 			deleteButton = new Button();
@@ -47,18 +49,19 @@
 			SaveButton = new Button();
 			infoTextBox = new TextBox();
 			textbox2 = new TextBox();
-			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			folderBrowserDialog2 = new FolderBrowserDialog();
 			button1 = new Button();
 			mainTabControl = new TabControl();
 			tabPage2 = new TabPage();
 			tabPage1 = new TabPage();
+			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
-			((System.ComponentModel.ISupportInitialize)showingStarsWV2).BeginInit();
 			mainTabControl.SuspendLayout();
 			tabPage2.SuspendLayout();
+			tabPage1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)showingStarsWV2).BeginInit();
 			SuspendLayout();
 			// 
 			// showingFireWV2
@@ -129,10 +132,24 @@
 			// 
 			// clearDatabaseToolStripMenuItem
 			// 
+			clearDatabaseToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { userInfoToolStripMenuItem, listInfoToolStripMenuItem });
 			clearDatabaseToolStripMenuItem.Name = "clearDatabaseToolStripMenuItem";
-			clearDatabaseToolStripMenuItem.Size = new Size(193, 26);
+			clearDatabaseToolStripMenuItem.Size = new Size(224, 26);
 			clearDatabaseToolStripMenuItem.Text = "Clear Database";
-			clearDatabaseToolStripMenuItem.Click += clearDatabaseToolStripMenuItem_Click;
+			// 
+			// userInfoToolStripMenuItem
+			// 
+			userInfoToolStripMenuItem.Name = "userInfoToolStripMenuItem";
+			userInfoToolStripMenuItem.Size = new Size(224, 26);
+			userInfoToolStripMenuItem.Text = "UserInfo";
+			userInfoToolStripMenuItem.Click += userInfoToolStripMenuItem_Click;
+			// 
+			// listInfoToolStripMenuItem
+			// 
+			listInfoToolStripMenuItem.Name = "listInfoToolStripMenuItem";
+			listInfoToolStripMenuItem.Size = new Size(224, 26);
+			listInfoToolStripMenuItem.Text = "ListInfo";
+			listInfoToolStripMenuItem.Click += listInfoToolStripMenuItem_Click;
 			// 
 			// gridView
 			// 
@@ -221,19 +238,6 @@
 			textbox2.TabIndex = 9;
 			textbox2.Text = "Tasks Done Today:";
 			// 
-			// showingStarsWV2
-			// 
-			showingStarsWV2.AllowExternalDrop = true;
-			showingStarsWV2.BackColor = SystemColors.Control;
-			showingStarsWV2.BackgroundImageLayout = ImageLayout.Center;
-			showingStarsWV2.CreationProperties = null;
-			showingStarsWV2.DefaultBackgroundColor = Color.White;
-			showingStarsWV2.Location = new Point(510, 10);
-			showingStarsWV2.Name = "showingStarsWV2";
-			showingStarsWV2.Size = new Size(157, 53);
-			showingStarsWV2.TabIndex = 12;
-			showingStarsWV2.ZoomFactor = 1D;
-			// 
 			// button1
 			// 
 			button1.Location = new Point(683, 374);
@@ -260,7 +264,6 @@
 			tabPage2.Controls.Add(addButton);
 			tabPage2.Controls.Add(button1);
 			tabPage2.Controls.Add(gridView);
-			tabPage2.Controls.Add(showingStarsWV2);
 			tabPage2.Controls.Add(deleteButton);
 			tabPage2.Controls.Add(showingFireWV2);
 			tabPage2.Controls.Add(SaveButton);
@@ -276,13 +279,27 @@
 			// 
 			// tabPage1
 			// 
+			tabPage1.Controls.Add(showingStarsWV2);
 			tabPage1.Location = new Point(4, 29);
 			tabPage1.Name = "tabPage1";
 			tabPage1.Padding = new Padding(3);
 			tabPage1.Size = new Size(809, 436);
 			tabPage1.TabIndex = 2;
-			tabPage1.Text = "Graph";
+			tabPage1.Text = "Statistics";
 			tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// showingStarsWV2
+			// 
+			showingStarsWV2.AllowExternalDrop = true;
+			showingStarsWV2.BackColor = SystemColors.Control;
+			showingStarsWV2.BackgroundImageLayout = ImageLayout.Center;
+			showingStarsWV2.CreationProperties = null;
+			showingStarsWV2.DefaultBackgroundColor = Color.White;
+			showingStarsWV2.Location = new Point(8, 6);
+			showingStarsWV2.Name = "showingStarsWV2";
+			showingStarsWV2.Size = new Size(157, 53);
+			showingStarsWV2.TabIndex = 13;
+			showingStarsWV2.ZoomFactor = 1D;
 			// 
 			// mainForm
 			// 
@@ -304,10 +321,11 @@
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).EndInit();
-			((System.ComponentModel.ISupportInitialize)showingStarsWV2).EndInit();
 			mainTabControl.ResumeLayout(false);
 			tabPage2.ResumeLayout(false);
 			tabPage2.PerformLayout();
+			tabPage1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)showingStarsWV2).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -327,7 +345,6 @@
 		private TextBox infoTextBox;
 		private TextBox textbox2;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingFireWV2;
-		private Microsoft.Web.WebView2.WinForms.WebView2 showingStarsWV2;
 		private FolderBrowserDialog folderBrowserDialog2;
 		private Button button1;
 		private ToolStripMenuItem databaseToolStripMenuItem;
@@ -335,5 +352,8 @@
 		private TabControl mainTabControl;
 		private TabPage tabPage2;
 		private TabPage tabPage1;
+		private Microsoft.Web.WebView2.WinForms.WebView2 showingStarsWV2;
+		private ToolStripMenuItem userInfoToolStripMenuItem;
+		private ToolStripMenuItem listInfoToolStripMenuItem;
 	}
 }

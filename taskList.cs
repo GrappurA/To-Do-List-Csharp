@@ -8,16 +8,17 @@ namespace ToDoList_C_
 {
 	internal class TaskList
 	{
-		bool gotStar;
 		List<Task> taskList;
+
 		string pathToList;
+		
 		string pathToInfo;
+		
 		public int donePercentage { get; set; }
 		
 		public TaskList()
 		{
 			taskList = new List<Task>();
-			gotStar = false;
 		}
 				
 		public void setPathToList(string path)
@@ -38,16 +39,6 @@ namespace ToDoList_C_
 		public string GetPathToInfo()
 		{
 			return this.pathToInfo;
-		}
-
-		public void SetGotStarStatus(bool gotStar)
-		{
-			this.gotStar = gotStar;
-		}
-		
-		public bool GetGotStarStatus()
-		{
-			return this.gotStar;
 		}
 
 		public void AddElement(Task elem)

@@ -87,6 +87,7 @@
 			Controls.Add(textBox1);
 			Controls.Add(okButton);
 			Controls.Add(getNameTextBox);
+			FormBorderStyle = FormBorderStyle.FixedSingle;
 			MaximizeBox = false;
 			MinimizeBox = false;
 			Name = "GetListNameForm";
