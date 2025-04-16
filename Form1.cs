@@ -16,6 +16,8 @@ namespace ToDoList_C_
 		TaskList taskList;
 		ListInfo listInfo;
 		UserInfo userInfo;
+		List<UserInfo> loadedUsers;
+
 
 		const string path = "G:\\Main\\ToDoLists\\";
 		string pathToAccountFile;
@@ -46,7 +48,6 @@ namespace ToDoList_C_
 			OpenLatestFile();
 			CreateFile(pathToAccountFile);
 
-
 			folderBrowserDialog1.InitialDirectory = path;
 			folderBrowserDialog1.Description = "Open A To Do List file";
 
@@ -56,10 +57,42 @@ namespace ToDoList_C_
 			calculatePercentageByList(taskList);
 
 		}
+		
 
-		private async void mainForm_Load(object sender, EventArgs e)
+		private async void LoadUserDB()
 		{
-			PrintStarsCount();
+			UsersDBContext dBContext = new UsersDBContext();
+			loadedUsers = new List<UserInfo>();
+
+			await dBContext.Database.EnsureCreatedAsync();
+
+			try
+			{
+				loadedUsers = await dBContext.users.ToListAsync();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Error while loading users: " + ex.Message);
+				loadedUsers = new List<UserInfo>();
+			}
+		}
+
+		private async void SaveUserDBChanges()
+		{
+			UsersDBContext dbContext = new UsersDBContext();
+			foreach (var user in loadedUsers)
+			{
+				dbContext.users.Update(user);
+			}
+			try
+			{
+				await dbContext.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Error saving users: " + ex.Message);
+			}
+
 		}
 
 		//additional funcs
@@ -69,7 +102,6 @@ namespace ToDoList_C_
 			{
 				File.Create(pathToFile).Close();
 			}
-
 		}
 
 		private async void HideBars()
@@ -111,6 +143,7 @@ namespace ToDoList_C_
 				{
 					listInfo.DonePercentage += oneTaskPercentage;
 					counter++;
+										
 				}
 			}
 
@@ -135,6 +168,7 @@ namespace ToDoList_C_
 						ListName = currentListName
 					};
 					userInfo.stars.Add(smallStar);
+					PrintStarsCount(userInfo.stars.Count.ToString());
 
 					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
 
@@ -159,8 +193,6 @@ namespace ToDoList_C_
 				setDefaultEmoji();
 				HideBars();
 			}
-
-			PrintStarsCount();
 			return listInfo.DonePercentage;
 		}
 
@@ -176,18 +208,25 @@ namespace ToDoList_C_
 			showingFireWV2.NavigateToString("<html><body style='font-size:12px;'></body></html>");
 		}
 
-		async void PrintStarsCount()
+		async void PrintStarsCount(string count)
 		{
 			await showingStarsWV2.EnsureCoreWebView2Async();
-			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {userInfo.stars.Count} Stars</body></html>");
+			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {count} Stars</body></html>");
 		}
 
-		private void OpenLatestFile()
+		private async void OpenLatestFile()
 		{
+			LoadUserDB();
+
+			var me = loadedUsers.FirstOrDefault(u => u.Id == userInfo.Id);
+			if (me != null)
+				userInfo.SetStarList(me.stars.ToList());
+
+
 			if (!Directory.Exists(path))
 			{
 				MessageBox.Show("Check the directory, 'path' does not exist");
-				return;
+
 			}
 			else
 			{
@@ -211,18 +250,15 @@ namespace ToDoList_C_
 						progress.Database.EnsureCreated();
 					}
 
-					using (var user = new UsersDBContext())
+					try
 					{
-						user.Database.EnsureCreated();
-						try
-						{
-							//userInfo.SetStarList(user.users.FirstOrDefault(p => p.Id == 1).stars);
-						}
-						catch (Exception e)
-						{
-							MessageBox.Show(e.Message);
-						}
+						userInfo.SetStarList(loadedUsers.FirstOrDefault(p => p.Id == 1).stars);
 					}
+					catch (Exception e)
+					{
+						MessageBox.Show(e.Message);
+					}
+
 
 					string latestFilePath = latestListFile.FullName;
 					string formName = Path.GetFileNameWithoutExtension(latestFilePath);
@@ -252,7 +288,8 @@ namespace ToDoList_C_
 					taskList.setPathToInfo(latestInfoFile.FullName);
 					taskList.setPathToList(latestListFile.FullName);
 
-					PrintStarsCount();
+					PrintStarsCount(loadedUsers.Max(e => e.stars.Count).ToString());
+
 					UpdateGridView();
 				}
 			}
@@ -473,12 +510,12 @@ namespace ToDoList_C_
 					DateTime today = DateTime.Today;
 					DateTime tommorow = today.AddDays(1);
 
-					ListInfo existing = progress.progresses.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow);
+					ListInfo existingList = progress.progresses.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow);
 
-					if (existing != null)
+					if (existingList != null)
 					{
-						existing.DonePercentage = listInfo.DonePercentage;
-						existing.GotStar = listInfo.GotStar;
+						existingList.DonePercentage = listInfo.DonePercentage;
+						existingList.GotStar = listInfo.GotStar;
 					}
 					else
 					{
@@ -487,25 +524,23 @@ namespace ToDoList_C_
 					}
 					progress.SaveChanges();
 				}
-				using (var user = new UsersDBContext())
-				{
-					UserInfo existing = new UserInfo();
-					existing = user.users.FirstOrDefault(u => u.Id == 1);
 
-					if (existing != null)
-					{
-						existing.SetStarList(userInfo.stars);
-					}
-					else
-					{
-						UserInfo currentProgress = new UserInfo();
-						currentProgress.SetStarList(userInfo.stars);
-						user.Add(currentProgress);
-					}
-					user.SaveChanges();
+				UserInfo existing = new UserInfo();
+				existing = loadedUsers.FirstOrDefault(u => u.Id == 1);
+
+				if (existing != null)
+				{
+					existing.SetStarList(userInfo.stars);
+				}
+				else
+				{
+					UserInfo currentProgress = new UserInfo();
+					currentProgress.SetStarList(userInfo.stars);
+					loadedUsers.Add(currentProgress);
 				}
 
 			}
+			SaveUserDBChanges();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
 		}
 
@@ -618,8 +653,13 @@ namespace ToDoList_C_
 		{
 			using (var user = new UsersDBContext())
 			{
-				user.users.RemoveRange(user.users);
-				user.SaveChanges();
+				if (!File.Exists("C:\\Users\\Nika\\source\\repos\\ToDoList_C#\\bin\\Debug\\net8.0-windows\\Users.db"))
+				{
+					MessageBox.Show("users data base not found");
+				}
+				else
+					File.Delete("C:\\Users\\Nika\\source\\repos\\ToDoList_C#\\bin\\Debug\\net8.0-windows\\Users.db");
+
 			}
 		}
 	}

@@ -316,7 +316,6 @@
 			Name = "mainForm";
 			RightToLeft = RightToLeft.No;
 			Text = "To Do List";
-			Load += mainForm_Load;
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).EndInit();
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();

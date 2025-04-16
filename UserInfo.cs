@@ -12,6 +12,7 @@ namespace ToDoList_C_
 		[Key]
 		public int Id { get; set; }
 		public List<Star> stars { get; private set; }
+		public int starCount { get; set; }
 		public double averageTasksDone { get; set; }
 		public int daysInARow { get; set; }
 
