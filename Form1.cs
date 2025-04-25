@@ -14,21 +14,10 @@ namespace ToDoList_C_
 	public partial class mainForm : Form
 	{
 		TaskList taskList;
-		ListInfo listInfo;
 		UserInfo userInfo;
-		List<UserInfo> loadedUsers;
+		List<UserInfo> loadedUser;
 
-
-		const string path = "G:\\Main\\ToDoLists\\";
-		string pathToAccountFile;
-		string directoryPath;
-		string fileNameList;
-		string fileNameInfo;
 		string listName;
-
-		string openedFilePath;
-		string openedFileName;
-
 		const int percentageToGetAStar = 50;
 
 		public mainForm()
@@ -39,48 +28,40 @@ namespace ToDoList_C_
 			SaveButton.Enabled = false;
 			gridView.RowHeadersVisible = false;
 			infoTextBox.ReadOnly = true;
-			pathToAccountFile = path + "Info.json";
+	
 
 			taskList = new TaskList();
-			listInfo = new ListInfo();
 			userInfo = new UserInfo(1);
 
 			OpenLatestFile();
-			CreateFile(pathToAccountFile);
-
-			folderBrowserDialog1.InitialDirectory = path;
-			folderBrowserDialog1.Description = "Open A To Do List file";
-
 			HideBars();
 
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 			calculatePercentageByList(taskList);
 
 		}
-		
-
 		private async void LoadUserDB()
 		{
 			UsersDBContext dBContext = new UsersDBContext();
-			loadedUsers = new List<UserInfo>();
+			loadedUser = new List<UserInfo>();
 
 			await dBContext.Database.EnsureCreatedAsync();
 
 			try
 			{
-				loadedUsers = await dBContext.users.ToListAsync();
+				loadedUser = await dBContext.users.ToListAsync();
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show("Error while loading users: " + ex.Message);
-				loadedUsers = new List<UserInfo>();
+				loadedUser = new List<UserInfo>();
 			}
 		}
 
 		private async void SaveUserDBChanges()
 		{
 			UsersDBContext dbContext = new UsersDBContext();
-			foreach (var user in loadedUsers)
+			foreach (var user in loadedUser)
 			{
 				dbContext.users.Update(user);
 			}
@@ -95,14 +76,28 @@ namespace ToDoList_C_
 
 		}
 
-		//additional funcs
-		private void CreateFile(string pathToFile)
+		private async void LoadListDB()
 		{
-			if (!File.Exists(pathToFile))
+			TaskListDBContext dBContext = new TaskListDBContext();
+
+			await dBContext.Database.EnsureCreatedAsync();
+			try
 			{
-				File.Create(pathToFile).Close();
+				var latestTaskList = await dBContext.lists
+					.Include(tl => tl.GetList()) // Load related tasks (if using EF Core with navigation property)
+					.OrderByDescending(tl => tl.dateTime)
+					.FirstOrDefaultAsync();
+
+				taskList.taskList = latestTaskList.taskList ?? new List<Task>();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Error while loading users: " + ex.Message);
+				taskList = new TaskList();
 			}
 		}
+
+		//additional funcs
 
 		private async void HideBars()
 		{
@@ -130,70 +125,68 @@ namespace ToDoList_C_
 
 		private int calculatePercentageByList(TaskList taskList)
 		{
-			listInfo = new ListInfo();
-
-			if (taskList == null || taskList.Count() == 0) { return 0; }
-
-			int oneTaskPercentage = 100 / taskList.Count();
-			int counter = 0;
-
-			foreach (var task in taskList.GetList())
-			{
-				if (task.Status)
-				{
-					listInfo.DonePercentage += oneTaskPercentage;
-					counter++;
-										
-				}
-			}
-
-			if (counter == taskList.Count())
-			{
-				listInfo.DonePercentage = 100;
-			}
-
-			if (listInfo.DonePercentage >= percentageToGetAStar)
-			{
-				SetFireEmoji();
-				HideBars();
-
-				string currentListName = Path.GetFileNameWithoutExtension(taskList.GetPathToList());
-				if (!userInfo.stars.Any(s => s.ListName == currentListName))
-				{
-					listInfo.GotStar = true;
-					Star smallStar = new Star
-					{
-						Size = 1,
-						earnDate = DateTime.Today,
-						ListName = currentListName
-					};
-					userInfo.stars.Add(smallStar);
-					PrintStarsCount(userInfo.stars.Count.ToString());
-
-					var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
-
-					if (!string.IsNullOrEmpty(taskList.GetPathToInfo()))
-					{
-						File.WriteAllText(taskList.GetPathToInfo(), json);
-					}
-					else
-					{
-						MessageBox.Show("Error: No file path set for task info.");
-					}
-
-				}
-				else
-				{
-					return listInfo.DonePercentage;
-				}
-
-			}
-			else
-			{
-				setDefaultEmoji();
-				HideBars();
-			}
-			return listInfo.DonePercentage;
+			//if (taskList == null || taskList.Count() == 0) { return 0; }
+			//
+			//int oneTaskPercentage = 100 / taskList.Count();
+			//int counter = 0;
+			//
+			//foreach (var task in taskList.GetList())
+			//{
+			//	if (task.Status)
+			//	{
+			//		taskList.DonePercentage += oneTaskPercentage;
+			//		counter++;
+			//
+			//	}
+			//}
+			//
+			//if (counter == taskList.Count())
+			//{
+			//	taskList.DonePercentage = 100;
+			//}
+			//
+			//if (taskList.DonePercentage >= percentageToGetAStar)
+			//{
+			//	SetFireEmoji();
+			//	HideBars();
+			//
+			//	if (!userInfo.stars.Any(s => s.ListName == taskList.Name))
+			//	{
+			//		taskList.GotStar = true;
+			//		Star smallStar = new Star
+			//		{
+			//			Size = 1,
+			//			earnDate = DateTime.Today,
+			//			ListName = taskList.Name,
+			//		};
+			//		userInfo.stars.Add(smallStar);
+			//		PrintStarsCount(userInfo.stars.Count.ToString());
+			//
+			//		var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
+			//
+			//		if (!string.IsNullOrEmpty(taskList.GetPathToInfo()))
+			//		{
+			//			File.WriteAllText(taskList.GetPathToInfo(), json);
+			//		}
+			//		else
+			//		{
+			//			MessageBox.Show("Error: No file path set for task info.");
+			//		}
+			//
+			//	}
+			//	else
+			//	{
+			//		return listInfo.DonePercentage;
+			//	}
+			//
+			//}
+			//else
+			//{
+			//	setDefaultEmoji();
+			//	HideBars();
+			//}
+			//return listInfo.DonePercentage;
+			return 0;
 		}
 
 		async void SetFireEmoji()
@@ -217,83 +210,41 @@ namespace ToDoList_C_
 		private async void OpenLatestFile()
 		{
 			LoadUserDB();
+			LoadListDB();
 
-			var me = loadedUsers.FirstOrDefault(u => u.Id == userInfo.Id);
+			var me = loadedUser.FirstOrDefault(u => u.Id == userInfo.Id);
 			if (me != null)
 				userInfo.SetStarList(me.stars.ToList());
 
 
-			if (!Directory.Exists(path))
+			if (me == null)
 			{
-				MessageBox.Show("Check the directory, 'path' does not exist");
-
+				MessageBox.Show("me = null");
 			}
 			else
 			{
-				var latestDir = new DirectoryInfo(path)
-				.GetDirectories()
-				.OrderByDescending(f => f.LastAccessTime)
-				.FirstOrDefault();
-
-				var latestListFile = latestDir?.GetFiles()
-					.Where(f => !f.Name.Contains("Info")).FirstOrDefault();
-
-				var latestInfoFile = latestDir?.GetFiles()
-					.Where(f => f.Name.Contains("Info")).FirstOrDefault();
-
-				string numberOfStars = readFile<string>(pathToAccountFile);
-
-				if (latestListFile != null)
+				try
 				{
-					using (var progress = new ProgressDBContext())
-					{
-						progress.Database.EnsureCreated();
-					}
-
-					try
-					{
-						userInfo.SetStarList(loadedUsers.FirstOrDefault(p => p.Id == 1).stars);
-					}
-					catch (Exception e)
-					{
-						MessageBox.Show(e.Message);
-					}
-
-
-					string latestFilePath = latestListFile.FullName;
-					string formName = Path.GetFileNameWithoutExtension(latestFilePath);
-
-					addButton.Enabled = true;
-					deleteButton.Enabled = true;
-					SaveButton.Enabled = true;
-					this.Text = formName;
-
-					taskList.Clear();
-					taskList.SetList(readFile<List<Task>>(latestFilePath));
-
-					var json = File.ReadAllText(latestInfoFile.FullName);
-
-					try
-					{
-						listInfo = System.Text.Json.JsonSerializer.Deserialize<ListInfo>(json);
-					}
-					catch (Exception)
-					{
-						MessageBox.Show("open vs, bratha");
-					}
-
-					infoTextBox.Text = listInfo.DonePercentage.ToString();
-
-					fileNameList = latestFilePath;
-					taskList.setPathToInfo(latestInfoFile.FullName);
-					taskList.setPathToList(latestListFile.FullName);
-
-					PrintStarsCount(loadedUsers.Max(e => e.stars.Count).ToString());
-
-					UpdateGridView();
+					userInfo.SetStarList(loadedUser.FirstOrDefault(p => p.Id == 1).stars);
 				}
+				catch (Exception e)
+				{
+					MessageBox.Show(e.Message);
+				}
+
+				addButton.Enabled = true;
+				deleteButton.Enabled = true;
+				SaveButton.Enabled = true;
+				this.Text = taskList.Name;
+
+				infoTextBox.Text = taskList.DonePercentage.ToString();
+
+				PrintStarsCount(loadedUser.Max(e => e.stars.Count).ToString());
+
+				UpdateGridView();
 			}
 		}
+
 
 		private void UpdateGridView()
 		{
@@ -320,24 +271,6 @@ namespace ToDoList_C_
 			//gridView.Rows[1].Height = 100;
 		}
 
-		private static T readFile<T>(string filePath)
-		{
-			return JsonConvert.DeserializeObject<T>(File.ReadAllText(filePath));
-		}
-
-		private void CreateDirectory(string directoryPath)
-		{
-			if (Directory.Exists(directoryPath))
-			{
-				MessageBox.Show("File with this name already exsits");
-				return;
-			}
-			else
-			{
-				Directory.CreateDirectory(directoryPath);
-			}
-		}
-
 		private void UpdateTasks()
 		{
 			for (int i = 0; i < taskList.Count(); i++)
@@ -356,7 +289,7 @@ namespace ToDoList_C_
 		//environment
 		private void addButton_Click(object sender, EventArgs e)
 		{
-			if (!string.IsNullOrEmpty(taskList.GetPathToList()) && File.Exists(taskList.GetPathToList()))
+			if (taskList != null)
 			{
 				int newId = taskList.Count() != 0 ? taskList.GetList().Max(t => t.Id) + 1 : 1;
 
@@ -384,23 +317,13 @@ namespace ToDoList_C_
 						{
 							taskList.Clear();
 							UpdateGridView();
-
-							listName = form.enteredName.Trim();
-							directoryPath = path + listName + "\\";
-
-							fileNameList = directoryPath + listName + ".json";
-							fileNameInfo = directoryPath + listName + "_Info.json";
-
-							taskList.setPathToList(fileNameList);
-							taskList.setPathToInfo(fileNameInfo);
-
-
+							taskList.Name = form.enteredName;
 							if (listName == "L")
 							{
 								form.Close();
 								break;
 							}
-							else if (!string.IsNullOrEmpty(listName) && !File.Exists(fileNameList))
+							else if (!string.IsNullOrEmpty(taskList.Name))
 							{
 								addButton.Enabled = true;
 								deleteButton.Enabled = true;
@@ -409,11 +332,8 @@ namespace ToDoList_C_
 								taskList.Clear();
 								UpdateGridView();
 
-								CreateDirectory(directoryPath);
-								File.Create(fileNameList).Close();
-								File.Create(fileNameInfo).Close();
-								this.Text = listName;
-								listInfo.dateTime = DateTime.Today;
+								this.Text = taskList.Name;
+								taskList.dateTime = DateTime.Today;
 
 								break;
 							}
@@ -475,58 +395,37 @@ namespace ToDoList_C_
 		private void SaveButton_Click(object sender, EventArgs e)
 		{
 			UpdateTasks();
-			string jsonList = JsonConvert.SerializeObject(taskList.GetList(), Formatting.Indented);
-			string jsonInfo = JsonConvert.SerializeObject(listInfo, Formatting.Indented);
-
-			var latestDir = new DirectoryInfo(path)
-				.GetDirectories()
-				.OrderByDescending(f => f.LastAccessTime)
-				.FirstOrDefault();
-
-			var latestInfoFile = latestDir?.GetFiles()
-					.Where(f => f.Name.Contains("Info")).FirstOrDefault();
-
-			if (!File.Exists(taskList.GetPathToList()))
+			if (taskList.taskList == null)
 			{
 				//potentially dangerous code
 				this.Name = "To-Do List";
-				taskList.Clear();
-
 				MessageBox.Show("File is deleted");
 				return;
 			}
 			else
 			{
-				if (latestInfoFile == null)
-					fileNameInfo = openedFilePath;
-				else
-					fileNameInfo = latestInfoFile.FullName;
-
-				File.WriteAllText(taskList.GetPathToList(), jsonList);
-				File.WriteAllText(fileNameInfo, jsonInfo);
-
-				using (var progress = new ProgressDBContext())
+				using (var dbContext = new TaskListDBContext())
 				{
 					DateTime today = DateTime.Today;
 					DateTime tommorow = today.AddDays(1);
 
-					ListInfo existingList = progress.progresses.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow);
+					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow);
 
 					if (existingList != null)
 					{
-						existingList.DonePercentage = listInfo.DonePercentage;
-						existingList.GotStar = listInfo.GotStar;
+						existingList.DonePercentage = taskList.DonePercentage;
+						existingList.GotStar = taskList.GotStar;
 					}
 					else
 					{
-						ListInfo currentProgress = new ListInfo(listInfo.DonePercentage, DateTime.Now);
-						progress.progresses.Add(currentProgress);
+						TaskList currentProgress = new TaskList(DateTime.Now, taskList.DonePercentage);
+						dbContext.lists.Add(currentProgress);
 					}
-					progress.SaveChanges();
+					dbContext.SaveChanges();
 				}
 
 				UserInfo existing = new UserInfo();
-				existing = loadedUsers.FirstOrDefault(u => u.Id == 1);
+				existing = loadedUser.FirstOrDefault(u => u.Id == 1);
 
 				if (existing != null)
 				{
@@ -536,7 +435,7 @@ namespace ToDoList_C_
 				{
 					UserInfo currentProgress = new UserInfo();
 					currentProgress.SetStarList(userInfo.stars);
-					loadedUsers.Add(currentProgress);
+					loadedUser.Add(currentProgress);
 				}
 
 			}
@@ -548,51 +447,51 @@ namespace ToDoList_C_
 		{
 			using (OpenFileDialog openFileDialog = new OpenFileDialog())
 			{
-				openFileDialog.InitialDirectory = path;
-				openFileDialog.Multiselect = false;
-				openFileDialog.Filter = "Json Files (*.json)|*.json|All Files (*.*)| *.*";
-
-				if (openFileDialog.ShowDialog() == DialogResult.OK)
-				{
-					addButton.Enabled = true;
-					deleteButton.Enabled = true;
-					SaveButton.Enabled = true;
-
-					taskList.setPathToList(openFileDialog.FileName);
-
-					openedFileName = Path.GetFileNameWithoutExtension(taskList.GetPathToList());
-
-					string PathToCurrentDirectory = Path.GetDirectoryName(taskList.GetPathToList());
-					Directory.SetLastAccessTime(taskList.GetPathToList(), DateTime.Now);
-
-					taskList.Clear();
-					taskList.SetList(readFile<List<Task>>(taskList.GetPathToList()));
-					infoTextBox.Text = calculatePercentageByList(taskList).ToString();
-
-					fileNameList = openedFilePath;
-					UpdateGridView();
-					this.Text = openedFileName;
-				}
+				//openFileDialog.InitialDirectory = path;
+				//openFileDialog.Multiselect = false;
+				//openFileDialog.Filter = "Json Files (*.json)|*.json|All Files (*.*)| *.*";
+				//
+				//if (openFileDialog.ShowDialog() == DialogResult.OK)
+				//{
+				//	addButton.Enabled = true;
+				//	deleteButton.Enabled = true;
+				//	SaveButton.Enabled = true;
+				//
+				//	taskList.setPathToList(openFileDialog.FileName);
+				//
+				//	openedFileName = Path.GetFileNameWithoutExtension(taskList.GetPathToList());
+				//
+				//	string PathToCurrentDirectory = Path.GetDirectoryName(taskList.GetPathToList());
+				//	Directory.SetLastAccessTime(taskList.GetPathToList(), DateTime.Now);
+				//
+				//	taskList.Clear();
+				//	taskList.SetList(readFile<List<Task>>(taskList.GetPathToList()));
+				//	infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+				//
+				//	fileNameList = openedFilePath;
+				//	UpdateGridView();
+				//	this.Text = openedFileName;
+				//}
 			}
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (folderBrowserDialog2)
-			{
-				folderBrowserDialog2.InitialDirectory = path;
-				using (approveClosingList form = new approveClosingList())
-				{
-					if (folderBrowserDialog2.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
-					{
-						UpdateGridView();
-
-						string toDeleteDirectoryPath = folderBrowserDialog2.SelectedPath;
-						Directory.Delete(toDeleteDirectoryPath, true);
-					}
-				}
-
-			}
+			//using (folderBrowserDialog2)
+			//{
+			//	folderBrowserDialog2.InitialDirectory = path;
+			//	using (approveClosingList form = new approveClosingList())
+			//	{
+			//		if (folderBrowserDialog2.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
+			//		{
+			//			UpdateGridView();
+			//
+			//			string toDeleteDirectoryPath = folderBrowserDialog2.SelectedPath;
+			//			Directory.Delete(toDeleteDirectoryPath, true);
+			//		}
+			//	}
+			//
+			//}
 		}
 
 		private void gridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
@@ -605,48 +504,48 @@ namespace ToDoList_C_
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
 
-				listInfo.DonePercentage = calculatePercentageByList(taskList);
-				infoTextBox.Text = listInfo.DonePercentage.ToString();
+				taskList.DonePercentage = calculatePercentageByList(taskList);
+				infoTextBox.Text = taskList.DonePercentage.ToString();
 			}
 		}
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			using (var progress = new ProgressDBContext())
-			{
-				foreach (var p in progress.progresses)
-				{
-					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime.Date.ToString("dd/MM/yyyy")}");
-				}
-			}
+			//using (var progress = new ProgressDBContext())
+			//{
+			//	foreach (var p in progress.progresses)
+			//	{
+			//		MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime.Date.ToString("dd/MM/yyyy")}");
+			//	}
+			//}
 		}
 
 		private void listInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (var progress = new ProgressDBContext())
-			{
-				using (var transaction = progress.Database.BeginTransaction())
-				{
-					try
-					{
-						// Remove all records from the progresses table
-						progress.progresses.RemoveRange(progress.progresses);
-						progress.SaveChanges();
-
-						// Reset the auto-incrementing ID (set it back to 1)
-						progress.Database.ExecuteSqlRaw("DELETE FROM SQLITE_SEQUENCE WHERE NAME = 'Progresses'");
-
-						// Commit the transaction
-						transaction.Commit();
-					}
-					catch (Exception ex)
-					{
-						// Rollback the transaction in case of error
-						transaction.Rollback();
-						MessageBox.Show($"Error clearing database: {ex.Message}");
-					}
-				}
-			}
+			//using (var progress = new ProgressDBContext())
+			//{
+			//	using (var transaction = progress.Database.BeginTransaction())
+			//	{
+			//		try
+			//		{
+			//			// Remove all records from the progresses table
+			//			progress.progresses.RemoveRange(progress.progresses);
+			//			progress.SaveChanges();
+			//
+			//			// Reset the auto-incrementing ID (set it back to 1)
+			//			progress.Database.ExecuteSqlRaw("DELETE FROM SQLITE_SEQUENCE WHERE NAME = 'Progresses'");
+			//
+			//			// Commit the transaction
+			//			transaction.Commit();
+			//		}
+			//		catch (Exception ex)
+			//		{
+			//			// Rollback the transaction in case of error
+			//			transaction.Rollback();
+			//			MessageBox.Show($"Error clearing database: {ex.Message}");
+			//		}
+			//	}
+			//}
 		}
 
 		private void userInfoToolStripMenuItem_Click(object sender, EventArgs e)

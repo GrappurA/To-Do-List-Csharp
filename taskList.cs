@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,37 +9,32 @@ namespace ToDoList_C_
 {
 	internal class TaskList
 	{
-		List<Task> taskList;
+		[Key] public int Id { get; set; }
 
-		string pathToList;
-		
-		string pathToInfo;
-		
-		public int donePercentage { get; set; }
-		
+		public List<Task> taskList { get; set; } = new List<Task>();
+
+		public int DonePercentage { get; set; }
+
+		public DateTime dateTime { get; set; }
+
+		public bool GotStar { get; set; }
+
+		public string? Name { get; set; }
+
+
 		public TaskList()
 		{
-			taskList = new List<Task>();
-		}
-				
-		public void setPathToList(string path)
-		{
-			this.pathToList = path;			
-		}
-		
-		public void setPathToInfo(string path)
-		{
-			this.pathToInfo = path;			
+			this.taskList = new List<Task>();
+			this.DonePercentage = 0;
+			this.dateTime = DateTime.Today;
+			this.GotStar = false;
+			this.Name = "DEFAULT";
 		}
 
-		public string GetPathToList()
+		public TaskList(DateTime dt,int donePercentage)
 		{
-			return this.pathToList;
-		}
-		
-		public string GetPathToInfo()
-		{
-			return this.pathToInfo;
+			this.dateTime= dt;
+			this.DonePercentage = donePercentage;
 		}
 
 		public void AddElement(Task elem)

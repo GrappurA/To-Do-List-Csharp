@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace ToDoList_C_
 {
-	internal class ProgressDBContext : DbContext
+	internal class TaskListDBContext : DbContext
 	{
-		public DbSet<ListInfo> progresses { get; set; }
+		public DbSet<TaskList> lists { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlite("Data Source=DailyProgress.db");
-		}		
+			optionsBuilder.UseSqlite("Data Source=Lists.db");
+		}
+
+
 	}
 }
