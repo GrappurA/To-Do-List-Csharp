@@ -32,7 +32,7 @@ namespace ToDoList_C_
 		}
 
 		public TaskList(DateTime dt,int donePercentage)
-		{
+		{			
 			this.dateTime= dt;
 			this.DonePercentage = donePercentage;
 		}

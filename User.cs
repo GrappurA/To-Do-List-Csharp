@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ToDoList_C_
 {
-	internal class UserInfo
+	internal class User
 	{
 		[Key]
 		public int Id { get; set; }
@@ -16,12 +16,12 @@ namespace ToDoList_C_
 		public double averageTasksDone { get; set; }
 		public int daysInARow { get; set; }
 
-		public UserInfo()
+		public User()
 		{
 			stars = new List<Star>();
 		}
 
-		public UserInfo(int id)
+		public User(int id)
 		{
 			this.Id = id;
 			stars = new List<Star>();

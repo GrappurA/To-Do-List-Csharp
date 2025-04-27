@@ -11,14 +11,16 @@ namespace ToDoList_C_
 		public int Id { get; set; }
 		public string Name { get; set; }
 		public bool Status { get; set; }
+		public DateTime DueDate { get; set; }
 
 		public Task() { }
 
-		public Task(int id, string name, bool status)
+		public Task(int id, string name, bool status, DateTime dueDate)
 		{
 			Id = id;
 			Name = name;
 			Status = status;
+			DueDate = dueDate;
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace ToDoList_C_
 {
 	internal class UsersDBContext : DbContext
 	{
-		public DbSet<UserInfo> users { get; set; }
+		public DbSet<User> users { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
