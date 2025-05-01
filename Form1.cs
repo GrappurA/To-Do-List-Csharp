@@ -29,10 +29,10 @@ namespace ToDoList_C_
 
 			gridView.RowHeadersVisible = false;
 			gridView.AllowUserToAddRows = false;
-			//gridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 			gridView.MultiSelect = false;
 			gridView.SelectionChanged += gridView_SelectionChanged;
 			gridView.DataError += gridView_DataError;
+			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 
 			taskList = new TaskList();
 			loadedUser = new User();
@@ -40,7 +40,6 @@ namespace ToDoList_C_
 			//OpenLatestFile();
 			HideBars();
 
-			calculatePercentageByList(taskList);
 		}
 		private async void LoadUserDB()
 		{
@@ -126,68 +125,52 @@ namespace ToDoList_C_
 
 		private int calculatePercentageByList(TaskList taskList)
 		{
-			//if (taskList == null || taskList.Count() == 0) { return 0; }
-			//
-			//int oneTaskPercentage = 100 / taskList.Count();
-			//int counter = 0;
-			//
-			//foreach (var task in taskList.GetList())
-			//{
-			//	if (task.Status)
-			//	{
-			//		taskList.DonePercentage += oneTaskPercentage;
-			//		counter++;
-			//
-			//	}
-			//}
-			//
-			//if (counter == taskList.Count())
-			//{
-			//	taskList.DonePercentage = 100;
-			//}
-			//
-			//if (taskList.DonePercentage >= percentageToGetAStar)
-			//{
-			//	SetFireEmoji();
-			//	HideBars();
-			//
-			//	if (!userInfo.stars.Any(s => s.ListName == taskList.Name))
-			//	{
-			//		taskList.GotStar = true;
-			//		Star smallStar = new Star
-			//		{
-			//			Size = 1,
-			//			earnDate = DateTime.Today,
-			//			ListName = taskList.Name,
-			//		};
-			//		userInfo.stars.Add(smallStar);
-			//		PrintStarsCount(userInfo.stars.Count.ToString());
-			//
-			//		var json = System.Text.Json.JsonSerializer.Serialize(listInfo, new JsonSerializerOptions { WriteIndented = true });
-			//
-			//		if (!string.IsNullOrEmpty(taskList.GetPathToInfo()))
-			//		{
-			//			File.WriteAllText(taskList.GetPathToInfo(), json);
-			//		}
-			//		else
-			//		{
-			//			MessageBox.Show("Error: No file path set for task info.");
-			//		}
-			//
-			//	}
-			//	else
-			//	{
-			//		return listInfo.DonePercentage;
-			//	}
-			//
-			//}
-			//else
-			//{
-			//	setDefaultEmoji();
-			//	HideBars();
-			//}
-			//return listInfo.DonePercentage;
-			return 0;
+			if (taskList == null || taskList.Count() == 0) { return 0; }
+
+			int res = 0;
+			int oneTaskPercentage = 100 / taskList.Count();
+			int counter = 0;
+
+			foreach (var task in taskList.taskList)
+			{
+				if (task.Status == true)
+				{
+					res += oneTaskPercentage;
+					counter++;
+
+				}
+			}
+
+			if (counter == taskList.Count())
+			{
+				res = 100;
+			}
+
+			if (res >= percentageToGetAStar)
+			{
+				SetFireEmoji();
+				HideBars();
+
+				if (!loadedUser.stars.Any(s => s.ListName == taskList.Name))
+				{
+					taskList.GotStar = true;
+					Star smallStar = new Star
+					{
+						Size = 1,
+						earnDate = DateTime.Today,
+						ListName = taskList.Name,
+					};
+					loadedUser.stars.Add(smallStar);
+					PrintStarsCount(loadedUser.stars.Count.ToString());
+
+				}
+			}
+			else
+			{
+				setDefaultEmoji();
+				HideBars();
+			}
+			return res;
 		}
 
 		async void SetFireEmoji()
@@ -225,16 +208,16 @@ namespace ToDoList_C_
 			UpdateGridView();
 		}
 
-
 		private BindingSource _taskListSource;
 		private void UpdateGridView()
 		{
 			if (_taskListSource == null)
 			{
 				_taskListSource = new BindingSource();
-				gridView.DataSource = _taskListSource;
 			}
-			_taskListSource.DataSource = taskList.GetList();
+			_taskListSource.DataSource = taskList.taskList;
+			gridView.DataSource = _taskListSource;
+			gridView.Columns[0].ReadOnly = true;
 
 			AdjustGridViewSizesLooks();
 		}
@@ -255,31 +238,19 @@ namespace ToDoList_C_
 			//gridView.Rows[1].Height = 100;
 		}
 
-		private void UpdateTasks()
-		{
-			//for (int i = 0; i < taskList.Count(); i++)
-			//{
-			//	if (gridView.Rows[i].Cells[1].Value != null)
-			//	{
-			//		taskList.GetList()[i].Name = gridView.Rows[i].Cells[1].Value.ToString();
-			//	}
-			//	if (gridView.Rows[i].Cells[0].Value != null)
-			//	{
-			//		taskList.GetList()[i].Id = (int)gridView.Rows[i].Cells[0].Value;
-			//	}
-			//}
-		}
-
 		//environment
+		int tempIdCounter = 0;
 		private void addButton_Click(object sender, EventArgs e)//ABC
 		{
 			if (taskList != null)
 			{
-				//int newId = taskList.Count() != 0 ? taskList.GetList().Max(t => t.Id) + 1 : 1;
-				Task task = new Task(1, "", false, DateTime.Today.AddDays(1));
+				DateTime tommorow = DateTime.Today.AddDays(1);
+				Task newTask = new Task("", false, tommorow);
+				newTask.Id = ++tempIdCounter;
 
-				taskList.taskList.Add(task);
-				_taskListSource.ResetBindings(false);
+				taskList.taskList.Add(newTask);
+
+				_taskListSource.ResetBindings(false);//fixes index -1 doesnt have a value exception
 				UpdateGridView();
 
 				deleteButton.Enabled = taskList.Count() > 0;
@@ -360,7 +331,7 @@ namespace ToDoList_C_
 		{
 			if (taskList.Count() > 0)
 			{
-				taskList.GetList().RemoveAt(gridView.RowCount - 1);
+				taskList.taskList.RemoveAt(gridView.RowCount - 1);
 				UpdateGridView();
 			}
 			deleteButton.Enabled = taskList.Count() > 0;
@@ -379,9 +350,8 @@ namespace ToDoList_C_
 			UpdateGridView();
 		}
 
-		private void SaveButton_Click(object sender, EventArgs e)//SB
+		private void SaveButton_Click(object sender, EventArgs e)//SBC
 		{
-			UpdateTasks();
 			if (taskList.taskList == null)
 			{
 				this.Name = "To-Do List";
@@ -542,6 +512,19 @@ namespace ToDoList_C_
 		{
 			// prevent the default “pop-up” and crash
 			e.ThrowException = false;
+		}
+
+		void gridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+		{
+			int DoneColumnIndex = 2;
+			if (gridView.CurrentCell != null && gridView.CurrentCell.ColumnIndex == DoneColumnIndex)
+			{
+				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+				taskList.DonePercentage = calculatePercentageByList(taskList);
+				infoTextBox.Text = taskList.DonePercentage.ToString();
+
+			}
+
 		}
 	}
 }

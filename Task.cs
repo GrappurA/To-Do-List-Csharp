@@ -22,5 +22,12 @@ namespace ToDoList_C_
 			Status = status;
 			DueDate = dueDate;
 		}
+
+		public Task(string name, bool status, DateTime dueDate)
+		{
+			Name = name;
+			Status = status;
+			DueDate = dueDate;
+		}
 	}
 }
