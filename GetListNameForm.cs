@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,7 @@ namespace ToDoList_C_
 		public GetListNameForm()
 		{
 			InitializeComponent();
+			this.FormClosed += GetListNameForm_FormClosed;
 		}
 
 		public string enteredName { get; private set; }
@@ -28,7 +30,14 @@ namespace ToDoList_C_
 		}
 		private void GetListNameForm_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			MessageBox.Show("The form was closed!");
+			if (enteredName.IsNullOrEmpty())
+			{
+				this.DialogResult = DialogResult.Cancel;
+			}
+			else
+			{
+				this.DialogResult = DialogResult.OK;
+			}
 		}
 		
 	}

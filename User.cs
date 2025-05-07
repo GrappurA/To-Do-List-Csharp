@@ -11,10 +11,13 @@ namespace ToDoList_C_
 	{
 		[Key]
 		public int Id { get; set; }
-		public List<Star> stars { get; private set; }
+		public List<Star> stars { get; set; }
 		public int starCount { get; set; }
 		public double averageTasksDone { get; set; }
 		public int daysInARow { get; set; }
+
+		public int? CurrentListId { get; set; }
+		public TaskList? CurrentList { get; set; }
 
 		public User()
 		{
@@ -27,14 +30,13 @@ namespace ToDoList_C_
 			stars = new List<Star>();
 		}
 
+		
+
 		public void GiveStar(Star star)
 		{
 			this.stars.Add(star);
 		}
 
-		public void SetStarList(List<Star> stars)
-		{
-			this.stars = stars;
-		}
+		
 	}
 }

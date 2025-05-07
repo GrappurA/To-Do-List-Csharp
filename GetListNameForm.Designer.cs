@@ -82,16 +82,16 @@
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(480, 188);
-			ControlBox = false;
 			Controls.Add(textBox2);
 			Controls.Add(textBox1);
 			Controls.Add(okButton);
 			Controls.Add(getNameTextBox);
 			FormBorderStyle = FormBorderStyle.FixedSingle;
+			ImeMode = ImeMode.NoControl;
 			MaximizeBox = false;
 			MinimizeBox = false;
 			Name = "GetListNameForm";
-			Text = "Name List";
+			Text = "Name The List";
 			ResumeLayout(false);
 			PerformLayout();
 		}

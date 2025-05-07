@@ -15,10 +15,16 @@ namespace ToDoList_C_
 		public PickDateForm()
 		{
 			InitializeComponent();
+			dateTimePicker1.Format = DateTimePickerFormat.Custom;
+			dateTimePicker1.CustomFormat = "dd/MM/YYYY";
+			dateTimePicker1.Value = DateTime.Today;
 		}
-		public DateTime enteredDate {  get; private set; }
+		public DateTime enteredDate { get; private set; }
 
-
-
+		private void button1_Click(object sender, EventArgs e)
+		{
+			enteredDate = dateTimePicker1.Value;
+			DialogResult = DialogResult.OK;
+		}
 	}
 }

@@ -16,7 +16,7 @@ namespace ToDoList_C_
 		TaskList taskList;
 		User loadedUser;
 
-		const int percentageToGetAStar = 50;
+		const int percentageToGetAStar = 65;
 
 		public mainForm()
 		{
@@ -33,11 +33,13 @@ namespace ToDoList_C_
 			gridView.SelectionChanged += gridView_SelectionChanged;
 			gridView.DataError += gridView_DataError;
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
+			gridView.CellClick += gridView_CellClick;
 
 			taskList = new TaskList();
 			loadedUser = new User();
 
-			//OpenLatestFile();
+			OpenLatestFile();
+			UpdateGridView();
 			HideBars();
 
 		}
@@ -50,7 +52,7 @@ namespace ToDoList_C_
 
 			try
 			{
-				loadedUser = await dBContext.users.OrderByDescending(u => u.Id).FirstOrDefaultAsync();
+				loadedUser = await dBContext.users.FirstOrDefaultAsync();
 			}
 			catch (Exception ex)
 			{
@@ -61,17 +63,33 @@ namespace ToDoList_C_
 
 		private async void SaveUserDBChanges()
 		{
-			UsersDBContext dbContext = new UsersDBContext();
-
-			dbContext.users.Update(loadedUser);
-
-			try
+			using (UsersDBContext dBContext = new UsersDBContext())
 			{
-				await dbContext.SaveChangesAsync();
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Error saving users: " + ex.Message);
+				dBContext.Database.EnsureCreated();
+
+				if (dBContext.users.Count() > 0)
+				{
+					User existingUser = await dBContext.users.OrderByDescending(u => u.Id).FirstOrDefaultAsync();
+
+					if (loadedUser != null)
+					{
+						existingUser.CurrentList = loadedUser.CurrentList;
+						existingUser.CurrentListId = loadedUser.CurrentListId;
+						existingUser.stars = loadedUser.stars;
+						existingUser.averageTasksDone = loadedUser.averageTasksDone;
+						existingUser.daysInARow = loadedUser.daysInARow;
+
+					}
+					await dBContext.SaveChangesAsync();
+				}
+				else
+				{
+					User firstUser = new User(1);
+					dBContext.users.Add(firstUser);
+					await dBContext.SaveChangesAsync();
+				}
+
+
 			}
 
 		}
@@ -83,16 +101,23 @@ namespace ToDoList_C_
 			await dBContext.Database.EnsureCreatedAsync();
 			try
 			{
-				var latestTaskList = await dBContext.lists
-					.Include(tl => tl.GetList()) // Load related tasks (if using EF Core with navigation property)
-					.OrderByDescending(tl => tl.dateTime)
-					.FirstOrDefaultAsync();
+				//var latestTaskList = await dBContext.lists
+				//	.Include(tl => tl.GetList()) // Load related tasks (if using EF Core with navigation property)
+				//	.OrderByDescending(tl => tl.dateTime)
+				//	.FirstOrDefaultAsync();
 
-				taskList.taskList = latestTaskList.taskList ?? new List<Task>();
+				var latestList = await dBContext.lists.OrderByDescending(tl => tl.dateTime).FirstOrDefaultAsync();
+
+				taskList.taskList = latestList.taskList ?? new List<Task>();
+				taskList.dateTime = latestList.dateTime;
+				taskList.DonePercentage = latestList.DonePercentage;
+				taskList.GotStar = latestList.GotStar;
+				taskList.Id = latestList.Id;
+				taskList.Name = latestList.Name;
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show("Error while loading users: " + ex.Message);
+				MessageBox.Show("Error while loading lists: " + ex.Message);
 				taskList = new TaskList();
 			}
 		}
@@ -144,6 +169,10 @@ namespace ToDoList_C_
 			if (counter == taskList.Count())
 			{
 				res = 100;
+			}
+			if (taskList.Count() % 2 == 0 && counter == taskList.Count() / 2)
+			{
+				res = 50;
 			}
 
 			if (res >= percentageToGetAStar)
@@ -200,7 +229,7 @@ namespace ToDoList_C_
 			deleteButton.Enabled = true;
 			SaveButton.Enabled = true;
 			this.Text = taskList.Name;
-
+			
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 
 			PrintStarsCount(loadedUser.stars.Count.ToString());
@@ -214,11 +243,12 @@ namespace ToDoList_C_
 			if (_taskListSource == null)
 			{
 				_taskListSource = new BindingSource();
+				gridView.DataSource = _taskListSource;
 			}
+			_taskListSource.DataSource = null;
 			_taskListSource.DataSource = taskList.taskList;
-			gridView.DataSource = _taskListSource;
-			gridView.Columns[0].ReadOnly = true;
 
+			gridView.Columns[0].ReadOnly = true;
 			AdjustGridViewSizesLooks();
 		}
 
@@ -239,14 +269,14 @@ namespace ToDoList_C_
 		}
 
 		//environment
-		int tempIdCounter = 0;
 		private void addButton_Click(object sender, EventArgs e)//ABC
 		{
 			if (taskList != null)
 			{
 				DateTime tommorow = DateTime.Today.AddDays(1);
 				Task newTask = new Task("", false, tommorow);
-				newTask.Id = ++tempIdCounter;
+
+				newTask.Id = taskList.Count() + 1;
 
 				taskList.taskList.Add(newTask);
 
@@ -254,58 +284,78 @@ namespace ToDoList_C_
 				UpdateGridView();
 
 				deleteButton.Enabled = taskList.Count() > 0;
-				infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+				UpdateProgressUI();
 
 				AnimateButton(addButton, Color.Green, 35);
 			}
 		}
 
+		private List<string> LoadAllListNames()
+		{
+			List<string> list = new List<string>();
+			using (TaskListDBContext dBContext = new TaskListDBContext())
+			{
+				list.AddRange(dBContext.lists.Select(l => l.Name).ToList());
+			}
+			return list;
+		}
+
+		private bool IsUsedName(string s)
+		{
+			List<string> list = LoadAllListNames();
+			if (list.Contains(s))
+			{
+				return true;
+			}
+			return false;
+		}
+
 		private void createToolStripMenuItem_Click(object sender, EventArgs e)//CreateT
 		{
-			while (true)
+			using (GetListNameForm getListNameForm = new GetListNameForm())
 			{
-				using (PickDateForm pickDateForm = new PickDateForm())
+				while (getListNameForm.DialogResult != DialogResult.OK)
 				{
-					using (GetListNameForm form = new GetListNameForm())
+					if (getListNameForm.DialogResult == DialogResult.Cancel)
 					{
-						if (form.ShowDialog() == DialogResult.OK)
+						return;
+					}
+					else if (getListNameForm.ShowDialog() == DialogResult.OK)
+					{
+						if (IsUsedName(getListNameForm.enteredName))
 						{
-							taskList.Clear();
+							MessageBox.Show("Invalid Name");
+							continue;
+						}
+						taskList.Clear();
+						UpdateGridView();
+						taskList.Name = getListNameForm.enteredName;
+										
+
+						if (!string.IsNullOrEmpty(taskList.Name))
+						{
+							addButton.Enabled = true;
+							deleteButton.Enabled = true;
+							SaveButton.Enabled = true;
+
 							UpdateGridView();
-							taskList.Name = form.enteredName;
-							if (taskList.Name == "L")
-							{
-								form.Close();
-								break;
-							}
-							else if (!string.IsNullOrEmpty(taskList.Name))
-							{
-								addButton.Enabled = true;
-								deleteButton.Enabled = true;
-								SaveButton.Enabled = true;
 
-								UpdateGridView();
+							this.Text = taskList.Name;
+							taskList.dateTime = DateTime.Today;
 
-								this.Text = taskList.Name;
-								taskList.dateTime = DateTime.Today;
-
-								break;
-							}
-							else
-							{
-								MessageBox.Show("Invalid name");
-							}
+							break;
 						}
 						else
 						{
-							MessageBox.Show("Something went wrong while naming the list...");
+							MessageBox.Show("Invalid name");
 						}
-
 					}
-				}
 
+				}
 			}
+
 		}
+
 
 		//private void gridView_SelectionChanged(object sender, DataGridViewCellEventArgs e)
 		//{
@@ -327,17 +377,35 @@ namespace ToDoList_C_
 		//	}
 		//}
 
-		private void deleteButton_Click(object sender, EventArgs e)
+		private void deleteButton_Click(object sender, EventArgs e)//dbc
 		{
 			if (taskList.Count() > 0)
 			{
-				taskList.taskList.RemoveAt(gridView.RowCount - 1);
-				UpdateGridView();
+				int selectedIndex;
+				try
+				{
+					selectedIndex = gridView.SelectedCells[0].RowIndex;
+
+				}
+				catch (Exception)
+				{
+					selectedIndex = taskList.Count() - 1;
+				}
+				if (selectedIndex > -1 && selectedIndex < taskList.Count())
+				{
+					taskList.taskList.RemoveAt(selectedIndex);
+					UpdateGridView();
+
+				}
+				else
+				{
+					taskList.taskList.RemoveAt(taskList.Count() - 1);
+				}
 			}
 			deleteButton.Enabled = taskList.Count() > 0;
 			SaveButton.Enabled = true;
 
-			infoTextBox.Text = calculatePercentageByList(taskList).ToString();
+			UpdateProgressUI();
 			AnimateButton(deleteButton, Color.DarkRed, 60);
 		}
 
@@ -381,17 +449,6 @@ namespace ToDoList_C_
 						dbContext.lists.Add(currentProgress);
 					}
 					dbContext.SaveChanges();
-				}
-
-				if (loadedUser != null)
-				{
-					loadedUser.SetStarList(loadedUser.stars);
-				}
-				else
-				{
-					User currentProgress = new User();
-					currentProgress.SetStarList(loadedUser.stars);
-					loadedUser = currentProgress;
 				}
 			}
 			SaveUserDBChanges();
@@ -451,61 +508,79 @@ namespace ToDoList_C_
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			//using (var progress = new ProgressDBContext())
-			//{
-			//	foreach (var p in progress.progresses)
-			//	{
-			//		MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime.Date.ToString("dd/MM/yyyy")}");
-			//	}
-			//}
+			using (var progress = new TaskListDBContext())
+			{
+				foreach (var p in progress.lists)
+				{
+					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime.Date.ToString("dd/MM/yyyy")}");
+				}
+			}
 		}
 
 		private void listInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			//using (var progress = new ProgressDBContext())
-			//{
-			//	using (var transaction = progress.Database.BeginTransaction())
-			//	{
-			//		try
-			//		{
-			//			// Remove all records from the progresses table
-			//			progress.progresses.RemoveRange(progress.progresses);
-			//			progress.SaveChanges();
-			//
-			//			// Reset the auto-incrementing ID (set it back to 1)
-			//			progress.Database.ExecuteSqlRaw("DELETE FROM SQLITE_SEQUENCE WHERE NAME = 'Progresses'");
-			//
-			//			// Commit the transaction
-			//			transaction.Commit();
-			//		}
-			//		catch (Exception ex)
-			//		{
-			//			// Rollback the transaction in case of error
-			//			transaction.Rollback();
-			//			MessageBox.Show($"Error clearing database: {ex.Message}");
-			//		}
-			//	}
-			//}
+			using (var progress = new TaskListDBContext())
+			{
+				using (var transaction = progress.Database.BeginTransaction())
+				{
+					try
+					{
+						// Remove all records from the progresses table
+						progress.lists.RemoveRange(progress.lists);
+						progress.SaveChanges();
+
+						// Reset the auto-incrementing ID (set it back to 1)
+						progress.Database.ExecuteSqlRaw("DELETE FROM SQLITE_SEQUENCE WHERE NAME = 'Progresses'");
+
+						// Commit the transaction
+						transaction.Commit();
+					}
+					catch (Exception ex)
+					{
+						// Rollback the transaction in case of error
+						transaction.Rollback();
+						MessageBox.Show($"Error clearing database: {ex.Message}");
+					}
+				}
+			}
 		}
 
 		private void userInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (var user = new UsersDBContext())
 			{
-				if (!File.Exists("C:\\Users\\Nika\\source\\repos\\ToDoList_C#\\bin\\Debug\\net8.0-windows\\Users.db"))
+				foreach (var u in user.users)
 				{
-					MessageBox.Show("users data base not found");
+					user.users.RemoveRange(user.users);
+					user.SaveChanges();
 				}
-				else
-					File.Delete("C:\\Users\\Nika\\source\\repos\\ToDoList_C#\\bin\\Debug\\net8.0-windows\\Users.db");
+			}
+		}
 
+		private void gridView_CellClick(object sender, DataGridViewCellEventArgs e)
+		{
+			if (e.RowIndex == 0 || taskList.taskList.Count() < 1)
+			{
+				return;
+			}
+			
+			if (gridView.SelectedCells != null && gridView.Columns[e.ColumnIndex].Index == 3)
+			{
+				using (PickDateForm pickDateForm = new PickDateForm())
+				{
+					if (pickDateForm.ShowDialog() == DialogResult.OK)
+					{
+						int selectedIndex = gridView.SelectedCells[0].RowIndex;
+						taskList.taskList[selectedIndex].DueDate = pickDateForm.enteredDate;
+						UpdateGridView();
+					}
+				}
 			}
 		}
 
 		private void gridView_SelectionChanged(object sender, EventArgs e)
 		{
-			// now you never see e.RowIndex here
-			deleteButton.Enabled = (gridView.SelectedRows.Count > 0);
+
 		}
 
 		private void gridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -520,11 +595,16 @@ namespace ToDoList_C_
 			if (gridView.CurrentCell != null && gridView.CurrentCell.ColumnIndex == DoneColumnIndex)
 			{
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
-				taskList.DonePercentage = calculatePercentageByList(taskList);
-				infoTextBox.Text = taskList.DonePercentage.ToString();
+				UpdateProgressUI();
 
 			}
 
+		}
+
+		private void UpdateProgressUI()
+		{
+			taskList.DonePercentage = calculatePercentageByList(taskList);
+			infoTextBox.Text = taskList.DonePercentage.ToString();
 		}
 	}
 }

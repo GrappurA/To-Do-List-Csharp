@@ -134,20 +134,20 @@
 			// 
 			clearDatabaseToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { userInfoToolStripMenuItem, listInfoToolStripMenuItem });
 			clearDatabaseToolStripMenuItem.Name = "clearDatabaseToolStripMenuItem";
-			clearDatabaseToolStripMenuItem.Size = new Size(224, 26);
+			clearDatabaseToolStripMenuItem.Size = new Size(193, 26);
 			clearDatabaseToolStripMenuItem.Text = "Clear Database";
 			// 
 			// userInfoToolStripMenuItem
 			// 
 			userInfoToolStripMenuItem.Name = "userInfoToolStripMenuItem";
-			userInfoToolStripMenuItem.Size = new Size(224, 26);
+			userInfoToolStripMenuItem.Size = new Size(147, 26);
 			userInfoToolStripMenuItem.Text = "UserInfo";
 			userInfoToolStripMenuItem.Click += userInfoToolStripMenuItem_Click;
 			// 
 			// listInfoToolStripMenuItem
 			// 
 			listInfoToolStripMenuItem.Name = "listInfoToolStripMenuItem";
-			listInfoToolStripMenuItem.Size = new Size(224, 26);
+			listInfoToolStripMenuItem.Size = new Size(147, 26);
 			listInfoToolStripMenuItem.Text = "ListInfo";
 			listInfoToolStripMenuItem.Click += listInfoToolStripMenuItem_Click;
 			// 
@@ -313,6 +313,7 @@
 			FormBorderStyle = FormBorderStyle.Fixed3D;
 			Icon = (Icon)resources.GetObject("$this.Icon");
 			MainMenuStrip = menuStrip1;
+			MaximizeBox = false;
 			Name = "mainForm";
 			RightToLeft = RightToLeft.No;
 			Text = "To Do List";

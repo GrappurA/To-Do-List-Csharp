@@ -30,11 +30,12 @@
 		{
 			dateTimePicker1 = new DateTimePicker();
 			textBox1 = new TextBox();
+			button1 = new Button();
 			SuspendLayout();
 			// 
 			// dateTimePicker1
 			// 
-			dateTimePicker1.CustomFormat = "dd/MM/yyyy";
+			dateTimePicker1.CustomFormat = "d/MM/yyyy";
 			dateTimePicker1.Font = new Font("Verdana", 10.2F);
 			dateTimePicker1.Location = new Point(12, 40);
 			dateTimePicker1.Name = "dateTimePicker1";
@@ -53,11 +54,24 @@
 			textBox1.TabIndex = 1;
 			textBox1.Text = "Select the date, that you're planning for: ";
 			// 
+			// button1
+			// 
+			button1.BackColor = Color.FromArgb(128, 255, 128);
+			button1.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
+			button1.Location = new Point(379, 23);
+			button1.Name = "button1";
+			button1.Size = new Size(113, 45);
+			button1.TabIndex = 2;
+			button1.Text = "Submit";
+			button1.UseVisualStyleBackColor = false;
+			button1.Click += button1_Click;
+			// 
 			// PickDateForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(385, 79);
+			ClientSize = new Size(504, 79);
+			Controls.Add(button1);
 			Controls.Add(textBox1);
 			Controls.Add(dateTimePicker1);
 			FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -71,5 +85,6 @@
 
 		private DateTimePicker dateTimePicker1;
 		private TextBox textBox1;
+		private Button button1;
 	}
 }
