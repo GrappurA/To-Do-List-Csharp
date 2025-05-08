@@ -104,11 +104,6 @@ namespace ToDoList_C_
 			await dBContext.Database.EnsureCreatedAsync();
 			try
 			{
-				//var latestTaskList = await dBContext.lists
-				//	.Include(tl => tl.GetList()) // Load related tasks (if using EF Core with navigation property)
-				//	.OrderByDescending(tl => tl.dateTime)
-				//	.FirstOrDefaultAsync();
-
 				var latestList = await dBContext.lists.Include(tl => tl.taskList).OrderByDescending(tl => tl.dateTime).FirstOrDefaultAsync();
 
 				taskList.taskList = latestList.taskList ?? new List<Task>();
