@@ -21,10 +21,10 @@ namespace ToDoList_C_
 		public mainForm()
 		{
 			InitializeComponent();
+
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
-
 			infoTextBox.ReadOnly = true;
 
 			gridView.RowHeadersVisible = false;
@@ -38,7 +38,10 @@ namespace ToDoList_C_
 			taskList = new TaskList();
 			loadedUser = new User();
 
+			LoadUserDB();
+			LoadListDB();
 			OpenLatestFile();
+
 			UpdateGridView();
 			HideBars();
 
@@ -106,7 +109,7 @@ namespace ToDoList_C_
 				//	.OrderByDescending(tl => tl.dateTime)
 				//	.FirstOrDefaultAsync();
 
-				var latestList = await dBContext.lists.OrderByDescending(tl => tl.dateTime).FirstOrDefaultAsync();
+				var latestList = await dBContext.lists.Include(tl => tl.taskList).OrderByDescending(tl => tl.dateTime).FirstOrDefaultAsync();
 
 				taskList.taskList = latestList.taskList ?? new List<Task>();
 				taskList.dateTime = latestList.dateTime;
@@ -222,9 +225,6 @@ namespace ToDoList_C_
 
 		private async void OpenLatestFile()
 		{
-			LoadUserDB();
-			LoadListDB();
-
 			addButton.Enabled = true;
 			deleteButton.Enabled = true;
 			SaveButton.Enabled = true;
@@ -233,7 +233,6 @@ namespace ToDoList_C_
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 
 			PrintStarsCount(loadedUser.stars.Count.ToString());
-
 			UpdateGridView();
 		}
 
@@ -446,6 +445,11 @@ namespace ToDoList_C_
 					else
 					{
 						TaskList currentProgress = new TaskList(DateTime.Now, taskList.DonePercentage);
+						currentProgress.taskList = taskList.taskList;
+						currentProgress.Name = taskList.Name;
+						currentProgress.dateTime = taskList.dateTime;
+						currentProgress.DonePercentage = taskList.DonePercentage;
+						currentProgress.GotStar = taskList.GotStar;
 						dbContext.lists.Add(currentProgress);
 					}
 					dbContext.SaveChanges();
