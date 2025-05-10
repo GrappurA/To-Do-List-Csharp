@@ -21,7 +21,16 @@ namespace ToDoList_C_
 		public mainForm()
 		{
 			InitializeComponent();
+			this.Load += mainForm_Load;
 
+			gridView.SelectionChanged += gridView_SelectionChanged;
+			gridView.DataError += gridView_DataError;
+			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
+			gridView.CellClick += gridView_CellClick;
+		}
+
+		private async void mainForm_Load(object? sender, EventArgs e)
+		{
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
@@ -30,23 +39,19 @@ namespace ToDoList_C_
 			gridView.RowHeadersVisible = false;
 			gridView.AllowUserToAddRows = false;
 			gridView.MultiSelect = false;
-			gridView.SelectionChanged += gridView_SelectionChanged;
-			gridView.DataError += gridView_DataError;
-			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
-			gridView.CellClick += gridView_CellClick;
 
 			taskList = new TaskList();
 			loadedUser = new User();
 
-			LoadUserDB();
-			LoadListDB();
+			LoadUserDBAsync();
+			LoadListDBAsync();
 			OpenLatestFile();
 
 			UpdateGridView();
 			HideBars();
-
 		}
-		private async void LoadUserDB()
+
+		private async void LoadUserDBAsync()
 		{
 			UsersDBContext dBContext = new UsersDBContext();
 			loadedUser = new User();
@@ -91,21 +96,25 @@ namespace ToDoList_C_
 					dBContext.users.Add(firstUser);
 					await dBContext.SaveChangesAsync();
 				}
-
-
 			}
 
 		}
 
-		private async void LoadListDB()
+		private async void LoadListDBAsync()
 		{
 			TaskListDBContext dBContext = new TaskListDBContext();
 
 			await dBContext.Database.EnsureCreatedAsync();
 			try
 			{
-				var latestList = await dBContext.lists.Include(tl => tl.taskList).OrderByDescending(tl => tl.dateTime).FirstOrDefaultAsync();
-
+				var latestList = await dBContext.lists
+				.Include(tl => tl.taskList)
+				.OrderByDescending(tl => tl.dateTime)
+				.FirstOrDefaultAsync();
+				if (latestList == null)
+				{
+					latestList = new();
+				}
 				taskList.taskList = latestList.taskList ?? new List<Task>();
 				taskList.dateTime = latestList.dateTime;
 				taskList.DonePercentage = latestList.DonePercentage;
@@ -121,7 +130,6 @@ namespace ToDoList_C_
 		}
 
 		//additional funcs
-
 		private async void HideBars()
 		{
 			await showingFireWV2.EnsureCoreWebView2Async();
@@ -135,7 +143,6 @@ namespace ToDoList_C_
 			document.documentElement.style.overflow = 'hidden';
 			document.body.style.overflow = 'hidden';
 			");
-
 		}
 
 		async void AnimateButton(Button button, Color color, int delay)
@@ -220,15 +227,24 @@ namespace ToDoList_C_
 
 		private async void OpenLatestFile()
 		{
-			addButton.Enabled = true;
-			deleteButton.Enabled = true;
-			SaveButton.Enabled = true;
-			this.Text = taskList.Name;
-			
-			infoTextBox.Text = taskList.DonePercentage.ToString();
-
-			PrintStarsCount(loadedUser.stars.Count.ToString());
-			UpdateGridView();
+			if (taskList.taskList.Count != 0)
+			{
+				addButton.Enabled = true;
+				deleteButton.Enabled = true;
+				SaveButton.Enabled = true;
+				this.Text = taskList.Name;
+				infoTextBox.Text = taskList.DonePercentage.ToString();
+				PrintStarsCount(loadedUser.stars.Count.ToString());
+				UpdateGridView();
+			}
+			else
+			{
+				this.Text = "To-Do List";
+				addButton.Enabled = false;
+				deleteButton.Enabled = false;
+				SaveButton.Enabled = false;
+				UpdateGridView();
+			}
 		}
 
 		private BindingSource _taskListSource;
@@ -257,9 +273,10 @@ namespace ToDoList_C_
 			gridView.Columns[0].Width = 30;
 			gridView.Columns[2].Width = 70;
 
+			gridView.Columns[0].HeaderText = "ID";
 			gridView.ResumeLayout();
-			//
-			//gridView.Rows[1].Height = 100;
+
+
 		}
 
 		//environment
@@ -270,7 +287,7 @@ namespace ToDoList_C_
 				DateTime tommorow = DateTime.Today.AddDays(1);
 				Task newTask = new Task("", false, tommorow);
 
-				newTask.Id = taskList.Count() + 1;
+				newTask.Position = taskList.Count() + 1;
 
 				taskList.taskList.Add(newTask);
 
@@ -324,7 +341,7 @@ namespace ToDoList_C_
 						taskList.Clear();
 						UpdateGridView();
 						taskList.Name = getListNameForm.enteredName;
-										
+
 
 						if (!string.IsNullOrEmpty(taskList.Name))
 						{
@@ -371,7 +388,7 @@ namespace ToDoList_C_
 		//	}
 		//}
 
-		private void deleteButton_Click(object sender, EventArgs e)//dbc
+		private void deleteButton_Click(object sender, EventArgs e)//dbcc
 		{
 			if (taskList.Count() > 0)
 			{
@@ -379,7 +396,6 @@ namespace ToDoList_C_
 				try
 				{
 					selectedIndex = gridView.SelectedCells[0].RowIndex;
-
 				}
 				catch (Exception)
 				{
@@ -387,9 +403,17 @@ namespace ToDoList_C_
 				}
 				if (selectedIndex > -1 && selectedIndex < taskList.Count())
 				{
+					var taskToRemove = taskList.taskList[selectedIndex];
+
+					//using (TaskListDBContext dbContext = new())
+					//{
+					//	dbContext.Attach(taskToRemove);
+					//	dbContext.Remove(taskToRemove);
+					//	dbContext.SaveChanges();
+					//}
+
 					taskList.taskList.RemoveAt(selectedIndex);
 					UpdateGridView();
-
 				}
 				else
 				{
@@ -451,6 +475,7 @@ namespace ToDoList_C_
 				}
 			}
 			SaveUserDBChanges();
+			UpdateGridView();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
 		}
 
@@ -562,7 +587,7 @@ namespace ToDoList_C_
 			{
 				return;
 			}
-			
+
 			if (gridView.SelectedCells != null && gridView.Columns[e.ColumnIndex].Index == 3)
 			{
 				using (PickDateForm pickDateForm = new PickDateForm())
