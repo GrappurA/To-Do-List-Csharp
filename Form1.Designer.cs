@@ -36,8 +36,8 @@
 			fileToolStripMenuItem = new ToolStripMenuItem();
 			createToolStripItem = new ToolStripMenuItem();
 			openToolStripMenuItem = new ToolStripMenuItem();
-			closeToolStripMenuItem1 = new ToolStripMenuItem();
 			deleteToolStripMenuItem = new ToolStripMenuItem();
+			closeToolStripMenuItem1 = new ToolStripMenuItem();
 			databaseToolStripMenuItem = new ToolStripMenuItem();
 			clearDatabaseToolStripMenuItem = new ToolStripMenuItem();
 			userInfoToolStripMenuItem = new ToolStripMenuItem();
@@ -90,7 +90,7 @@
 			// 
 			// fileToolStripMenuItem
 			// 
-			fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createToolStripItem, openToolStripMenuItem, closeToolStripMenuItem1, deleteToolStripMenuItem });
+			fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createToolStripItem, openToolStripMenuItem, deleteToolStripMenuItem, closeToolStripMenuItem1 });
 			fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			fileToolStripMenuItem.Size = new Size(46, 24);
 			fileToolStripMenuItem.Text = "File";
@@ -109,19 +109,19 @@
 			openToolStripMenuItem.Text = "Open";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
-			// closeToolStripMenuItem1
-			// 
-			closeToolStripMenuItem1.Name = "closeToolStripMenuItem1";
-			closeToolStripMenuItem1.Size = new Size(136, 26);
-			closeToolStripMenuItem1.Text = "Close";
-			closeToolStripMenuItem1.Click += closeToolStripMenuItem1_Click;
-			// 
 			// deleteToolStripMenuItem
 			// 
 			deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
 			deleteToolStripMenuItem.Size = new Size(136, 26);
 			deleteToolStripMenuItem.Text = "Delete";
 			deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
+			// 
+			// closeToolStripMenuItem1
+			// 
+			closeToolStripMenuItem1.Name = "closeToolStripMenuItem1";
+			closeToolStripMenuItem1.Size = new Size(136, 26);
+			closeToolStripMenuItem1.Text = "Close";
+			closeToolStripMenuItem1.Click += closeToolStripMenuItem1_Click;
 			// 
 			// databaseToolStripMenuItem
 			// 

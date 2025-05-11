@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ToDoList_C_
 {
-	internal class User
+	public class User
 	{
 		[Key]
 		public int Id { get; set; }

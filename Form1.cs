@@ -22,8 +22,7 @@ namespace ToDoList_C_
 		{
 			InitializeComponent();
 			this.Load += mainForm_Load;
-
-			gridView.SelectionChanged += gridView_SelectionChanged;
+						
 			gridView.DataError += gridView_DataError;
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 			gridView.CellClick += gridView_CellClick;
@@ -275,8 +274,6 @@ namespace ToDoList_C_
 
 			gridView.Columns[0].HeaderText = "ID";
 			gridView.ResumeLayout();
-
-
 		}
 
 		//environment
@@ -342,7 +339,6 @@ namespace ToDoList_C_
 						UpdateGridView();
 						taskList.Name = getListNameForm.enteredName;
 
-
 						if (!string.IsNullOrEmpty(taskList.Name))
 						{
 							addButton.Enabled = true;
@@ -352,7 +348,7 @@ namespace ToDoList_C_
 							UpdateGridView();
 
 							this.Text = taskList.Name;
-							taskList.dateTime = DateTime.Today;
+							taskList.dateTime = DateTime.Now;
 
 							break;
 						}
@@ -366,27 +362,6 @@ namespace ToDoList_C_
 			}
 
 		}
-
-
-		//private void gridView_SelectionChanged(object sender, DataGridViewCellEventArgs e)
-		//{
-		//	if (gridView.Rows.Count == 0)
-		//	{
-		//		return;
-		//	}
-		//	if (gridView.SelectedRows.Count > 0)
-		//	{
-		//		int index = gridView.SelectedRows[0].Index;
-		//		if (index >= 0 && index < taskList.Count())
-		//		{
-		//			deleteButton.Enabled = true;
-		//		}
-		//	}
-		//	else
-		//	{
-		//		deleteButton.Enabled = false;
-		//	}
-		//}
 
 		private void deleteButton_Click(object sender, EventArgs e)//dbcc
 		{
@@ -433,6 +408,8 @@ namespace ToDoList_C_
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			taskList.Clear();
+			taskList = new();
+			this.Text = "To-Do List";
 			UpdateGridView();
 		}
 
@@ -451,7 +428,7 @@ namespace ToDoList_C_
 					DateTime today = DateTime.Today;
 					DateTime tommorow = today.AddDays(1);
 
-					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow);
+					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow && p.Name ==taskList.Name);
 
 					if (existingList != null)
 					{
@@ -481,33 +458,15 @@ namespace ToDoList_C_
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog openFileDialog = new OpenFileDialog())
+			using (openListForm form = new())
 			{
-				//openFileDialog.InitialDirectory = path;
-				//openFileDialog.Multiselect = false;
-				//openFileDialog.Filter = "Json Files (*.json)|*.json|All Files (*.*)| *.*";
-				//
-				//if (openFileDialog.ShowDialog() == DialogResult.OK)
-				//{
-				//	addButton.Enabled = true;
-				//	deleteButton.Enabled = true;
-				//	SaveButton.Enabled = true;
-				//
-				//	taskList.setPathToList(openFileDialog.FileName);
-				//
-				//	openedFileName = Path.GetFileNameWithoutExtension(taskList.GetPathToList());
-				//
-				//	string PathToCurrentDirectory = Path.GetDirectoryName(taskList.GetPathToList());
-				//	Directory.SetLastAccessTime(taskList.GetPathToList(), DateTime.Now);
-				//
-				//	taskList.Clear();
-				//	taskList.SetList(readFile<List<Task>>(taskList.GetPathToList()));
-				//	infoTextBox.Text = calculatePercentageByList(taskList).ToString();
-				//
-				//	fileNameList = openedFilePath;
-				//	UpdateGridView();
-				//	this.Text = openedFileName;
-				//}
+				if (form.ShowDialog() == DialogResult.OK)
+				{
+					taskList.Clear();
+					taskList = form.wrapper.taskList;
+					loadedUser = form.wrapper.user;
+					UpdateGridView();
+				}
 			}
 		}
 
@@ -602,11 +561,6 @@ namespace ToDoList_C_
 			}
 		}
 
-		private void gridView_SelectionChanged(object sender, EventArgs e)
-		{
-
-		}
-
 		private void gridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
 			// prevent the default “pop-up” and crash
@@ -620,9 +574,7 @@ namespace ToDoList_C_
 			{
 				gridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 				UpdateProgressUI();
-
 			}
-
 		}
 
 		private void UpdateProgressUI()
