@@ -22,7 +22,7 @@ namespace ToDoList_C_
 		{
 			InitializeComponent();
 			this.Load += mainForm_Load;
-						
+
 			gridView.DataError += gridView_DataError;
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 			gridView.CellClick += gridView_CellClick;
@@ -255,7 +255,7 @@ namespace ToDoList_C_
 				gridView.DataSource = _taskListSource;
 			}
 			_taskListSource.DataSource = null;
-			_taskListSource.DataSource = taskList.taskList;
+			_taskListSource.DataSource = taskList.GetList();
 
 			gridView.Columns[0].ReadOnly = true;
 			AdjustGridViewSizesLooks();
@@ -428,7 +428,7 @@ namespace ToDoList_C_
 					DateTime today = DateTime.Today;
 					DateTime tommorow = today.AddDays(1);
 
-					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow && p.Name ==taskList.Name);
+					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow && p.Name == taskList.Name);
 
 					if (existingList != null)
 					{
@@ -462,9 +462,10 @@ namespace ToDoList_C_
 			{
 				if (form.ShowDialog() == DialogResult.OK)
 				{
-					taskList.Clear();
-					taskList = form.wrapper.taskList;
+					taskList.SetList(form.wrapper.taskList.GetList());
 					loadedUser = form.wrapper.user;
+					this.Text = form.wrapper.taskList.Name;
+					calculatePercentageByList(taskList);
 					UpdateGridView();
 				}
 			}
