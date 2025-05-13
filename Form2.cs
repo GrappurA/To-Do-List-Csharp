@@ -52,7 +52,7 @@ namespace ToDoList_C_
 		{
 			using (TaskListDBContext dbContext = new())
 			{
-				_taskList.DataSource = dbContext.lists.ToList();
+				_taskList.DataSource = dbContext.lists.Include(l => l.taskList).ToList();
 			}
 			showTaskListsDGV.DataSource = _taskList;
 
@@ -70,7 +70,7 @@ namespace ToDoList_C_
 		}
 
 		private void openListForm_KeyDown(object sender, KeyEventArgs e)
-		 {
+		{
 			if (e.KeyCode == Keys.Space && showTaskListsDGV.SelectedCells != null)
 			{
 				this.DialogResult = DialogResult.OK;
