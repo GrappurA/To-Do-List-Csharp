@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.KeyPreview = true;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(openListForm));
 			showTaskListsDGV = new DataGridView();
 			textBox1 = new TextBox();
@@ -52,11 +51,12 @@
 			textBox1.BackColor = SystemColors.Control;
 			textBox1.BorderStyle = BorderStyle.None;
 			textBox1.Font = new Font("Verdana", 12.8F, FontStyle.Bold);
-			textBox1.Location = new Point(642, 76);
+			textBox1.Location = new Point(709, 71);
+			textBox1.Multiline = true;
 			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(278, 26);
+			textBox1.Size = new Size(179, 47);
 			textBox1.TabIndex = 2;
-			textBox1.Text = "Press 'Space' To submit";
+			textBox1.Text = "Press 'Space'\r\nTo submit";
 			textBox1.TextAlign = HorizontalAlignment.Center;
 			// 
 			// openListForm
@@ -68,6 +68,7 @@
 			Controls.Add(textBox1);
 			Controls.Add(showTaskListsDGV);
 			Icon = (Icon)resources.GetObject("$this.Icon");
+			KeyPreview = true;
 			MaximizeBox = false;
 			Name = "openListForm";
 			Text = "Open a List";

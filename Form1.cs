@@ -4,10 +4,10 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Web.WebView2.WinForms;
-using Newtonsoft.Json;
 
 namespace ToDoList_C_
 {
@@ -42,24 +42,26 @@ namespace ToDoList_C_
 			taskList = new TaskList();
 			loadedUser = new User();
 
-			LoadUserDBAsync();
-			LoadListDBAsync();
+			await LoadUserDBAsync();
+			await LoadListDBAsync();
 			OpenLatestFile();
 
 			UpdateGridView();
 			HideBars();
 		}
 
-		private async void LoadUserDBAsync()
+		private async System.Threading.Tasks.Task LoadUserDBAsync()
 		{
-			UsersDBContext dBContext = new UsersDBContext();
-			loadedUser = new User();
+			using var db = new UsersDBContext();
 
-			await dBContext.Database.EnsureCreatedAsync();
+			await db.Database.EnsureCreatedAsync();
 
 			try
 			{
-				loadedUser = await dBContext.users.FirstOrDefaultAsync();
+				// await a Task<T>, so the containing method returns Task
+				loadedUser = await db.users
+					.Include(u => u.stars)
+					.FirstOrDefaultAsync() ?? new User();
 			}
 			catch (Exception ex)
 			{
@@ -99,7 +101,7 @@ namespace ToDoList_C_
 
 		}
 
-		private async void LoadListDBAsync()
+		private async Task LoadListDBAsync()
 		{
 			TaskListDBContext dBContext = new TaskListDBContext();
 
@@ -114,7 +116,7 @@ namespace ToDoList_C_
 				{
 					latestList = new();
 				}
-				taskList.taskList = latestList.taskList ?? new List<Task>();
+				taskList.taskList = latestList.taskList ?? new List<ToDoTask>();
 				taskList.dateTime = latestList.dateTime;
 				taskList.DonePercentage = latestList.DonePercentage;
 				taskList.GotStar = latestList.GotStar;
@@ -133,6 +135,7 @@ namespace ToDoList_C_
 		{
 			await showingFireWV2.EnsureCoreWebView2Async();
 			await showingStarsWV2.EnsureCoreWebView2Async();
+			await showingStarsWV2.EnsureCoreWebView2Async();
 
 			await showingFireWV2.ExecuteScriptAsync(@"
 			document.documentElement.style.overflow = 'hidden';
@@ -142,6 +145,11 @@ namespace ToDoList_C_
 			document.documentElement.style.overflow = 'hidden';
 			document.body.style.overflow = 'hidden';
 			");
+			await showLatestStarWV.ExecuteScriptAsync(@"
+			document.documentElement.style.overflow = 'hidden';
+			document.body.style.overflow = 'hidden';
+			");
+
 		}
 
 		async void AnimateButton(Button button, Color color, int delay)
@@ -152,7 +160,7 @@ namespace ToDoList_C_
 			button.BackColor = originalColor;
 		}
 
-		private int calculatePercentageByList(TaskList taskList)
+		private int CalculateDonePercentage(TaskList taskList)
 		{
 			if (taskList == null || taskList.Count() == 0) { return 0; }
 
@@ -195,7 +203,6 @@ namespace ToDoList_C_
 					};
 					loadedUser.stars.Add(smallStar);
 					PrintStarsCount(loadedUser.stars.Count.ToString());
-
 				}
 			}
 			else
@@ -221,10 +228,35 @@ namespace ToDoList_C_
 		async void PrintStarsCount(string count)
 		{
 			await showingStarsWV2.EnsureCoreWebView2Async();
-			showingStarsWV2.NavigateToString($"<html><body style='font-size:12px;'>You have {count} Stars</body></html>");
+			showingStarsWV2.NavigateToString($"" +
+				$"<html>" +
+				$"<body style='" +
+				$"font-family: Segoe UI, sans-serif;" +
+				$"font-size:23px;'>" +
+				$"You have {count} Stars" +
+				$"</body>" +
+				$"</html>");
 		}
 
-		private async void OpenLatestFile()
+		async void PrintLatestStar(string date)
+		{
+			await showLatestStarWV.EnsureCoreWebView2Async();
+			showLatestStarWV.NavigateToString($"" +
+				$"<html>" +
+				$"<body style='" +
+				$"font-family: Segoe UI, sans-serif;" +
+				$"font-size:23px;'>" +
+				$"Latest star: {date}" +
+				$"</body>" +
+				$"</html>");
+		}
+
+		private void CalculateUserDaysInARow()
+		{
+
+		}
+
+		private void OpenLatestFile()
 		{
 			if (taskList.taskList.Count != 0)
 			{
@@ -233,7 +265,24 @@ namespace ToDoList_C_
 				SaveButton.Enabled = true;
 				this.Text = taskList.Name;
 				infoTextBox.Text = taskList.DonePercentage.ToString();
+
 				PrintStarsCount(loadedUser.stars.Count.ToString());
+				PrintLatestStar(loadedUser.stars
+					.OrderByDescending(s => s.earnDate)
+					.FirstOrDefault().earnDate.Date
+					.ToShortDateString());
+				try
+				{
+					//	PrintLatestStar(loadedUser.stars
+					//		.OrderByDescending(s => s.earnDate)
+					//		.FirstOrDefault().earnDate.Date
+					//		.ToShortDateString());
+				}
+				catch (Exception)
+				{
+					MessageBox.Show("Error while printing latest star");
+					return;
+				}
 				UpdateGridView();
 			}
 			else
@@ -282,7 +331,7 @@ namespace ToDoList_C_
 			if (taskList != null)
 			{
 				DateTime tommorow = DateTime.Today.AddDays(1);
-				Task newTask = new Task("", false, tommorow);
+				ToDoTask newTask = new ToDoTask("", false, tommorow);
 
 				newTask.Position = taskList.Count() + 1;
 
@@ -318,6 +367,15 @@ namespace ToDoList_C_
 			return false;
 		}
 
+		private void ResetTaskList()
+		{
+			taskList.taskList.Clear();
+			taskList.GotStar = false;
+			taskList.DonePercentage = 0;
+			taskList.Name = "default_name";
+			taskList.dateTime = DateTime.MinValue;
+		}
+
 		private void createToolStripMenuItem_Click(object sender, EventArgs e)//CreateT
 		{
 			using (GetListNameForm getListNameForm = new GetListNameForm())
@@ -335,7 +393,10 @@ namespace ToDoList_C_
 							MessageBox.Show("Invalid Name");
 							continue;
 						}
-						taskList.Clear();
+						if (taskList != null)
+						{
+							ResetTaskList();
+						}
 						UpdateGridView();
 						taskList.Name = getListNameForm.enteredName;
 
@@ -465,7 +526,12 @@ namespace ToDoList_C_
 					taskList.SetList(form.wrapper.taskList.GetList());
 					loadedUser = form.wrapper.user;
 					this.Text = form.wrapper.taskList.Name;
-					calculatePercentageByList(taskList);
+					CalculateDonePercentage(taskList);
+
+					addButton.Enabled = true;
+					deleteButton.Enabled = taskList.taskList.Count > 0;
+					SaveButton.Enabled = true;
+
 					UpdateGridView();
 				}
 			}
@@ -497,46 +563,6 @@ namespace ToDoList_C_
 				foreach (var p in progress.lists)
 				{
 					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime.Date.ToString("dd/MM/yyyy")}");
-				}
-			}
-		}
-
-		private void listInfoToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (var progress = new TaskListDBContext())
-			{
-				using (var transaction = progress.Database.BeginTransaction())
-				{
-					try
-					{
-						// Remove all records from the progresses table
-						progress.lists.RemoveRange(progress.lists);
-						progress.SaveChanges();
-
-						// Reset the auto-incrementing ID (set it back to 1)
-						progress.Database.ExecuteSqlRaw("DELETE FROM SQLITE_SEQUENCE WHERE NAME = 'Progresses'");
-
-						// Commit the transaction
-						transaction.Commit();
-					}
-					catch (Exception ex)
-					{
-						// Rollback the transaction in case of error
-						transaction.Rollback();
-						MessageBox.Show($"Error clearing database: {ex.Message}");
-					}
-				}
-			}
-		}
-
-		private void userInfoToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (var user = new UsersDBContext())
-			{
-				foreach (var u in user.users)
-				{
-					user.users.RemoveRange(user.users);
-					user.SaveChanges();
 				}
 			}
 		}
@@ -580,7 +606,7 @@ namespace ToDoList_C_
 
 		private void UpdateProgressUI()
 		{
-			taskList.DonePercentage = calculatePercentageByList(taskList);
+			taskList.DonePercentage = CalculateDonePercentage(taskList);
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 		}
 	}

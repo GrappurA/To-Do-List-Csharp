@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ToDoList_C_
 {
-	public class Task
+	public class ToDoTask
 	{
 
 		[Browsable(false)] [Key] public int Id { get; set; }
@@ -17,9 +17,9 @@ namespace ToDoList_C_
 		public bool Status { get; set; }
 		public DateTime DueDate { get; set; }
 
-		public Task() { }
+		public ToDoTask() { }
 
-		public Task(int pos, string name, bool status, DateTime dueDate)
+		public ToDoTask(int pos, string name, bool status, DateTime dueDate)
 		{
 			this.Position = pos;
 			Name = name;
@@ -27,7 +27,7 @@ namespace ToDoList_C_
 			DueDate = dueDate;
 		}
 
-		public Task(string name, bool status, DateTime dueDate)
+		public ToDoTask(string name, bool status, DateTime dueDate)
 		{
 			Name = name;
 			Status = status;

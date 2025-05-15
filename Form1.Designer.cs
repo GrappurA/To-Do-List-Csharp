@@ -54,14 +54,18 @@
 			mainTabControl = new TabControl();
 			tabPage2 = new TabPage();
 			tabPage1 = new TabPage();
+			showLatestStarWV = new Microsoft.Web.WebView2.WinForms.WebView2();
 			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
+			showDayStreak = new Microsoft.Web.WebView2.WinForms.WebView2();
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
 			mainTabControl.SuspendLayout();
 			tabPage2.SuspendLayout();
 			tabPage1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)showLatestStarWV).BeginInit();
 			((System.ComponentModel.ISupportInitialize)showingStarsWV2).BeginInit();
+			((System.ComponentModel.ISupportInitialize)showDayStreak).BeginInit();
 			SuspendLayout();
 			// 
 			// showingFireWV2
@@ -142,14 +146,12 @@
 			userInfoToolStripMenuItem.Name = "userInfoToolStripMenuItem";
 			userInfoToolStripMenuItem.Size = new Size(147, 26);
 			userInfoToolStripMenuItem.Text = "UserInfo";
-			userInfoToolStripMenuItem.Click += userInfoToolStripMenuItem_Click;
 			// 
 			// listInfoToolStripMenuItem
 			// 
 			listInfoToolStripMenuItem.Name = "listInfoToolStripMenuItem";
 			listInfoToolStripMenuItem.Size = new Size(147, 26);
 			listInfoToolStripMenuItem.Text = "ListInfo";
-			listInfoToolStripMenuItem.Click += listInfoToolStripMenuItem_Click;
 			// 
 			// gridView
 			// 
@@ -279,6 +281,8 @@
 			// 
 			// tabPage1
 			// 
+			tabPage1.Controls.Add(showDayStreak);
+			tabPage1.Controls.Add(showLatestStarWV);
 			tabPage1.Controls.Add(showingStarsWV2);
 			tabPage1.Location = new Point(4, 29);
 			tabPage1.Name = "tabPage1";
@@ -287,6 +291,17 @@
 			tabPage1.TabIndex = 2;
 			tabPage1.Text = "Statistics";
 			tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// showLatestStarWV
+			// 
+			showLatestStarWV.AllowExternalDrop = true;
+			showLatestStarWV.CreationProperties = null;
+			showLatestStarWV.DefaultBackgroundColor = Color.White;
+			showLatestStarWV.Location = new Point(8, 65);
+			showLatestStarWV.Name = "showLatestStarWV";
+			showLatestStarWV.Size = new Size(339, 53);
+			showLatestStarWV.TabIndex = 14;
+			showLatestStarWV.ZoomFactor = 1D;
 			// 
 			// showingStarsWV2
 			// 
@@ -297,9 +312,20 @@
 			showingStarsWV2.DefaultBackgroundColor = Color.White;
 			showingStarsWV2.Location = new Point(8, 6);
 			showingStarsWV2.Name = "showingStarsWV2";
-			showingStarsWV2.Size = new Size(157, 53);
+			showingStarsWV2.Size = new Size(339, 53);
 			showingStarsWV2.TabIndex = 13;
 			showingStarsWV2.ZoomFactor = 1D;
+			// 
+			// showDayStreak
+			// 
+			showDayStreak.AllowExternalDrop = true;
+			showDayStreak.CreationProperties = null;
+			showDayStreak.DefaultBackgroundColor = Color.White;
+			showDayStreak.Location = new Point(8, 124);
+			showDayStreak.Name = "showDayStreak";
+			showDayStreak.Size = new Size(339, 53);
+			showDayStreak.TabIndex = 15;
+			showDayStreak.ZoomFactor = 1D;
 			// 
 			// mainForm
 			// 
@@ -325,7 +351,9 @@
 			tabPage2.ResumeLayout(false);
 			tabPage2.PerformLayout();
 			tabPage1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)showLatestStarWV).EndInit();
 			((System.ComponentModel.ISupportInitialize)showingStarsWV2).EndInit();
+			((System.ComponentModel.ISupportInitialize)showDayStreak).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -355,5 +383,7 @@
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingStarsWV2;
 		private ToolStripMenuItem userInfoToolStripMenuItem;
 		private ToolStripMenuItem listInfoToolStripMenuItem;
+		private Microsoft.Web.WebView2.WinForms.WebView2 showLatestStarWV;
+		private Microsoft.Web.WebView2.WinForms.WebView2 showDayStreak;
 	}
 }

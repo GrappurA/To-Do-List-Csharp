@@ -15,6 +15,7 @@ namespace ToDoList_C_
 		public int starCount { get; set; }
 		public double averageTasksDone { get; set; }
 		public int daysInARow { get; set; }
+		public int MaxDaysInARow { get; set; }
 
 		public int? CurrentListId { get; set; }
 		public TaskList? CurrentList { get; set; }
@@ -30,13 +31,13 @@ namespace ToDoList_C_
 			stars = new List<Star>();
 		}
 
-		
+
 
 		public void GiveStar(Star star)
 		{
 			this.stars.Add(star);
 		}
 
-		
+
 	}
 }

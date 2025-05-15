@@ -65,6 +65,7 @@ namespace ToDoList_C_
 			showTaskListsDGV.AllowUserToResizeColumns = false;
 			showTaskListsDGV.AllowUserToResizeRows = false;
 			showTaskListsDGV.AllowUserToAddRows = false;
+			showTaskListsDGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
 			showTaskListsDGV.RowHeadersVisible = false;
 		}

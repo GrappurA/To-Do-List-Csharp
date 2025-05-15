@@ -11,7 +11,7 @@ namespace ToDoList_C_
 	{
 		[Key] public int Id { get; set; }
 
-		public List<Task> taskList { get; set; } = new List<Task>();
+		public List<ToDoTask> taskList { get; set; } = new List<ToDoTask>();
 
 		public int DonePercentage { get; set; }
 
@@ -24,7 +24,7 @@ namespace ToDoList_C_
 
 		public TaskList()
 		{
-			this.taskList = new List<Task>();
+			this.taskList = new List<ToDoTask>();
 			this.DonePercentage = 0;
 			this.dateTime = DateTime.Today;
 			this.GotStar = false;
@@ -37,12 +37,12 @@ namespace ToDoList_C_
 			this.DonePercentage = donePercentage;
 		}
 
-		public void AddElement(Task elem)
+		public void AddElement(ToDoTask elem)
 		{
 			taskList.Add(elem);
 		}
 
-		public void RemoveElement(Task elem)
+		public void RemoveElement(ToDoTask elem)
 		{
 			taskList.Remove(elem);
 		}
@@ -57,12 +57,12 @@ namespace ToDoList_C_
 			taskList.Clear();
 		}
 
-		public List<Task> GetList()
+		public List<ToDoTask> GetList()
 		{
 			return taskList;
 		}
 
-		public void SetList(List<Task> taskList)
+		public void SetList(List<ToDoTask> taskList)
 		{
 			this.taskList = taskList;
 		}
