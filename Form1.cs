@@ -70,6 +70,45 @@ namespace ToDoList_C_
 			}
 		}
 
+		private async void CalculateDaysInARow()
+		{
+			using (TaskListDBContext dbContext = new())
+			{
+				await dbContext.Database.EnsureCreatedAsync();
+				var dates = await dbContext.lists.Select(l => l.dateTime).ToArrayAsync();
+				var statuses = await dbContext.lists.Select(l => l.GotStar).ToArrayAsync();
+				/*
+				Dictionary<DateTime, bool> datePercentagePairs = new Dictionary<DateTime, bool>();
+
+				if (dates.Length == statuses.Length)
+				{
+					for (int i = 0; i < dates.Length; i++)
+					{
+						datePercentagePairs.Add(dates[i], statuses[i]);
+					}
+				}
+				else
+				{
+					return;
+				}
+				int max = 0;
+				for (int i = 0; i < datePercentagePairs.Count; i++)
+				{
+					if (datePercentagePairs.Values[i])
+					{
+
+					}
+				}
+				*/
+				int max = 0;
+				for (int i = 0; i < statuses.Length; i++)
+				{
+
+				}
+
+			}
+		}
+
 		private async void SaveUserDBChanges()
 		{
 			using (UsersDBContext dBContext = new UsersDBContext())
@@ -136,6 +175,7 @@ namespace ToDoList_C_
 			await showingFireWV2.EnsureCoreWebView2Async();
 			await showingStarsWV2.EnsureCoreWebView2Async();
 			await showingStarsWV2.EnsureCoreWebView2Async();
+			await showDayStreak.EnsureCoreWebView2Async();
 
 			await showingFireWV2.ExecuteScriptAsync(@"
 			document.documentElement.style.overflow = 'hidden';
@@ -149,7 +189,10 @@ namespace ToDoList_C_
 			document.documentElement.style.overflow = 'hidden';
 			document.body.style.overflow = 'hidden';
 			");
-
+			await showDayStreak.ExecuteScriptAsync(@"
+			document.documentElement.style.overflow = 'hidden';
+			document.body.style.overflow = 'hidden';
+			");
 		}
 
 		async void AnimateButton(Button button, Color color, int delay)
