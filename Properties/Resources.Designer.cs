@@ -59,5 +59,15 @@ namespace ToDoList_C_.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap vecteezy_frame_of_light_2021296 {
+            get {
+                object obj = ResourceManager.GetObject("vecteezy_frame-of-light_2021296", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

@@ -28,8 +28,8 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-			DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
 			showingFireWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			menuStrip1 = new MenuStrip();
@@ -54,18 +54,22 @@
 			mainTabControl = new TabControl();
 			tabPage2 = new TabPage();
 			tabPage1 = new TabPage();
+			fireFrameGifBP = new PictureBox();
+			showMaxStreakWV = new Microsoft.Web.WebView2.WinForms.WebView2();
+			showDayStreak = new Microsoft.Web.WebView2.WinForms.WebView2();
 			showLatestStarWV = new Microsoft.Web.WebView2.WinForms.WebView2();
 			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
-			showDayStreak = new Microsoft.Web.WebView2.WinForms.WebView2();
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
 			mainTabControl.SuspendLayout();
 			tabPage2.SuspendLayout();
 			tabPage1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)fireFrameGifBP).BeginInit();
+			((System.ComponentModel.ISupportInitialize)showMaxStreakWV).BeginInit();
+			((System.ComponentModel.ISupportInitialize)showDayStreak).BeginInit();
 			((System.ComponentModel.ISupportInitialize)showLatestStarWV).BeginInit();
 			((System.ComponentModel.ISupportInitialize)showingStarsWV2).BeginInit();
-			((System.ComponentModel.ISupportInitialize)showDayStreak).BeginInit();
 			SuspendLayout();
 			// 
 			// showingFireWV2
@@ -155,19 +159,19 @@
 			// 
 			// gridView
 			// 
-			dataGridViewCellStyle1.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle3.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
+			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
 			gridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 			gridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle2.BackColor = SystemColors.Window;
-			dataGridViewCellStyle2.Font = new Font("Segoe UI Emoji", 9F);
-			dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
-			dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-			dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-			dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-			gridView.DefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle4.BackColor = SystemColors.Window;
+			dataGridViewCellStyle4.Font = new Font("Segoe UI Emoji", 9F);
+			dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
+			dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
+			dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+			dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
+			gridView.DefaultCellStyle = dataGridViewCellStyle4;
 			gridView.Location = new Point(0, 65);
 			gridView.Name = "gridView";
 			gridView.RowHeadersVisible = false;
@@ -281,6 +285,8 @@
 			// 
 			// tabPage1
 			// 
+			tabPage1.Controls.Add(fireFrameGifBP);
+			tabPage1.Controls.Add(showMaxStreakWV);
 			tabPage1.Controls.Add(showDayStreak);
 			tabPage1.Controls.Add(showLatestStarWV);
 			tabPage1.Controls.Add(showingStarsWV2);
@@ -292,12 +298,44 @@
 			tabPage1.Text = "Statistics";
 			tabPage1.UseVisualStyleBackColor = true;
 			// 
+			// fireFrameGifBP
+			// 
+			fireFrameGifBP.Image = (Image)resources.GetObject("fireFrameGifBP.Image");
+			fireFrameGifBP.Location = new Point(5, 10);
+			fireFrameGifBP.Name = "fireFrameGifBP";
+			fireFrameGifBP.Size = new Size(278, 64);
+			fireFrameGifBP.SizeMode = PictureBoxSizeMode.StretchImage;
+			fireFrameGifBP.TabIndex = 16;
+			fireFrameGifBP.TabStop = false;
+			// 
+			// showMaxStreakWV
+			// 
+			showMaxStreakWV.AllowExternalDrop = true;
+			showMaxStreakWV.CreationProperties = null;
+			showMaxStreakWV.DefaultBackgroundColor = Color.White;
+			showMaxStreakWV.Location = new Point(5, 139);
+			showMaxStreakWV.Name = "showMaxStreakWV";
+			showMaxStreakWV.Size = new Size(335, 53);
+			showMaxStreakWV.TabIndex = 15;
+			showMaxStreakWV.ZoomFactor = 1D;
+			// 
+			// showDayStreak
+			// 
+			showDayStreak.AllowExternalDrop = true;
+			showDayStreak.CreationProperties = null;
+			showDayStreak.DefaultBackgroundColor = Color.White;
+			showDayStreak.Location = new Point(5, 80);
+			showDayStreak.Name = "showDayStreak";
+			showDayStreak.Size = new Size(374, 53);
+			showDayStreak.TabIndex = 15;
+			showDayStreak.ZoomFactor = 1D;
+			// 
 			// showLatestStarWV
 			// 
 			showLatestStarWV.AllowExternalDrop = true;
 			showLatestStarWV.CreationProperties = null;
 			showLatestStarWV.DefaultBackgroundColor = Color.White;
-			showLatestStarWV.Location = new Point(8, 65);
+			showLatestStarWV.Location = new Point(289, 15);
 			showLatestStarWV.Name = "showLatestStarWV";
 			showLatestStarWV.Size = new Size(339, 53);
 			showLatestStarWV.TabIndex = 14;
@@ -310,22 +348,11 @@
 			showingStarsWV2.BackgroundImageLayout = ImageLayout.Center;
 			showingStarsWV2.CreationProperties = null;
 			showingStarsWV2.DefaultBackgroundColor = Color.White;
-			showingStarsWV2.Location = new Point(8, 6);
+			showingStarsWV2.Location = new Point(25, 15);
 			showingStarsWV2.Name = "showingStarsWV2";
-			showingStarsWV2.Size = new Size(339, 53);
+			showingStarsWV2.Size = new Size(253, 46);
 			showingStarsWV2.TabIndex = 13;
 			showingStarsWV2.ZoomFactor = 1D;
-			// 
-			// showDayStreak
-			// 
-			showDayStreak.AllowExternalDrop = true;
-			showDayStreak.CreationProperties = null;
-			showDayStreak.DefaultBackgroundColor = Color.White;
-			showDayStreak.Location = new Point(8, 124);
-			showDayStreak.Name = "showDayStreak";
-			showDayStreak.Size = new Size(339, 53);
-			showDayStreak.TabIndex = 15;
-			showDayStreak.ZoomFactor = 1D;
 			// 
 			// mainForm
 			// 
@@ -351,9 +378,11 @@
 			tabPage2.ResumeLayout(false);
 			tabPage2.PerformLayout();
 			tabPage1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)fireFrameGifBP).EndInit();
+			((System.ComponentModel.ISupportInitialize)showMaxStreakWV).EndInit();
+			((System.ComponentModel.ISupportInitialize)showDayStreak).EndInit();
 			((System.ComponentModel.ISupportInitialize)showLatestStarWV).EndInit();
 			((System.ComponentModel.ISupportInitialize)showingStarsWV2).EndInit();
-			((System.ComponentModel.ISupportInitialize)showDayStreak).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -385,5 +414,7 @@
 		private ToolStripMenuItem listInfoToolStripMenuItem;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showLatestStarWV;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showDayStreak;
+		private Microsoft.Web.WebView2.WinForms.WebView2 showMaxStreakWV;
+		private PictureBox fireFrameGifBP;
 	}
 }

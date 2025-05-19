@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media.Animation;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,9 @@ namespace ToDoList_C_
 
 		private async void mainForm_Load(object? sender, EventArgs e)
 		{
+			taskList = new TaskList();
+			loadedUser = new User();
+
 			addButton.Enabled = false;
 			deleteButton.Enabled = false;
 			SaveButton.Enabled = false;
@@ -39,73 +43,167 @@ namespace ToDoList_C_
 			gridView.AllowUserToAddRows = false;
 			gridView.MultiSelect = false;
 
-			taskList = new TaskList();
-			loadedUser = new User();
+			fireFrameGifBP.SendToBack();
+
 
 			await LoadUserDBAsync();
 			await LoadListDBAsync();
-			OpenLatestFile();
+			await OpenLatestFile();
+
+			await showingStarsWV2.EnsureCoreWebView2Async();
+			SetupShowingStarsWebView();
+			await showingFireWV2.EnsureCoreWebView2Async();
+			SetupShowingFireWebView();
+			await showLatestStarWV.EnsureCoreWebView2Async();
+			SetupShowLatestStarWebView();
+			await showDayStreak.EnsureCoreWebView2Async();
+			SetupShowDayStreakWebView();
+			await showMaxStreakWV.EnsureCoreWebView2Async();
+			SetupShowMaxStreakWebView();
 
 			UpdateGridView();
-			HideBars();
+			await HideBars();
 		}
 
-		private async System.Threading.Tasks.Task LoadUserDBAsync()
+		private async Task LoadUserDBAsync()
 		{
-			using var db = new UsersDBContext();
-
-			await db.Database.EnsureCreatedAsync();
-
-			try
+			using (var db = new UsersDBContext())
 			{
-				// await a Task<T>, so the containing method returns Task
-				loadedUser = await db.users
-					.Include(u => u.stars)
-					.FirstOrDefaultAsync() ?? new User();
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Error while loading users: " + ex.Message);
-				loadedUser = new User();
+				await db.Database.EnsureCreatedAsync();
+
+				try
+				{
+					// await a Task<T>, so the containing method returns Task
+					loadedUser = await db.users
+						.Include(u => u.stars)
+						.FirstOrDefaultAsync() ?? new User();
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error while loading users: " + ex.Message);
+					loadedUser = new User();
+				}
 			}
 		}
+		#region webviewStuff
+		private void SetupShowingStarsWebView()
+		{
+			showingStarsWV2.CoreWebView2.NavigationCompleted += async (s, e) =>
+			{
+				await DisableScrollAsync(showingStarsWV2);
+			};
+		}
+
+		private void SetupShowingFireWebView()
+		{
+			showingFireWV2.CoreWebView2.NavigationCompleted += async (s, e) =>
+			{
+				await DisableScrollAsync(showingFireWV2);
+			};
+		}
+
+		private void SetupShowLatestStarWebView()
+		{
+			showLatestStarWV.CoreWebView2.NavigationCompleted += async (s, e) =>
+			{
+				await DisableScrollAsync(showLatestStarWV);
+			};
+		}
+
+		private void SetupShowDayStreakWebView()
+		{
+			showDayStreak.CoreWebView2.NavigationCompleted += async (s, e) =>
+			{
+				await DisableScrollAsync(showDayStreak);
+			};
+		}
+
+		private void SetupShowMaxStreakWebView()
+		{
+			showMaxStreakWV.CoreWebView2.NavigationCompleted += async (s, e) =>
+			{
+				await DisableScrollAsync(showMaxStreakWV);
+			};
+		}
+
+		private async Task DisableScrollAsync(Microsoft.Web.WebView2.WinForms.WebView2 webView)
+		{
+			if (webView != null && webView.CoreWebView2 != null)
+			{
+				await webView.ExecuteScriptAsync(@"
+			document.documentElement.style.overflow = 'hidden';
+			document.body.style.overflow = 'hidden';
+		");
+			}
+		}
+
+		private async Task HideBars()
+		{
+			await DisableScrollAsync(showingFireWV2);
+			await DisableScrollAsync(showingStarsWV2);
+			await DisableScrollAsync(showLatestStarWV);
+			await DisableScrollAsync(showDayStreak);
+			await DisableScrollAsync(showMaxStreakWV);
+		}
+		#endregion
 
 		private async void CalculateDaysInARow()
 		{
 			using (TaskListDBContext dbContext = new())
 			{
 				await dbContext.Database.EnsureCreatedAsync();
-				var dates = await dbContext.lists.Select(l => l.dateTime).ToArrayAsync();
 				var statuses = await dbContext.lists.Select(l => l.GotStar).ToArrayAsync();
-				/*
-				Dictionary<DateTime, bool> datePercentagePairs = new Dictionary<DateTime, bool>();
-
-				if (dates.Length == statuses.Length)
+				int currentStreak = 0;
+				//calculating currnet streak
+				if (statuses[statuses.Length - 1] != false)
 				{
-					for (int i = 0; i < dates.Length; i++)
+					currentStreak++;
+					for (int i = statuses.Length - 2; i >= 0; i--)
 					{
-						datePercentagePairs.Add(dates[i], statuses[i]);
+						if (statuses[i] == true)
+						{
+							currentStreak++;
+						}
+						else
+						{
+							break;
+						}
 					}
 				}
 				else
 				{
-					return;
+					currentStreak = 0;
 				}
-				int max = 0;
-				for (int i = 0; i < datePercentagePairs.Count; i++)
+
+				//calculating max streak
+				int maxStreak = 0;
+				int counter = 0;
+				for (int i = 0; i < statuses.Length; i++)
 				{
-					if (datePercentagePairs.Values[i])
+					if (statuses[i] == true)
 					{
+						for (int j = i + 1; j < statuses.Length; j++)
+						{
+							if (statuses[j] == true)
+							{
+								counter++;
+								if (counter > maxStreak)
+								{
+									maxStreak = counter;
+								}
+							}
+							else
+							{
+								//maxStreak = counter;
+								counter = 0;
+							}
+						}
+						counter = 0;
 
 					}
 				}
-				*/
-				int max = 0;
-				for (int i = 0; i < statuses.Length; i++)
-				{
-
-				}
-
+				loadedUser.daysInARow = currentStreak;
+				loadedUser.MaxDaysInARow = maxStreak + 1;
 			}
 		}
 
@@ -170,30 +268,6 @@ namespace ToDoList_C_
 		}
 
 		//additional funcs
-		private async void HideBars()
-		{
-			await showingFireWV2.EnsureCoreWebView2Async();
-			await showingStarsWV2.EnsureCoreWebView2Async();
-			await showingStarsWV2.EnsureCoreWebView2Async();
-			await showDayStreak.EnsureCoreWebView2Async();
-
-			await showingFireWV2.ExecuteScriptAsync(@"
-			document.documentElement.style.overflow = 'hidden';
-			document.body.style.overflow = 'hidden';
-			");
-			await showingStarsWV2.ExecuteScriptAsync(@"
-			document.documentElement.style.overflow = 'hidden';
-			document.body.style.overflow = 'hidden';
-			");
-			await showLatestStarWV.ExecuteScriptAsync(@"
-			document.documentElement.style.overflow = 'hidden';
-			document.body.style.overflow = 'hidden';
-			");
-			await showDayStreak.ExecuteScriptAsync(@"
-			document.documentElement.style.overflow = 'hidden';
-			document.body.style.overflow = 'hidden';
-			");
-		}
 
 		async void AnimateButton(Button button, Color color, int delay)
 		{
@@ -268,7 +342,7 @@ namespace ToDoList_C_
 			showingFireWV2.NavigateToString("<html><body style='font-size:12px;'></body></html>");
 		}
 
-		async void PrintStarsCount(string count)
+		async Task PrintStarsCount(string count)
 		{
 			await showingStarsWV2.EnsureCoreWebView2Async();
 			showingStarsWV2.NavigateToString($"" +
@@ -281,7 +355,7 @@ namespace ToDoList_C_
 				$"</html>");
 		}
 
-		async void PrintLatestStar(string date)
+		async Task PrintLatestStar(string date)
 		{
 			await showLatestStarWV.EnsureCoreWebView2Async();
 			showLatestStarWV.NavigateToString($"" +
@@ -294,12 +368,33 @@ namespace ToDoList_C_
 				$"</html>");
 		}
 
-		private void CalculateUserDaysInARow()
+		async Task PrintCurrentStreak(string streak)
 		{
-
+			await showDayStreak.EnsureCoreWebView2Async();
+			showDayStreak.NavigateToString($"" +
+				$"<html>" +
+				$"<body style='" +
+				$"font-family: Segoe UI, sans-serif;" +
+				$"font-size:23px;'>" +
+				$"Your current day-streak: {streak}" +
+				$"</body>" +
+				$"</html>");
 		}
 
-		private void OpenLatestFile()
+		async Task PrintMaxStreak(string streak)
+		{
+			await showMaxStreakWV.EnsureCoreWebView2Async();
+			showMaxStreakWV.NavigateToString($"" +
+				$"<html>" +
+				$"<body style='" +
+				$"font-family: Segoe UI, sans-serif;" +
+				$"font-size:23px;'>" +
+				$"Biggest streak: {streak}" +
+				$"</body>" +
+				$"</html>");
+		}
+
+		private async Task OpenLatestFile()
 		{
 			if (taskList.taskList.Count != 0)
 			{
@@ -309,23 +404,8 @@ namespace ToDoList_C_
 				this.Text = taskList.Name;
 				infoTextBox.Text = taskList.DonePercentage.ToString();
 
-				PrintStarsCount(loadedUser.stars.Count.ToString());
-				PrintLatestStar(loadedUser.stars
-					.OrderByDescending(s => s.earnDate)
-					.FirstOrDefault().earnDate.Date
-					.ToShortDateString());
-				try
-				{
-					//	PrintLatestStar(loadedUser.stars
-					//		.OrderByDescending(s => s.earnDate)
-					//		.FirstOrDefault().earnDate.Date
-					//		.ToShortDateString());
-				}
-				catch (Exception)
-				{
-					MessageBox.Show("Error while printing latest star");
-					return;
-				}
+				await RefreshStatisticsInfo();
+
 				UpdateGridView();
 			}
 			else
@@ -336,6 +416,23 @@ namespace ToDoList_C_
 				SaveButton.Enabled = false;
 				UpdateGridView();
 			}
+		}
+
+		private async Task RefreshStatisticsInfo()
+		{
+			CalculateDaysInARow();
+
+			await PrintStarsCount(loadedUser.stars.Count.ToString());
+
+			await PrintLatestStar(loadedUser.stars
+				.OrderByDescending(s => s.earnDate)
+				.FirstOrDefault().earnDate.Date
+				.ToShortDateString());
+
+			await PrintCurrentStreak(loadedUser.daysInARow.ToString());
+
+			await PrintMaxStreak(loadedUser.MaxDaysInARow.ToString());
+
 		}
 
 		private BindingSource _taskListSource;
@@ -517,7 +614,7 @@ namespace ToDoList_C_
 			UpdateGridView();
 		}
 
-		private void SaveButton_Click(object sender, EventArgs e)//SBC
+		private async void SaveButton_Click(object sender, EventArgs e)//SBC
 		{
 			if (taskList.taskList == null)
 			{
@@ -558,6 +655,7 @@ namespace ToDoList_C_
 			SaveUserDBChanges();
 			UpdateGridView();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
+			await RefreshStatisticsInfo();
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -652,5 +750,7 @@ namespace ToDoList_C_
 			taskList.DonePercentage = CalculateDonePercentage(taskList);
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 		}
+
+		
 	}
 }
