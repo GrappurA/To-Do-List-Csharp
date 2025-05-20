@@ -424,10 +424,17 @@ namespace ToDoList_C_
 
 			await PrintStarsCount(loadedUser.stars.Count.ToString());
 
-			await PrintLatestStar(loadedUser.stars
+			var latestStar = loadedUser.stars
 				.OrderByDescending(s => s.earnDate)
-				.FirstOrDefault().earnDate.Date
-				.ToShortDateString());
+			.FirstOrDefault();
+			if (latestStar != null)
+			{
+				await PrintLatestStar(latestStar.earnDate.ToShortDateString());
+			}
+			else
+			{
+				await PrintLatestStar("*missing*");
+			}
 
 			await PrintCurrentStreak(loadedUser.daysInARow.ToString());
 
@@ -751,6 +758,6 @@ namespace ToDoList_C_
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 		}
 
-		
+
 	}
 }
