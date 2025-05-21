@@ -28,8 +28,11 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-			DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
 			showingFireWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			menuStrip1 = new MenuStrip();
@@ -54,6 +57,7 @@
 			mainTabControl = new TabControl();
 			tabPage2 = new TabPage();
 			tabPage1 = new TabPage();
+			percentageToDaysChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			fireFrameGifBP = new PictureBox();
 			showMaxStreakWV = new Microsoft.Web.WebView2.WinForms.WebView2();
 			showDayStreak = new Microsoft.Web.WebView2.WinForms.WebView2();
@@ -65,6 +69,7 @@
 			mainTabControl.SuspendLayout();
 			tabPage2.SuspendLayout();
 			tabPage1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)percentageToDaysChart).BeginInit();
 			((System.ComponentModel.ISupportInitialize)fireFrameGifBP).BeginInit();
 			((System.ComponentModel.ISupportInitialize)showMaxStreakWV).BeginInit();
 			((System.ComponentModel.ISupportInitialize)showDayStreak).BeginInit();
@@ -159,19 +164,19 @@
 			// 
 			// gridView
 			// 
-			dataGridViewCellStyle3.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
-			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+			dataGridViewCellStyle1.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
 			gridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 			gridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle4.BackColor = SystemColors.Window;
-			dataGridViewCellStyle4.Font = new Font("Segoe UI Emoji", 9F);
-			dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
-			dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
-			dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
-			dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
-			gridView.DefaultCellStyle = dataGridViewCellStyle4;
+			dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle2.BackColor = SystemColors.Window;
+			dataGridViewCellStyle2.Font = new Font("Segoe UI Emoji", 9F);
+			dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+			dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+			dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+			dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+			gridView.DefaultCellStyle = dataGridViewCellStyle2;
 			gridView.Location = new Point(0, 65);
 			gridView.Name = "gridView";
 			gridView.RowHeadersVisible = false;
@@ -285,6 +290,7 @@
 			// 
 			// tabPage1
 			// 
+			tabPage1.Controls.Add(percentageToDaysChart);
 			tabPage1.Controls.Add(fireFrameGifBP);
 			tabPage1.Controls.Add(showMaxStreakWV);
 			tabPage1.Controls.Add(showDayStreak);
@@ -297,6 +303,32 @@
 			tabPage1.TabIndex = 2;
 			tabPage1.Text = "Statistics";
 			tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// percentageToDaysChart
+			// 
+			percentageToDaysChart.BorderlineColor = Color.Black;
+			chartArea1.Name = "ChartArea1";
+			percentageToDaysChart.ChartAreas.Add(chartArea1);
+			legend1.Name = "Legend1";
+			percentageToDaysChart.Legends.Add(legend1);
+			percentageToDaysChart.Location = new Point(385, 80);
+			percentageToDaysChart.Name = "percentageToDaysChart";
+			percentageToDaysChart.PaletteCustomColors = new Color[]
+	{
+	Color.FromArgb(0, 0, 0, 44)
+	};
+			series1.ChartArea = "ChartArea1";
+			series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+			series1.Font = new Font("Microsoft YaHei UI", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			series1.IsValueShownAsLabel = true;
+			series1.Legend = "Legend1";
+			series1.MarkerColor = Color.Red;
+			series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+			series1.Name = "Series1";
+			series1.YValuesPerPoint = 10;
+			percentageToDaysChart.Series.Add(series1);
+			percentageToDaysChart.Size = new Size(417, 349);
+			percentageToDaysChart.TabIndex = 17;
 			// 
 			// fireFrameGifBP
 			// 
@@ -378,6 +410,7 @@
 			tabPage2.ResumeLayout(false);
 			tabPage2.PerformLayout();
 			tabPage1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)percentageToDaysChart).EndInit();
 			((System.ComponentModel.ISupportInitialize)fireFrameGifBP).EndInit();
 			((System.ComponentModel.ISupportInitialize)showMaxStreakWV).EndInit();
 			((System.ComponentModel.ISupportInitialize)showDayStreak).EndInit();
@@ -416,5 +449,6 @@
 		private Microsoft.Web.WebView2.WinForms.WebView2 showDayStreak;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showMaxStreakWV;
 		private PictureBox fireFrameGifBP;
+		private System.Windows.Forms.DataVisualization.Charting.Chart percentageToDaysChart;
 	}
 }

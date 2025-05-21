@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Media.Animation;
+using System.Windows.Forms.DataVisualization.Charting;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -45,10 +45,11 @@ namespace ToDoList_C_
 
 			fireFrameGifBP.SendToBack();
 
-
 			await LoadUserDBAsync();
 			await LoadListDBAsync();
 			await OpenLatestFile();
+
+			SetupChart();
 
 			await showingStarsWV2.EnsureCoreWebView2Async();
 			SetupShowingStarsWebView();
@@ -63,6 +64,50 @@ namespace ToDoList_C_
 
 			UpdateGridView();
 			await HideBars();
+		}
+
+		private async Task SetupChart()
+		{
+			percentageToDaysChart.Series.Clear();
+			percentageToDaysChart.ChartAreas.Clear();
+
+			ChartArea area = new("MainArea");
+			percentageToDaysChart.ChartAreas.Add(area);
+
+			Series series = new Series("Tasks Done")
+			{
+				//YValuesPerPoint = 32,
+				ChartType = SeriesChartType.Spline,
+				MarkerStyle = MarkerStyle.Circle,
+				MarkerColor = Color.Red,
+				IsValueShownAsLabel = true,// shows numbers above columns
+				MarkerSize = 6,
+			};
+			percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
+
+			List<DateTime> dates1 = new List<DateTime>();
+			DateTime today = DateTime.Today;
+			for (int i = 7; i > 0; i--)
+			{
+				DateTime day = today.AddDays(-i);
+				dates1.Add(day);
+			}
+
+			List<int> percentages;
+			using (TaskListDBContext dbContext = new())
+			{
+				percentages = await dbContext.lists.OrderByDescending(l => l.CreationDate)
+					.Select(l => l.DonePercentage)
+					.Take(7)
+					.ToListAsync();
+			}
+
+			for (int i = 0; i < percentages.Count; i++)
+			{
+				series.Points.AddXY(dates1[i], percentages[i]);
+			}
+
+			percentageToDaysChart.Series.Add(series);
 		}
 
 		private async Task LoadUserDBAsync()
@@ -85,6 +130,7 @@ namespace ToDoList_C_
 				}
 			}
 		}
+
 		#region webviewStuff
 		private void SetupShowingStarsWebView()
 		{
@@ -147,7 +193,7 @@ namespace ToDoList_C_
 		}
 		#endregion
 
-		private async void CalculateDaysInARow()
+		private async Task CalculateDaysInARow()
 		{
 			using (TaskListDBContext dbContext = new())
 			{
@@ -207,7 +253,7 @@ namespace ToDoList_C_
 			}
 		}
 
-		private async void SaveUserDBChanges()
+		private async Task SaveUserDBChanges()
 		{
 			using (UsersDBContext dBContext = new UsersDBContext())
 			{
@@ -247,14 +293,15 @@ namespace ToDoList_C_
 			{
 				var latestList = await dBContext.lists
 				.Include(tl => tl.taskList)
-				.OrderByDescending(tl => tl.dateTime)
+				.OrderByDescending(tl => tl.CreationDate)
 				.FirstOrDefaultAsync();
 				if (latestList == null)
 				{
 					latestList = new();
 				}
-				taskList.taskList = latestList.taskList ?? new List<ToDoTask>();
-				taskList.dateTime = latestList.dateTime;
+				taskList.taskList = latestList.taskList?.Select(t => new ToDoTask(t)).ToList()
+					?? new List<ToDoTask>();
+				taskList.CreationDate = latestList.CreationDate;
 				taskList.DonePercentage = latestList.DonePercentage;
 				taskList.GotStar = latestList.GotStar;
 				taskList.Id = latestList.Id;
@@ -420,7 +467,7 @@ namespace ToDoList_C_
 
 		private async Task RefreshStatisticsInfo()
 		{
-			CalculateDaysInARow();
+			await CalculateDaysInARow();
 
 			await PrintStarsCount(loadedUser.stars.Count.ToString());
 
@@ -520,7 +567,7 @@ namespace ToDoList_C_
 			taskList.GotStar = false;
 			taskList.DonePercentage = 0;
 			taskList.Name = "default_name";
-			taskList.dateTime = DateTime.MinValue;
+			taskList.CreationDate = DateTime.MinValue;
 		}
 
 		private void createToolStripMenuItem_Click(object sender, EventArgs e)//CreateT
@@ -556,7 +603,7 @@ namespace ToDoList_C_
 							UpdateGridView();
 
 							this.Text = taskList.Name;
-							taskList.dateTime = DateTime.Now;
+							taskList.CreationDate = DateTime.Now;
 
 							break;
 						}
@@ -636,13 +683,13 @@ namespace ToDoList_C_
 					DateTime today = DateTime.Today;
 					DateTime tommorow = today.AddDays(1);
 
-					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.dateTime >= today && p.dateTime < tommorow && p.Name == taskList.Name);
+					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.CreationDate >= today && p.CreationDate < tommorow && p.Name == taskList.Name);
 
 					if (existingList != null)
 					{
 						existingList.taskList = taskList.taskList;
 						existingList.Name = taskList.Name;
-						existingList.dateTime = taskList.dateTime;
+						existingList.CreationDate = taskList.CreationDate;
 						existingList.DonePercentage = taskList.DonePercentage;
 						existingList.GotStar = taskList.GotStar;
 					}
@@ -651,7 +698,7 @@ namespace ToDoList_C_
 						TaskList currentProgress = new TaskList(DateTime.Now, taskList.DonePercentage);
 						currentProgress.taskList = taskList.taskList;
 						currentProgress.Name = taskList.Name;
-						currentProgress.dateTime = taskList.dateTime;
+						currentProgress.CreationDate = taskList.CreationDate;
 						currentProgress.DonePercentage = taskList.DonePercentage;
 						currentProgress.GotStar = taskList.GotStar;
 						dbContext.lists.Add(currentProgress);
@@ -659,7 +706,7 @@ namespace ToDoList_C_
 					dbContext.SaveChanges();
 				}
 			}
-			SaveUserDBChanges();
+			await SaveUserDBChanges();
 			UpdateGridView();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
 			await RefreshStatisticsInfo();
@@ -671,7 +718,8 @@ namespace ToDoList_C_
 			{
 				if (form.ShowDialog() == DialogResult.OK)
 				{
-					taskList.SetList(form.wrapper.taskList.GetList());
+					taskList = new TaskList();
+					taskList.SetList(form.wrapper.taskList);
 					loadedUser = form.wrapper.user;
 					this.Text = form.wrapper.taskList.Name;
 					CalculateDonePercentage(taskList);
@@ -710,7 +758,7 @@ namespace ToDoList_C_
 			{
 				foreach (var p in progress.lists)
 				{
-					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.dateTime.Date.ToString("dd/MM/yyyy")}");
+					MessageBox.Show(p.ToString() + $"\n {p.Id}\n{p.DonePercentage}\n{p.CreationDate.Date.ToString("dd/MM/yyyy")}");
 				}
 			}
 		}
