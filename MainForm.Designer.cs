@@ -1,24 +1,24 @@
 ﻿namespace ToDoList_C_
 {
-    partial class mainForm
-    {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+	partial class mainForm
+	{
+		/// <summary>
+		///  Required designer variable.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+		/// <summary>
+		///  Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
+			base.Dispose(disposing);
+		}
 
 		#region Windows Form Designer generated code
 
@@ -28,11 +28,11 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-			DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
 			showingFireWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			menuStrip1 = new MenuStrip();
@@ -57,12 +57,14 @@
 			mainTabControl = new TabControl();
 			tabPage2 = new TabPage();
 			tabPage1 = new TabPage();
+			chooseLastDaysCB = new ComboBox();
 			percentageToDaysChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			fireFrameGifBP = new PictureBox();
 			showMaxStreakWV = new Microsoft.Web.WebView2.WinForms.WebView2();
 			showDayStreak = new Microsoft.Web.WebView2.WinForms.WebView2();
 			showLatestStarWV = new Microsoft.Web.WebView2.WinForms.WebView2();
 			showingStarsWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
+			textBox1 = new TextBox();
 			((System.ComponentModel.ISupportInitialize)showingFireWV2).BeginInit();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)gridView).BeginInit();
@@ -164,19 +166,19 @@
 			// 
 			// gridView
 			// 
-			dataGridViewCellStyle1.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle5.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
+			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
 			gridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 			gridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle2.BackColor = SystemColors.Window;
-			dataGridViewCellStyle2.Font = new Font("Segoe UI Emoji", 9F);
-			dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
-			dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-			dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-			dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-			gridView.DefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle6.BackColor = SystemColors.Window;
+			dataGridViewCellStyle6.Font = new Font("Segoe UI Emoji", 9F);
+			dataGridViewCellStyle6.ForeColor = SystemColors.ControlText;
+			dataGridViewCellStyle6.SelectionBackColor = SystemColors.Highlight;
+			dataGridViewCellStyle6.SelectionForeColor = SystemColors.HighlightText;
+			dataGridViewCellStyle6.WrapMode = DataGridViewTriState.True;
+			gridView.DefaultCellStyle = dataGridViewCellStyle6;
 			gridView.Location = new Point(0, 65);
 			gridView.Name = "gridView";
 			gridView.RowHeadersVisible = false;
@@ -290,6 +292,8 @@
 			// 
 			// tabPage1
 			// 
+			tabPage1.Controls.Add(textBox1);
+			tabPage1.Controls.Add(chooseLastDaysCB);
 			tabPage1.Controls.Add(percentageToDaysChart);
 			tabPage1.Controls.Add(fireFrameGifBP);
 			tabPage1.Controls.Add(showMaxStreakWV);
@@ -304,30 +308,43 @@
 			tabPage1.Text = "Statistics";
 			tabPage1.UseVisualStyleBackColor = true;
 			// 
+			// chooseLastDaysCB
+			// 
+			chooseLastDaysCB.BackColor = Color.Salmon;
+			chooseLastDaysCB.DropDownStyle = ComboBoxStyle.DropDownList;
+			chooseLastDaysCB.FlatStyle = FlatStyle.Popup;
+			chooseLastDaysCB.Font = new Font("Segoe UI Emoji", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			chooseLastDaysCB.FormattingEnabled = true;
+			chooseLastDaysCB.Location = new Point(613, 198);
+			chooseLastDaysCB.Name = "chooseLastDaysCB";
+			chooseLastDaysCB.RightToLeft = RightToLeft.No;
+			chooseLastDaysCB.Size = new Size(147, 28);
+			chooseLastDaysCB.TabIndex = 18;
+			// 
 			// percentageToDaysChart
 			// 
 			percentageToDaysChart.BorderlineColor = Color.Black;
-			chartArea1.Name = "ChartArea1";
-			percentageToDaysChart.ChartAreas.Add(chartArea1);
-			legend1.Name = "Legend1";
-			percentageToDaysChart.Legends.Add(legend1);
-			percentageToDaysChart.Location = new Point(385, 80);
+			chartArea3.Name = "ChartArea1";
+			percentageToDaysChart.ChartAreas.Add(chartArea3);
+			legend3.Name = "Legend1";
+			percentageToDaysChart.Legends.Add(legend3);
+			percentageToDaysChart.Location = new Point(8, 198);
 			percentageToDaysChart.Name = "percentageToDaysChart";
 			percentageToDaysChart.PaletteCustomColors = new Color[]
 	{
 	Color.FromArgb(0, 0, 0, 44)
 	};
-			series1.ChartArea = "ChartArea1";
-			series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-			series1.Font = new Font("Microsoft YaHei UI", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			series1.IsValueShownAsLabel = true;
-			series1.Legend = "Legend1";
-			series1.MarkerColor = Color.Red;
-			series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-			series1.Name = "Series1";
-			series1.YValuesPerPoint = 10;
-			percentageToDaysChart.Series.Add(series1);
-			percentageToDaysChart.Size = new Size(417, 349);
+			series3.ChartArea = "ChartArea1";
+			series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+			series3.Font = new Font("Microsoft YaHei UI", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			series3.IsValueShownAsLabel = true;
+			series3.Legend = "Legend1";
+			series3.MarkerColor = Color.Red;
+			series3.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+			series3.Name = "Series1";
+			series3.YValuesPerPoint = 10;
+			percentageToDaysChart.Series.Add(series3);
+			percentageToDaysChart.Size = new Size(599, 231);
 			percentageToDaysChart.TabIndex = 17;
 			// 
 			// fireFrameGifBP
@@ -345,7 +362,7 @@
 			showMaxStreakWV.AllowExternalDrop = true;
 			showMaxStreakWV.CreationProperties = null;
 			showMaxStreakWV.DefaultBackgroundColor = Color.White;
-			showMaxStreakWV.Location = new Point(5, 139);
+			showMaxStreakWV.Location = new Point(0, 139);
 			showMaxStreakWV.Name = "showMaxStreakWV";
 			showMaxStreakWV.Size = new Size(335, 53);
 			showMaxStreakWV.TabIndex = 15;
@@ -386,6 +403,19 @@
 			showingStarsWV2.TabIndex = 13;
 			showingStarsWV2.ZoomFactor = 1D;
 			// 
+			// textBox1
+			// 
+			textBox1.BackColor = Color.White;
+			textBox1.BorderStyle = BorderStyle.None;
+			textBox1.Font = new Font("Verdana", 12.8F, FontStyle.Bold);
+			textBox1.Location = new Point(556, 232);
+			textBox1.Multiline = true;
+			textBox1.Name = "textBox1";
+			textBox1.Size = new Size(211, 55);
+			textBox1.TabIndex = 19;
+			textBox1.Text = "Change Graph ^";
+			textBox1.TextAlign = HorizontalAlignment.Center;
+			// 
 			// mainForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
@@ -410,6 +440,7 @@
 			tabPage2.ResumeLayout(false);
 			tabPage2.PerformLayout();
 			tabPage1.ResumeLayout(false);
+			tabPage1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)percentageToDaysChart).EndInit();
 			((System.ComponentModel.ISupportInitialize)fireFrameGifBP).EndInit();
 			((System.ComponentModel.ISupportInitialize)showMaxStreakWV).EndInit();
@@ -450,5 +481,7 @@
 		private Microsoft.Web.WebView2.WinForms.WebView2 showMaxStreakWV;
 		private PictureBox fireFrameGifBP;
 		private System.Windows.Forms.DataVisualization.Charting.Chart percentageToDaysChart;
+		private ComboBox chooseLastDaysCB;
+		private TextBox textBox1;
 	}
 }

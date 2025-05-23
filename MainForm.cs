@@ -27,6 +27,16 @@ namespace ToDoList_C_
 			gridView.DataError += gridView_DataError;
 			gridView.CurrentCellDirtyStateChanged += gridView_CurrentCellDirtyStateChanged;
 			gridView.CellClick += gridView_CellClick;
+
+			chooseLastDaysCB.SelectedIndexChanged += chooseLastDaysCB_SelectedIndexChanged;
+		}
+
+		private async void chooseLastDaysCB_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (chooseLastDaysCB.SelectedItem is int days)
+			{
+				await SetupChart(days);
+			}
 		}
 
 		private async void mainForm_Load(object? sender, EventArgs e)
@@ -43,13 +53,16 @@ namespace ToDoList_C_
 			gridView.AllowUserToAddRows = false;
 			gridView.MultiSelect = false;
 
+			chooseLastDaysCB.Items.AddRange(new object[] { 7, 14, 30, 60, 90 });
+			chooseLastDaysCB.SelectedIndex = 0;
+
 			fireFrameGifBP.SendToBack();
 
 			await LoadUserDBAsync();
 			await LoadListDBAsync();
 			await OpenLatestFile();
 
-			SetupChart();
+			await SetupChart((int)chooseLastDaysCB.SelectedItem);
 
 			await showingStarsWV2.EnsureCoreWebView2Async();
 			SetupShowingStarsWebView();
@@ -66,7 +79,7 @@ namespace ToDoList_C_
 			await HideBars();
 		}
 
-		private async Task SetupChart()
+		private async Task SetupChart(int days)
 		{
 			percentageToDaysChart.Series.Clear();
 			percentageToDaysChart.ChartAreas.Clear();
@@ -85,24 +98,30 @@ namespace ToDoList_C_
 			};
 			percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
 
+			//building dates axis
 			List<DateTime> dates1 = new List<DateTime>();
+
 			DateTime today = DateTime.Today;
-			for (int i = 7; i > 0; i--)
+			for (int i = days; i > 0; i--)
 			{
-				DateTime day = today.AddDays(-i);
-				dates1.Add(day);
+				dates1.Add(today.AddDays(-i + 1));
 			}
 
 			List<int> percentages;
 			using (TaskListDBContext dbContext = new())
 			{
-				percentages = await dbContext.lists.OrderByDescending(l => l.CreationDate)
+				percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
 					.Select(l => l.DonePercentage)
-					.Take(7)
+					.Take(days + 1)
 					.ToListAsync();
 			}
 
-			for (int i = 0; i < percentages.Count; i++)
+			if (days > percentages.Count || days > dates1.Count)
+			{
+				return;
+			}
+
+			for (int i = 0; i < days; i++)
 			{
 				series.Points.AddXY(dates1[i], percentages[i]);
 			}
@@ -249,7 +268,7 @@ namespace ToDoList_C_
 					}
 				}
 				loadedUser.daysInARow = currentStreak;
-				loadedUser.MaxDaysInARow = maxStreak + 1;
+				loadedUser.MaxDaysInARow = maxStreak;
 			}
 		}
 
@@ -302,6 +321,7 @@ namespace ToDoList_C_
 				taskList.taskList = latestList.taskList?.Select(t => new ToDoTask(t)).ToList()
 					?? new List<ToDoTask>();
 				taskList.CreationDate = latestList.CreationDate;
+				taskList.DueDate = latestList.DueDate;
 				taskList.DonePercentage = latestList.DonePercentage;
 				taskList.GotStar = latestList.GotStar;
 				taskList.Id = latestList.Id;
@@ -568,6 +588,7 @@ namespace ToDoList_C_
 			taskList.DonePercentage = 0;
 			taskList.Name = "default_name";
 			taskList.CreationDate = DateTime.MinValue;
+			taskList.DueDate = DateTime.MinValue;
 		}
 
 		private void createToolStripMenuItem_Click(object sender, EventArgs e)//CreateT
@@ -604,6 +625,7 @@ namespace ToDoList_C_
 
 							this.Text = taskList.Name;
 							taskList.CreationDate = DateTime.Now;
+							taskList.DueDate = DateTime.Today.AddDays(1);
 
 							break;
 						}
@@ -690,6 +712,7 @@ namespace ToDoList_C_
 						existingList.taskList = taskList.taskList;
 						existingList.Name = taskList.Name;
 						existingList.CreationDate = taskList.CreationDate;
+						existingList.DueDate = taskList.DueDate;
 						existingList.DonePercentage = taskList.DonePercentage;
 						existingList.GotStar = taskList.GotStar;
 					}
@@ -699,6 +722,7 @@ namespace ToDoList_C_
 						currentProgress.taskList = taskList.taskList;
 						currentProgress.Name = taskList.Name;
 						currentProgress.CreationDate = taskList.CreationDate;
+						currentProgress.DueDate = taskList.DueDate;
 						currentProgress.DonePercentage = taskList.DonePercentage;
 						currentProgress.GotStar = taskList.GotStar;
 						dbContext.lists.Add(currentProgress);
@@ -710,6 +734,7 @@ namespace ToDoList_C_
 			UpdateGridView();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
 			await RefreshStatisticsInfo();
+			await SetupChart(chooseLastDaysCB.SelectedIndex);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -805,7 +830,5 @@ namespace ToDoList_C_
 			taskList.DonePercentage = CalculateDonePercentage(taskList);
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 		}
-
-
 	}
 }

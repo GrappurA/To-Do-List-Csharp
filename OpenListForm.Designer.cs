@@ -42,7 +42,7 @@
 			showTaskListsDGV.Location = new Point(0, 0);
 			showTaskListsDGV.Name = "showTaskListsDGV";
 			showTaskListsDGV.RowHeadersWidth = 51;
-			showTaskListsDGV.Size = new Size(673, 188);
+			showTaskListsDGV.Size = new Size(784, 208);
 			showTaskListsDGV.TabIndex = 0;
 			showTaskListsDGV.CellClick += showTaskListsDGV_CellClick;
 			// 
@@ -51,10 +51,10 @@
 			textBox1.BackColor = SystemColors.Control;
 			textBox1.BorderStyle = BorderStyle.None;
 			textBox1.Font = new Font("Verdana", 12.8F, FontStyle.Bold);
-			textBox1.Location = new Point(709, 71);
+			textBox1.Location = new Point(821, 62);
 			textBox1.Multiline = true;
 			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(179, 47);
+			textBox1.Size = new Size(169, 55);
 			textBox1.TabIndex = 2;
 			textBox1.Text = "Press 'Space'\r\nTo submit";
 			textBox1.TextAlign = HorizontalAlignment.Center;
@@ -64,7 +64,7 @@
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			BackColor = SystemColors.Control;
-			ClientSize = new Size(931, 189);
+			ClientSize = new Size(1021, 207);
 			Controls.Add(textBox1);
 			Controls.Add(showTaskListsDGV);
 			Icon = (Icon)resources.GetObject("$this.Icon");

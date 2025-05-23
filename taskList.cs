@@ -17,6 +17,8 @@ namespace ToDoList_C_
 
 		public DateTime CreationDate { get; set; }
 
+		public DateTime? DueDate { get; set; }
+
 		public bool GotStar { get; set; }
 
 		public string? Name { get; set; }
