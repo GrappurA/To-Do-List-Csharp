@@ -89,9 +89,9 @@ namespace ToDoList_C_
 
 			Series series = new Series("Tasks Done")
 			{
-				//YValuesPerPoint = 32,
 				ChartType = SeriesChartType.Spline,
 				MarkerStyle = MarkerStyle.Circle,
+				BorderWidth = 4,
 				MarkerColor = Color.Red,
 				IsValueShownAsLabel = true,// shows numbers above columns
 				MarkerSize = 6,
@@ -705,35 +705,50 @@ namespace ToDoList_C_
 					DateTime today = DateTime.Today;
 					DateTime tommorow = today.AddDays(1);
 
-					TaskList existingList = dbContext.lists.FirstOrDefault(p => p.CreationDate >= today && p.CreationDate < tommorow && p.Name == taskList.Name);
+					TaskList existingList = dbContext.lists
+						.Include(l => l.taskList)
+						.FirstOrDefault(p => p.Name == taskList.Name);
 
 					if (existingList != null)
 					{
-						existingList.taskList = taskList.taskList;
+						existingList.taskList.Clear();
+
+						foreach (var inMemTask in taskList.taskList)
+						{
+							var clone = new ToDoTask(inMemTask)
+							{
+								// copy-ctor must reset Id => 0
+							};
+							existingList.taskList.Add(clone);
+						}
 						existingList.Name = taskList.Name;
 						existingList.CreationDate = taskList.CreationDate;
-						existingList.DueDate = taskList.DueDate;
 						existingList.DonePercentage = taskList.DonePercentage;
 						existingList.GotStar = taskList.GotStar;
+
 					}
 					else
 					{
-						TaskList currentProgress = new TaskList(DateTime.Now, taskList.DonePercentage);
-						currentProgress.taskList = taskList.taskList;
-						currentProgress.Name = taskList.Name;
-						currentProgress.CreationDate = taskList.CreationDate;
-						currentProgress.DueDate = taskList.DueDate;
-						currentProgress.DonePercentage = taskList.DonePercentage;
-						currentProgress.GotStar = taskList.GotStar;
-						dbContext.lists.Add(currentProgress);
+						var newList = new TaskList(DateTime.Now, taskList.DonePercentage)
+						{
+							Name = taskList.Name,
+							CreationDate = taskList.CreationDate,
+							GotStar = taskList.GotStar,
+						};
+						newList.taskList = taskList.taskList
+							.Select(t => new ToDoTask(t))  // ensures Id is reset
+							.ToList();
+
+						dbContext.lists.Add(newList);
 					}
-					dbContext.SaveChanges();
+					await dbContext.SaveChangesAsync();
 				}
 			}
 			await SaveUserDBChanges();
 			UpdateGridView();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
 			await RefreshStatisticsInfo();
+			chooseLastDaysCB.SelectedIndex = 0;
 			await SetupChart(chooseLastDaysCB.SelectedIndex);
 		}
 
@@ -743,8 +758,7 @@ namespace ToDoList_C_
 			{
 				if (form.ShowDialog() == DialogResult.OK)
 				{
-					taskList = new TaskList();
-					taskList.SetList(form.wrapper.taskList);
+					taskList = new TaskList(form.wrapper.taskList);
 					loadedUser = form.wrapper.user;
 					this.Text = form.wrapper.taskList.Name;
 					CalculateDonePercentage(taskList);

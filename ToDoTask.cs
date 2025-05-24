@@ -37,7 +37,7 @@ namespace ToDoList_C_
 
 		public ToDoTask(ToDoTask other)
 		{
-			Id = 0;
+			Id = 0; // ← CRITICAL
 			Position = other.Position;
 			Name = other.Name;
 			Status = other.Status;
