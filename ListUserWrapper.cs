@@ -25,7 +25,7 @@ namespace ToDoList_C_
 
 		public void SetTaskList(TaskList ts)
 		{
-			this.taskList = new TaskList(ts);
+			this.taskList = ts;
 		}
 
 		public void SetUser(User user)

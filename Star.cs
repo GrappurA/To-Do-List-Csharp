@@ -18,6 +18,8 @@ namespace ToDoList_C_
 
 		public string? ListName { get; set; }
 
+		public int ListId { get; set; }
+
 		public Star() { }
 
 		public Star(int Size, DateTime dt)
@@ -33,7 +35,7 @@ namespace ToDoList_C_
 		}
 
 		public int GetSize() { return this.Size; }
-		
+
 
 	}
 }

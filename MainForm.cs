@@ -17,7 +17,7 @@ namespace ToDoList_C_
 		TaskList taskList;
 		User loadedUser;
 
-		const int percentageToGetAStar = 65;
+		const int percentageToGetAStar = 60;
 
 		public mainForm()
 		{
@@ -62,7 +62,6 @@ namespace ToDoList_C_
 			await LoadListDBAsync();
 			await OpenLatestFile();
 
-			await SetupChart((int)chooseLastDaysCB.SelectedItem);
 
 			await showingStarsWV2.EnsureCoreWebView2Async();
 			SetupShowingStarsWebView();
@@ -77,56 +76,57 @@ namespace ToDoList_C_
 
 			UpdateGridView();
 			await HideBars();
+			await SetupChart((int)chooseLastDaysCB.SelectedItem);
 		}
 
 		private async Task SetupChart(int days)
 		{
-			percentageToDaysChart.Series.Clear();
-			percentageToDaysChart.ChartAreas.Clear();
-
-			ChartArea area = new("MainArea");
-			percentageToDaysChart.ChartAreas.Add(area);
-
-			Series series = new Series("Tasks Done")
-			{
-				ChartType = SeriesChartType.Spline,
-				MarkerStyle = MarkerStyle.Circle,
-				BorderWidth = 4,
-				MarkerColor = Color.Red,
-				IsValueShownAsLabel = true,// shows numbers above columns
-				MarkerSize = 6,
-			};
-			percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
-
-			//building dates axis
-			List<DateTime> dates1 = new List<DateTime>();
-
-			DateTime today = DateTime.Today;
-			for (int i = days; i > 0; i--)
-			{
-				dates1.Add(today.AddDays(-i + 1));
-			}
-
-			List<int> percentages;
-			using (TaskListDBContext dbContext = new())
-			{
-				percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
-					.Select(l => l.DonePercentage)
-					.Take(days + 1)
-					.ToListAsync();
-			}
-
-			if (days > percentages.Count || days > dates1.Count)
-			{
-				return;
-			}
-
-			for (int i = 0; i < days; i++)
-			{
-				series.Points.AddXY(dates1[i], percentages[i]);
-			}
-
-			percentageToDaysChart.Series.Add(series);
+			//percentageToDaysChart.Series.Clear();
+			//percentageToDaysChart.ChartAreas.Clear();
+			//
+			//ChartArea area = new("MainArea");
+			//percentageToDaysChart.ChartAreas.Add(area);
+			//
+			//Series series = new Series("Tasks Done")
+			//{
+			//	ChartType = SeriesChartType.Spline,
+			//	MarkerStyle = MarkerStyle.Circle,
+			//	BorderWidth = 4,
+			//	MarkerColor = Color.Red,
+			//	IsValueShownAsLabel = true,// shows numbers above columns
+			//	MarkerSize = 6,
+			//};
+			//percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
+			//
+			////building dates axis
+			//List<DateTime> dates1 = new List<DateTime>();
+			//
+			//DateTime today = DateTime.Today;
+			//for (int i = days; i > 0; i--)
+			//{
+			//	dates1.Add(today.AddDays(-i + 1));
+			//}
+			//
+			//List<int> percentages;
+			//using (TaskListDBContext dbContext = new())
+			//{				
+			//		percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
+			//			.Select(l => l.DonePercentage)
+			//			.Take(days + 1)
+			//			.ToListAsync();
+			//}
+			//
+			//if (days > percentages.Count || days > dates1.Count)
+			//{
+			//	return;
+			//}
+			//
+			//for (int i = 0; i < days; i++)
+			//{
+			//	series.Points.AddXY(dates1[i], percentages[i]);
+			//}
+			//
+			//percentageToDaysChart.Series.Add(series);
 		}
 
 		private async Task LoadUserDBAsync()
@@ -137,7 +137,6 @@ namespace ToDoList_C_
 
 				try
 				{
-					// await a Task<T>, so the containing method returns Task
 					loadedUser = await db.users
 						.Include(u => u.stars)
 						.FirstOrDefaultAsync() ?? new User();
@@ -196,9 +195,9 @@ namespace ToDoList_C_
 			if (webView != null && webView.CoreWebView2 != null)
 			{
 				await webView.ExecuteScriptAsync(@"
-			document.documentElement.style.overflow = 'hidden';
-			document.body.style.overflow = 'hidden';
-		");
+			document.documentElement.style.overflow = 'hidden';  
+			document.body.style.overflow = 'hidden';    
+				");
 			}
 		}
 
@@ -358,7 +357,6 @@ namespace ToDoList_C_
 				{
 					res += oneTaskPercentage;
 					counter++;
-
 				}
 			}
 
@@ -376,12 +374,13 @@ namespace ToDoList_C_
 				SetFireEmoji();
 				HideBars();
 
-				if (!loadedUser.stars.Any(s => s.ListName == taskList.Name))
+				if (!loadedUser.stars.Any(s => s.ListId == taskList.Id || s.ListName == taskList.Name))
 				{
 					taskList.GotStar = true;
 					Star smallStar = new Star
 					{
 						Size = 1,
+						ListId = taskList.Id,
 						earnDate = DateTime.Today,
 						ListName = taskList.Name,
 					};
@@ -391,6 +390,7 @@ namespace ToDoList_C_
 			}
 			else
 			{
+				taskList.GotStar = false;
 				setDefaultEmoji();
 				HideBars();
 			}
@@ -758,7 +758,7 @@ namespace ToDoList_C_
 			{
 				if (form.ShowDialog() == DialogResult.OK)
 				{
-					taskList = new TaskList(form.wrapper.taskList);
+					taskList = form.wrapper.taskList;
 					loadedUser = form.wrapper.user;
 					this.Text = form.wrapper.taskList.Name;
 					CalculateDonePercentage(taskList);

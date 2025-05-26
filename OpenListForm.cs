@@ -38,7 +38,10 @@ namespace ToDoList_C_
 		{
 			using (UsersDBContext dbContext = new())
 			{
-				wrapper.SetUser(await dbContext.users.FirstOrDefaultAsync());
+				wrapper.SetUser(await dbContext.users
+					.Include(l => l.CurrentList)
+					.Include(l=>l.stars)
+					.FirstOrDefaultAsync());
 			}
 			if (wrapper.user == null)
 			{
@@ -52,7 +55,9 @@ namespace ToDoList_C_
 		{
 			using (TaskListDBContext dbContext = new())
 			{
-				_taskList.DataSource = dbContext.lists.Include(l => l.taskList).ToList();
+				_taskList.DataSource = dbContext.lists
+					.Include(l => l.taskList)
+					.ToList();
 			}
 			showTaskListsDGV.DataSource = _taskList;
 
