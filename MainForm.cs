@@ -81,52 +81,58 @@ namespace ToDoList_C_
 
 		private async Task SetupChart(int days)
 		{
-			//percentageToDaysChart.Series.Clear();
-			//percentageToDaysChart.ChartAreas.Clear();
-			//
-			//ChartArea area = new("MainArea");
-			//percentageToDaysChart.ChartAreas.Add(area);
-			//
-			//Series series = new Series("Tasks Done")
-			//{
-			//	ChartType = SeriesChartType.Spline,
-			//	MarkerStyle = MarkerStyle.Circle,
-			//	BorderWidth = 4,
-			//	MarkerColor = Color.Red,
-			//	IsValueShownAsLabel = true,// shows numbers above columns
-			//	MarkerSize = 6,
-			//};
-			//percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
-			//
-			////building dates axis
-			//List<DateTime> dates1 = new List<DateTime>();
-			//
-			//DateTime today = DateTime.Today;
-			//for (int i = days; i > 0; i--)
-			//{
-			//	dates1.Add(today.AddDays(-i + 1));
-			//}
-			//
-			//List<int> percentages;
-			//using (TaskListDBContext dbContext = new())
-			//{				
-			//		percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
-			//			.Select(l => l.DonePercentage)
-			//			.Take(days + 1)
-			//			.ToListAsync();
-			//}
-			//
-			//if (days > percentages.Count || days > dates1.Count)
-			//{
-			//	return;
-			//}
-			//
-			//for (int i = 0; i < days; i++)
-			//{
-			//	series.Points.AddXY(dates1[i], percentages[i]);
-			//}
-			//
-			//percentageToDaysChart.Series.Add(series);
+			percentageToDaysChart.Series.Clear();
+			percentageToDaysChart.ChartAreas.Clear();
+
+			ChartArea area = new("MainArea");
+			percentageToDaysChart.ChartAreas.Add(area);
+
+			Series series = new Series("Tasks Done")
+			{
+				ChartType = SeriesChartType.Spline,
+				MarkerStyle = MarkerStyle.Circle,
+				BorderWidth = 4,
+				MarkerColor = Color.Red,
+				IsValueShownAsLabel = true,// shows numbers above columns
+				MarkerSize = 6,
+			};
+			percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
+
+			List<DateTime?> dates = new List<DateTime?>();
+			List<int> percentages;
+
+			using (TaskListDBContext dbContext = new())
+			{
+				dates = await dbContext.lists.OrderByDescending(l => l.DueDate)
+					.Select(l => l.DueDate)
+					.Take(days + 1)
+					.ToListAsync();
+
+				percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
+					.Select(l => l.DonePercentage)
+					.Take(days + 1)
+					.ToListAsync();
+			}
+
+
+			if (days > percentages.Count || days > dates.Count)
+			{
+				if (percentages.Count > dates.Count)
+					days = dates.Count;
+				else
+					days = percentages.Count;
+			}
+
+			for (int i = 0; i < days; i++)
+			{
+				if (!dates[i].HasValue)
+				{
+					break;
+				}
+				series.Points.AddXY(dates[i], percentages[i]);
+			}
+
+			percentageToDaysChart.Series.Add(series);
 		}
 
 		private async Task LoadUserDBAsync()
@@ -725,6 +731,7 @@ namespace ToDoList_C_
 						existingList.CreationDate = taskList.CreationDate;
 						existingList.DonePercentage = taskList.DonePercentage;
 						existingList.GotStar = taskList.GotStar;
+						existingList.DueDate = taskList.DueDate;
 
 					}
 					else
@@ -734,6 +741,7 @@ namespace ToDoList_C_
 							Name = taskList.Name,
 							CreationDate = taskList.CreationDate,
 							GotStar = taskList.GotStar,
+							DueDate = taskList.DueDate,
 						};
 						newList.taskList = taskList.taskList
 							.Select(t => new ToDoTask(t))  // ensures Id is reset
