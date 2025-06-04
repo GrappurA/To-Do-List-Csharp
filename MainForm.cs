@@ -58,6 +58,8 @@ namespace ToDoList_C_
 
 			fireFrameGifBP.SendToBack();
 
+			CreateTrainingTab();
+
 			await LoadUserDBAsync();
 			await LoadListDBAsync();
 			await OpenLatestFile();
@@ -77,6 +79,15 @@ namespace ToDoList_C_
 			UpdateGridView();
 			await HideBars();
 			await SetupChart((int)chooseLastDaysCB.SelectedItem);
+		}
+
+		private void CreateTrainingTab()
+		{
+			var trainingControl = new TrainingUserControl();
+			var trainingTab = new TabPage();
+			trainingTab.Controls.Add(trainingControl);
+			trainingTab.Text = "Training";
+			mainTabControl.Controls.Add(trainingTab);
 		}
 
 		private async Task SetupChart(int days)
@@ -103,15 +114,32 @@ namespace ToDoList_C_
 
 			using (TaskListDBContext dbContext = new())
 			{
-				dates = await dbContext.lists.OrderByDescending(l => l.DueDate)
+				await dbContext.Database.EnsureCreatedAsync();
+				try
+				{
+					dates = await dbContext.lists.OrderByDescending(l => l.DueDate)
 					.Select(l => l.DueDate)
 					.Take(days + 1)
 					.ToListAsync();
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(e.Message);
+					throw;
+				}
 
-				percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
-					.Select(l => l.DonePercentage)
-					.Take(days + 1)
-					.ToListAsync();
+				try
+				{
+					percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
+						.Select(l => l.DonePercentage)
+						.Take(days + 1)
+						.ToListAsync();
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(e.Message);
+					throw;
+				}
 			}
 
 
@@ -752,6 +780,8 @@ namespace ToDoList_C_
 					await dbContext.SaveChangesAsync();
 				}
 			}
+			
+
 			await SaveUserDBChanges();
 			UpdateGridView();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
@@ -782,21 +812,7 @@ namespace ToDoList_C_
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			//using (folderBrowserDialog2)
-			//{
-			//	folderBrowserDialog2.InitialDirectory = path;
-			//	using (approveClosingList form = new approveClosingList())
-			//	{
-			//		if (folderBrowserDialog2.ShowDialog() == DialogResult.OK && form.ShowDialog() == DialogResult.OK)
-			//		{
-			//			UpdateGridView();
-			//
-			//			string toDeleteDirectoryPath = folderBrowserDialog2.SelectedPath;
-			//			Directory.Delete(toDeleteDirectoryPath, true);
-			//		}
-			//	}
-			//
-			//}
+
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -852,5 +868,7 @@ namespace ToDoList_C_
 			taskList.DonePercentage = CalculateDonePercentage(taskList);
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 		}
+
+
 	}
 }

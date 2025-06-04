@@ -41,10 +41,8 @@
 			openToolStripMenuItem = new ToolStripMenuItem();
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			closeToolStripMenuItem1 = new ToolStripMenuItem();
-			databaseToolStripMenuItem = new ToolStripMenuItem();
-			clearDatabaseToolStripMenuItem = new ToolStripMenuItem();
-			userInfoToolStripMenuItem = new ToolStripMenuItem();
-			listInfoToolStripMenuItem = new ToolStripMenuItem();
+			trainingToolStripMenuItem = new ToolStripMenuItem();
+			createToolStripMenuItem = new ToolStripMenuItem();
 			gridView = new DataGridView();
 			addButton = new Button();
 			deleteButton = new Button();
@@ -53,7 +51,6 @@
 			infoTextBox = new TextBox();
 			textbox2 = new TextBox();
 			folderBrowserDialog2 = new FolderBrowserDialog();
-			button1 = new Button();
 			mainTabControl = new TabControl();
 			tabPage2 = new TabPage();
 			tabPage1 = new TabPage();
@@ -96,7 +93,7 @@
 			// 
 			menuStrip1.BackColor = SystemColors.ButtonFace;
 			menuStrip1.ImageScalingSize = new Size(20, 20);
-			menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, databaseToolStripMenuItem });
+			menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, trainingToolStripMenuItem });
 			menuStrip1.Location = new Point(0, 0);
 			menuStrip1.Name = "menuStrip1";
 			menuStrip1.Size = new Size(818, 28);
@@ -138,31 +135,18 @@
 			closeToolStripMenuItem1.Text = "Close";
 			closeToolStripMenuItem1.Click += closeToolStripMenuItem1_Click;
 			// 
-			// databaseToolStripMenuItem
+			// trainingToolStripMenuItem
 			// 
-			databaseToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { clearDatabaseToolStripMenuItem });
-			databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
-			databaseToolStripMenuItem.Size = new Size(86, 24);
-			databaseToolStripMenuItem.Text = "Database";
+			trainingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createToolStripMenuItem });
+			trainingToolStripMenuItem.Name = "trainingToolStripMenuItem";
+			trainingToolStripMenuItem.Size = new Size(76, 24);
+			trainingToolStripMenuItem.Text = "Training";
 			// 
-			// clearDatabaseToolStripMenuItem
+			// createToolStripMenuItem
 			// 
-			clearDatabaseToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { userInfoToolStripMenuItem, listInfoToolStripMenuItem });
-			clearDatabaseToolStripMenuItem.Name = "clearDatabaseToolStripMenuItem";
-			clearDatabaseToolStripMenuItem.Size = new Size(193, 26);
-			clearDatabaseToolStripMenuItem.Text = "Clear Database";
-			// 
-			// userInfoToolStripMenuItem
-			// 
-			userInfoToolStripMenuItem.Name = "userInfoToolStripMenuItem";
-			userInfoToolStripMenuItem.Size = new Size(147, 26);
-			userInfoToolStripMenuItem.Text = "UserInfo";
-			// 
-			// listInfoToolStripMenuItem
-			// 
-			listInfoToolStripMenuItem.Name = "listInfoToolStripMenuItem";
-			listInfoToolStripMenuItem.Size = new Size(147, 26);
-			listInfoToolStripMenuItem.Text = "ListInfo";
+			createToolStripMenuItem.Name = "createToolStripMenuItem";
+			createToolStripMenuItem.Size = new Size(135, 26);
+			createToolStripMenuItem.Text = "Create";
 			// 
 			// gridView
 			// 
@@ -251,16 +235,6 @@
 			textbox2.TabIndex = 9;
 			textbox2.Text = "Tasks Done Today:";
 			// 
-			// button1
-			// 
-			button1.Location = new Point(683, 374);
-			button1.Name = "button1";
-			button1.Size = new Size(119, 59);
-			button1.TabIndex = 13;
-			button1.Text = "showDatabase";
-			button1.UseVisualStyleBackColor = true;
-			button1.Click += button1_Click;
-			// 
 			// mainTabControl
 			// 
 			mainTabControl.Controls.Add(tabPage2);
@@ -275,7 +249,6 @@
 			// tabPage2
 			// 
 			tabPage2.Controls.Add(addButton);
-			tabPage2.Controls.Add(button1);
 			tabPage2.Controls.Add(gridView);
 			tabPage2.Controls.Add(deleteButton);
 			tabPage2.Controls.Add(showingFireWV2);
@@ -468,15 +441,10 @@
 		private TextBox textbox2;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingFireWV2;
 		private FolderBrowserDialog folderBrowserDialog2;
-		private Button button1;
-		private ToolStripMenuItem databaseToolStripMenuItem;
-		private ToolStripMenuItem clearDatabaseToolStripMenuItem;
 		private TabControl mainTabControl;
 		private TabPage tabPage2;
 		private TabPage tabPage1;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showingStarsWV2;
-		private ToolStripMenuItem userInfoToolStripMenuItem;
-		private ToolStripMenuItem listInfoToolStripMenuItem;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showLatestStarWV;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showDayStreak;
 		private Microsoft.Web.WebView2.WinForms.WebView2 showMaxStreakWV;
@@ -484,5 +452,7 @@
 		private System.Windows.Forms.DataVisualization.Charting.Chart percentageToDaysChart;
 		private ComboBox chooseLastDaysCB;
 		private TextBox textBox1;
+		private ToolStripMenuItem trainingToolStripMenuItem;
+		private ToolStripMenuItem createToolStripMenuItem;
 	}
 }
