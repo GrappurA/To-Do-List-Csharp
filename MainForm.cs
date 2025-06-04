@@ -79,6 +79,13 @@ namespace ToDoList_C_
 			UpdateGridView();
 			await HideBars();
 			await SetupChart((int)chooseLastDaysCB.SelectedItem);
+
+			gridView.Columns[3].ReadOnly = true;
+		}
+
+		private DateTime CalculateDueDate(TaskList tl)
+		{
+			return tl.taskList.Select(t => t.DueDate).Max().AddDays(1);
 		}
 
 		private void CreateTrainingTab()
@@ -759,7 +766,7 @@ namespace ToDoList_C_
 						existingList.CreationDate = taskList.CreationDate;
 						existingList.DonePercentage = taskList.DonePercentage;
 						existingList.GotStar = taskList.GotStar;
-						existingList.DueDate = taskList.DueDate;
+						existingList.DueDate = CalculateDueDate(taskList);
 
 					}
 					else
@@ -769,7 +776,7 @@ namespace ToDoList_C_
 							Name = taskList.Name,
 							CreationDate = taskList.CreationDate,
 							GotStar = taskList.GotStar,
-							DueDate = taskList.DueDate,
+							DueDate = CalculateDueDate(taskList),
 						};
 						newList.taskList = taskList.taskList
 							.Select(t => new ToDoTask(t))  // ensures Id is reset
@@ -780,7 +787,7 @@ namespace ToDoList_C_
 					await dbContext.SaveChangesAsync();
 				}
 			}
-			
+
 
 			await SaveUserDBChanges();
 			UpdateGridView();
