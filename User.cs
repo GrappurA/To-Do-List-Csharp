@@ -16,6 +16,7 @@ namespace ToDoList_C_
 		public double averageTasksDone { get; set; }
 		public int daysInARow { get; set; }
 		public int MaxDaysInARow { get; set; }
+		public bool TrainingEnabled { get; set; }
 
 		public int? CurrentListId { get; set; }
 		public TaskList? CurrentList { get; set; }

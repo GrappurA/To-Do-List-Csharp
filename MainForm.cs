@@ -29,14 +29,8 @@ namespace ToDoList_C_
 			gridView.CellClick += gridView_CellClick;
 
 			chooseLastDaysCB.SelectedIndexChanged += chooseLastDaysCB_SelectedIndexChanged;
-		}
 
-		private async void chooseLastDaysCB_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (chooseLastDaysCB.SelectedItem is int days)
-			{
-				await SetupChart(days);
-			}
+			enableToolStripMenuItem.CheckedChanged += EnableToolStripMenuItem_CheckedChanged;
 		}
 
 		private async void mainForm_Load(object? sender, EventArgs e)
@@ -58,12 +52,11 @@ namespace ToDoList_C_
 
 			fireFrameGifBP.SendToBack();
 
-			CreateTrainingTab();
-
 			await LoadUserDBAsync();
 			await LoadListDBAsync();
 			await OpenLatestFile();
 
+			enableToolStripMenuItem.Checked = loadedUser.TrainingEnabled;
 
 			await showingStarsWV2.EnsureCoreWebView2Async();
 			SetupShowingStarsWebView();
@@ -83,9 +76,40 @@ namespace ToDoList_C_
 			gridView.Columns[3].ReadOnly = true;
 		}
 
+		//Toggle on/off trainings tab
+		private async void EnableToolStripMenuItem_CheckedChanged(object? sender, EventArgs e)
+		{
+			bool enabledFlag = loadedUser.TrainingEnabled;
+			if (enableToolStripMenuItem.Checked == true)
+			{
+				CreateTrainingTab();
+				enabledFlag = true;
+			}
+			else if (enableToolStripMenuItem.Checked == false)
+			{
+				int index = mainTabControl.TabPages.IndexOfKey("TrainingTab");
+				if (index >= 0)
+				{
+					mainTabControl.TabPages.Remove(mainTabControl.TabPages[index]);
+					enabledFlag = false;
+				}
+			}
+			loadedUser.TrainingEnabled = enabledFlag;
+			enableToolStripMenuItem.Checked = loadedUser.TrainingEnabled;
+			await SaveUserDBChanges();
+		}
+
+		private async void chooseLastDaysCB_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (chooseLastDaysCB.SelectedItem is int days)
+			{
+				await SetupChart(days);
+			}
+		}
+
 		private DateTime CalculateDueDate(TaskList tl)
 		{
-			return tl.taskList.Select(t => t.DueDate).Max().AddDays(1);
+			return tl.taskList.Select(t => t.DueDate).Max();
 		}
 
 		private void CreateTrainingTab()
@@ -94,7 +118,8 @@ namespace ToDoList_C_
 			var trainingTab = new TabPage();
 			trainingTab.Controls.Add(trainingControl);
 			trainingTab.Text = "Training";
-			mainTabControl.Controls.Add(trainingTab);
+			trainingTab.Name = "TrainingTab";
+			mainTabControl.TabPages.Add(trainingTab);
 		}
 
 		private async Task SetupChart(int days)
@@ -116,7 +141,7 @@ namespace ToDoList_C_
 			};
 			percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
 
-			List<DateTime?> dates = new List<DateTime?>();
+			List<DateTime?> dates = new();
 			List<int> percentages;
 
 			using (TaskListDBContext dbContext = new())
@@ -149,7 +174,6 @@ namespace ToDoList_C_
 				}
 			}
 
-
 			if (days > percentages.Count || days > dates.Count)
 			{
 				if (percentages.Count > dates.Count)
@@ -160,7 +184,7 @@ namespace ToDoList_C_
 
 			for (int i = 0; i < days; i++)
 			{
-				if (!dates[i].HasValue)
+				if (dates[i] == null)
 				{
 					break;
 				}
@@ -329,7 +353,7 @@ namespace ToDoList_C_
 						existingUser.stars = loadedUser.stars;
 						existingUser.averageTasksDone = loadedUser.averageTasksDone;
 						existingUser.daysInARow = loadedUser.daysInARow;
-
+						existingUser.TrainingEnabled = loadedUser.TrainingEnabled;
 					}
 					await dBContext.SaveChangesAsync();
 				}
@@ -524,6 +548,12 @@ namespace ToDoList_C_
 				SaveButton.Enabled = false;
 				UpdateGridView();
 			}
+
+			if (loadedUser.TrainingEnabled)
+			{
+				CreateTrainingTab();
+			}
+
 		}
 
 		private async Task RefreshStatisticsInfo()
@@ -586,7 +616,7 @@ namespace ToDoList_C_
 			if (taskList != null)
 			{
 				DateTime tommorow = DateTime.Today.AddDays(1);
-				ToDoTask newTask = new ToDoTask("", false, tommorow);
+				ToDoTask newTask = new ToDoTask("", false, tommorow.AddDays(1));
 
 				newTask.Position = taskList.Count() + 1;
 
@@ -788,7 +818,6 @@ namespace ToDoList_C_
 				}
 			}
 
-
 			await SaveUserDBChanges();
 			UpdateGridView();
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
@@ -875,7 +904,5 @@ namespace ToDoList_C_
 			taskList.DonePercentage = CalculateDonePercentage(taskList);
 			infoTextBox.Text = taskList.DonePercentage.ToString();
 		}
-
-
 	}
 }

@@ -41,8 +41,9 @@
 			openToolStripMenuItem = new ToolStripMenuItem();
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			closeToolStripMenuItem1 = new ToolStripMenuItem();
+			optionsToolStripMenuItem = new ToolStripMenuItem();
 			trainingToolStripMenuItem = new ToolStripMenuItem();
-			createToolStripMenuItem = new ToolStripMenuItem();
+			enableToolStripMenuItem = new ToolStripMenuItem();
 			gridView = new DataGridView();
 			addButton = new Button();
 			deleteButton = new Button();
@@ -93,7 +94,7 @@
 			// 
 			menuStrip1.BackColor = SystemColors.ButtonFace;
 			menuStrip1.ImageScalingSize = new Size(20, 20);
-			menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, trainingToolStripMenuItem });
+			menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, optionsToolStripMenuItem });
 			menuStrip1.Location = new Point(0, 0);
 			menuStrip1.Name = "menuStrip1";
 			menuStrip1.Size = new Size(818, 28);
@@ -135,18 +136,28 @@
 			closeToolStripMenuItem1.Text = "Close";
 			closeToolStripMenuItem1.Click += closeToolStripMenuItem1_Click;
 			// 
+			// optionsToolStripMenuItem
+			// 
+			optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { trainingToolStripMenuItem });
+			optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+			optionsToolStripMenuItem.Size = new Size(75, 24);
+			optionsToolStripMenuItem.Text = "Options";
+			// 
 			// trainingToolStripMenuItem
 			// 
-			trainingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createToolStripMenuItem });
+			trainingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { enableToolStripMenuItem });
 			trainingToolStripMenuItem.Name = "trainingToolStripMenuItem";
-			trainingToolStripMenuItem.Size = new Size(76, 24);
+			trainingToolStripMenuItem.Size = new Size(224, 26);
 			trainingToolStripMenuItem.Text = "Training";
 			// 
-			// createToolStripMenuItem
+			// enableToolStripMenuItem
 			// 
-			createToolStripMenuItem.Name = "createToolStripMenuItem";
-			createToolStripMenuItem.Size = new Size(135, 26);
-			createToolStripMenuItem.Text = "Create";
+			enableToolStripMenuItem.Checked = true;
+			enableToolStripMenuItem.CheckOnClick = true;
+			enableToolStripMenuItem.CheckState = CheckState.Checked;
+			enableToolStripMenuItem.Name = "enableToolStripMenuItem";
+			enableToolStripMenuItem.Size = new Size(224, 26);
+			enableToolStripMenuItem.Text = "Enable";
 			// 
 			// gridView
 			// 
@@ -452,7 +463,8 @@
 		private System.Windows.Forms.DataVisualization.Charting.Chart percentageToDaysChart;
 		private ComboBox chooseLastDaysCB;
 		private TextBox textBox1;
+		private ToolStripMenuItem optionsToolStripMenuItem;
 		private ToolStripMenuItem trainingToolStripMenuItem;
-		private ToolStripMenuItem createToolStripMenuItem;
+		private ToolStripMenuItem enableToolStripMenuItem;
 	}
 }
