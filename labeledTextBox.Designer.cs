@@ -34,19 +34,19 @@
 			// 
 			// richTextBox1
 			// 
-			richTextBox1.Location = new Point(3, 43);
+			richTextBox1.Location = new Point(0, 46);
 			richTextBox1.Name = "richTextBox1";
-			richTextBox1.Size = new Size(218, 125);
+			richTextBox1.Size = new Size(249, 141);
 			richTextBox1.TabIndex = 0;
 			richTextBox1.Text = "";
 			// 
 			// textLabel
 			// 
-			textLabel.AutoSize = true;
+			textLabel.Dock = DockStyle.Top;
 			textLabel.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
-			textLabel.Location = new Point(71, 12);
+			textLabel.Location = new Point(0, 0);
 			textLabel.Name = "textLabel";
-			textLabel.Size = new Size(62, 28);
+			textLabel.Size = new Size(250, 43);
 			textLabel.TabIndex = 1;
 			textLabel.Text = "text";
 			textLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -59,9 +59,8 @@
 			Controls.Add(textLabel);
 			Controls.Add(richTextBox1);
 			Name = "labeledTextBox";
-			Size = new Size(224, 171);
+			Size = new Size(250, 187);
 			ResumeLayout(false);
-			PerformLayout();
 		}
 
 		#endregion

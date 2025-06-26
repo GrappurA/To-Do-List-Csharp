@@ -16,5 +16,10 @@ namespace ToDoList_C_
 		{
 			InitializeComponent();
 		}
+
+		private void textLabel_Click(object sender, EventArgs e)
+		{
+
+		}
 	}
 }

@@ -21,6 +21,8 @@ namespace ToDoList_C_
 			InitializeComponent();
 			Start();
 			LoadLatestData();
+
+			TrainingUserControl.
 		}
 
 		static string appFolder = Path.Combine(
@@ -61,9 +63,7 @@ namespace ToDoList_C_
 		private void LoadLatestData()
 		{
 			string json = File.ReadAllText(filePath);
-			info = JsonConvert.DeserializeObject<string[]>(json).ToList();
-
-			
+			info = JsonConvert.DeserializeObject<string[]>(json).ToList();			
 		}
 
 		async void AnimateButton(Button button, Color color, int delay)
@@ -76,7 +76,9 @@ namespace ToDoList_C_
 
 		private void addButton_Click(object sender, EventArgs e)
 		{
-
+			var panel = new labeledTextBox();
+			flowLayoutPanel1.Controls.Add(panel);
+			
 		}
 
 		private void deleteButton_Click(object sender, EventArgs e)
