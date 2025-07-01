@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,16 +11,37 @@ using System.Windows.Forms;
 
 namespace ToDoList_C_
 {
-	public partial class labeledTextBox : UserControl
+	public partial class LabeledTextBox : UserControl
 	{
-		public labeledTextBox()
+		public string LabelText
 		{
-			InitializeComponent();
+			get => textBox1.Text;
+			set => textBox1.Text = value;
 		}
 
-		private void textLabel_Click(object sender, EventArgs e)
+		public string TextBoxText
 		{
+			get => richTextBox1.Text;
+			set => richTextBox1.Text = value;
+		}
 
+		public LabeledTextBox()
+		{
+			InitializeComponent();
+			TextBoxText = richTextBox1.Text;
+			LabelText = textBox1.Text;
+		}
+
+		public TextBox InnerLabel => textBox1;
+		public RichTextBox InnerTextBox => richTextBox1;
+
+		public LabeledTextBoxData GetData()
+		{
+			return new LabeledTextBoxData()
+			{
+				LabelData = InnerLabel.Text,
+				TextBoxData = InnerTextBox.Text
+			};
 		}
 	}
 }
