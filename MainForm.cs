@@ -134,14 +134,14 @@ namespace ToDoList_C_
 			{
 				ChartType = SeriesChartType.Spline,
 				MarkerStyle = MarkerStyle.Circle,
-				BorderWidth = 4,
+				BorderWidth = 2,
 				MarkerColor = Color.Red,
 				IsValueShownAsLabel = true,// shows numbers above columns
 				MarkerSize = 6,
 			};
 			percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
 
-			List<DateTime?> dates = new();
+			List<DateTime> dates = new();
 			List<int> percentages;
 
 			using (TaskListDBContext dbContext = new())
@@ -149,9 +149,9 @@ namespace ToDoList_C_
 				await dbContext.Database.EnsureCreatedAsync();
 				try
 				{
-					dates = await dbContext.lists.OrderByDescending(l => l.DueDate)
-					.Select(l => l.DueDate)
-					.Take(days + 1)
+					dates = await dbContext.lists.OrderByDescending(l => l.CreationDate)
+					.Select(l => l.CreationDate)
+					.Take(days)
 					.ToListAsync();
 				}
 				catch (Exception e)
@@ -162,7 +162,7 @@ namespace ToDoList_C_
 
 				try
 				{
-					percentages = await dbContext.lists.OrderByDescending(l => l.DueDate)
+					percentages = await dbContext.lists.OrderByDescending(l => l.CreationDate)
 						.Select(l => l.DonePercentage)
 						.Take(days + 1)
 						.ToListAsync();

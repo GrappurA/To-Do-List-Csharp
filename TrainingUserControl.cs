@@ -22,7 +22,6 @@ namespace ToDoList_C_
 			Start();
 			LoadLatestData();
 
-			TrainingUserControl.
 		}
 
 		static string appFolder = Path.Combine(
