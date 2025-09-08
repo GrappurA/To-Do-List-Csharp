@@ -1,6 +1,6 @@
 ﻿namespace ToDoList_C_
 {
-	partial class labeledTextBox
+	partial class LabeledTextBox
 	{
 		/// <summary> 
 		/// Required designer variable.
@@ -29,43 +29,47 @@
 		private void InitializeComponent()
 		{
 			richTextBox1 = new RichTextBox();
-			textLabel = new Label();
+			textBox1 = new TextBox();
 			SuspendLayout();
 			// 
 			// richTextBox1
 			// 
-			richTextBox1.Location = new Point(0, 46);
+			richTextBox1.BorderStyle = BorderStyle.None;
+			richTextBox1.Font = new Font("Verdana", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			richTextBox1.Location = new Point(0, 34);
+			richTextBox1.Margin = new Padding(3, 2, 3, 2);
 			richTextBox1.Name = "richTextBox1";
-			richTextBox1.Size = new Size(249, 141);
+			richTextBox1.Size = new Size(218, 107);
 			richTextBox1.TabIndex = 0;
 			richTextBox1.Text = "";
 			// 
-			// textLabel
+			// textBox1
 			// 
-			textLabel.Dock = DockStyle.Top;
-			textLabel.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
-			textLabel.Location = new Point(0, 0);
-			textLabel.Name = "textLabel";
-			textLabel.Size = new Size(250, 43);
-			textLabel.TabIndex = 1;
-			textLabel.Text = "text";
-			textLabel.TextAlign = ContentAlignment.MiddleCenter;
+			textBox1.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
+			textBox1.Location = new Point(0, 6);
+			textBox1.Name = "textBox1";
+			textBox1.Size = new Size(218, 30);
+			textBox1.TabIndex = 1;
+			textBox1.Text = "null";
+			textBox1.TextAlign = HorizontalAlignment.Center;
 			// 
 			// labeledTextBox
 			// 
-			AutoScaleDimensions = new SizeF(8F, 20F);
+			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			BackColor = Color.Transparent;
-			Controls.Add(textLabel);
+			Controls.Add(textBox1);
 			Controls.Add(richTextBox1);
+			Margin = new Padding(3, 2, 3, 2);
 			Name = "labeledTextBox";
-			Size = new Size(250, 187);
+			Size = new Size(219, 140);
 			ResumeLayout(false);
+			PerformLayout();
 		}
 
 		#endregion
 
 		private RichTextBox richTextBox1;
-		private Label textLabel;
+		private TextBox textBox1;
 	}
 }

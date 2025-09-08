@@ -38,9 +38,10 @@
 			// 
 			addButton.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
 			addButton.ForeColor = Color.Green;
-			addButton.Location = new Point(3, 3);
+			addButton.Location = new Point(3, 2);
+			addButton.Margin = new Padding(3, 2, 3, 2);
 			addButton.Name = "addButton";
-			addButton.Size = new Size(125, 60);
+			addButton.Size = new Size(109, 45);
 			addButton.TabIndex = 7;
 			addButton.Text = "ADD";
 			addButton.UseVisualStyleBackColor = true;
@@ -52,9 +53,10 @@
 			deleteButton.Enabled = false;
 			deleteButton.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
 			deleteButton.ForeColor = Color.Red;
-			deleteButton.Location = new Point(134, 3);
+			deleteButton.Location = new Point(117, 2);
+			deleteButton.Margin = new Padding(3, 2, 3, 2);
 			deleteButton.Name = "deleteButton";
-			deleteButton.Size = new Size(125, 60);
+			deleteButton.Size = new Size(109, 45);
 			deleteButton.TabIndex = 8;
 			deleteButton.Text = "DELETE";
 			deleteButton.UseVisualStyleBackColor = false;
@@ -65,31 +67,35 @@
 			SaveButton.BackColor = Color.FromArgb(128, 255, 128);
 			SaveButton.Font = new Font("Verdana", 13.8F, FontStyle.Bold);
 			SaveButton.ForeColor = Color.Black;
-			SaveButton.Location = new Point(673, 3);
+			SaveButton.Location = new Point(589, 2);
+			SaveButton.Margin = new Padding(3, 2, 3, 2);
 			SaveButton.Name = "SaveButton";
-			SaveButton.Size = new Size(133, 60);
+			SaveButton.Size = new Size(116, 45);
 			SaveButton.TabIndex = 9;
 			SaveButton.Text = "Save";
 			SaveButton.UseVisualStyleBackColor = false;
+			SaveButton.Click += SaveButton_Click_1;
 			// 
 			// flowLayoutPanel1
 			// 
 			flowLayoutPanel1.AutoScroll = true;
-			flowLayoutPanel1.Location = new Point(3, 69);
+			flowLayoutPanel1.Location = new Point(3, 52);
+			flowLayoutPanel1.Margin = new Padding(3, 2, 3, 2);
 			flowLayoutPanel1.Name = "flowLayoutPanel1";
-			flowLayoutPanel1.Size = new Size(803, 364);
+			flowLayoutPanel1.Size = new Size(703, 273);
 			flowLayoutPanel1.TabIndex = 10;
 			// 
 			// TrainingUserControl
 			// 
-			AutoScaleDimensions = new SizeF(8F, 20F);
+			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			Controls.Add(flowLayoutPanel1);
 			Controls.Add(SaveButton);
 			Controls.Add(addButton);
 			Controls.Add(deleteButton);
+			Margin = new Padding(3, 2, 3, 2);
 			Name = "TrainingUserControl";
-			Size = new Size(809, 436);
+			Size = new Size(708, 327);
 			ResumeLayout(false);
 		}
 
