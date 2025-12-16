@@ -113,7 +113,7 @@ namespace ToDoList_C_
 		private async void LoadTrainingData()
 		{
 			string json = await File.ReadAllTextAsync(filePath);
-			List<LabeledTextBoxData> data = JsonConvert.DeserializeObject<List<LabeledTextBoxData>>(json);
+			List<LabeledTextBoxData>? data = JsonConvert.DeserializeObject<List<LabeledTextBoxData>>(json);
 
 			for (int i = 0; i < data.Count; i++)
 			{

@@ -40,7 +40,7 @@ namespace ToDoList_C_
 			{
 				wrapper.SetUser(await dbContext.users
 					.Include(l => l.CurrentList)
-					.Include(l=>l.stars)
+					.Include(l => l.stars)
 					.FirstOrDefaultAsync());
 			}
 			if (wrapper.user == null)
@@ -57,6 +57,7 @@ namespace ToDoList_C_
 			{
 				_taskList.DataSource = dbContext.lists
 					.Include(l => l.taskList)
+					.OrderByDescending(l => l.CreationDate)
 					.ToList();
 			}
 			showTaskListsDGV.DataSource = _taskList;

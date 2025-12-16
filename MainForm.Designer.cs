@@ -28,11 +28,11 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-			DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
 			showingFireWV2 = new Microsoft.Web.WebView2.WinForms.WebView2();
 			menuStrip1 = new MenuStrip();
@@ -147,7 +147,7 @@
 			// 
 			trainingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { enableToolStripMenuItem });
 			trainingToolStripMenuItem.Name = "trainingToolStripMenuItem";
-			trainingToolStripMenuItem.Size = new Size(224, 26);
+			trainingToolStripMenuItem.Size = new Size(145, 26);
 			trainingToolStripMenuItem.Text = "Training";
 			// 
 			// enableToolStripMenuItem
@@ -156,24 +156,24 @@
 			enableToolStripMenuItem.CheckOnClick = true;
 			enableToolStripMenuItem.CheckState = CheckState.Checked;
 			enableToolStripMenuItem.Name = "enableToolStripMenuItem";
-			enableToolStripMenuItem.Size = new Size(224, 26);
+			enableToolStripMenuItem.Size = new Size(137, 26);
 			enableToolStripMenuItem.Text = "Enable";
 			// 
 			// gridView
 			// 
-			dataGridViewCellStyle1.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle3.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
+			gridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
 			gridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
 			gridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle2.BackColor = SystemColors.Window;
-			dataGridViewCellStyle2.Font = new Font("Segoe UI Emoji", 9F);
-			dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
-			dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-			dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-			dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-			gridView.DefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle4.BackColor = SystemColors.Window;
+			dataGridViewCellStyle4.Font = new Font("Segoe UI Emoji", 9F);
+			dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
+			dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
+			dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+			dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
+			gridView.DefaultCellStyle = dataGridViewCellStyle4;
 			gridView.Location = new Point(0, 65);
 			gridView.Name = "gridView";
 			gridView.RowHeadersVisible = false;
@@ -296,12 +296,12 @@
 			// 
 			textBox1.BackColor = Color.White;
 			textBox1.BorderStyle = BorderStyle.None;
-			textBox1.Font = new Font("Verdana", 12.8F, FontStyle.Bold);
-			textBox1.Location = new Point(556, 232);
+			textBox1.Font = new Font("Verdana", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			textBox1.Location = new Point(662, 232);
 			textBox1.Multiline = true;
 			textBox1.Name = "textBox1";
 			textBox1.ReadOnly = true;
-			textBox1.Size = new Size(211, 55);
+			textBox1.Size = new Size(147, 55);
 			textBox1.TabIndex = 19;
 			textBox1.Text = "Change Graph ^";
 			textBox1.TextAlign = HorizontalAlignment.Center;
@@ -313,35 +313,35 @@
 			chooseLastDaysCB.FlatStyle = FlatStyle.Popup;
 			chooseLastDaysCB.Font = new Font("Segoe UI Emoji", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			chooseLastDaysCB.FormattingEnabled = true;
-			chooseLastDaysCB.Location = new Point(613, 198);
+			chooseLastDaysCB.Location = new Point(670, 198);
 			chooseLastDaysCB.Name = "chooseLastDaysCB";
 			chooseLastDaysCB.RightToLeft = RightToLeft.No;
-			chooseLastDaysCB.Size = new Size(147, 28);
+			chooseLastDaysCB.Size = new Size(133, 28);
 			chooseLastDaysCB.TabIndex = 18;
 			// 
 			// percentageToDaysChart
 			// 
 			percentageToDaysChart.BorderlineColor = Color.Black;
-			chartArea1.Name = "ChartArea1";
-			percentageToDaysChart.ChartAreas.Add(chartArea1);
-			legend1.Name = "Legend1";
-			percentageToDaysChart.Legends.Add(legend1);
+			chartArea2.Name = "ChartArea1";
+			percentageToDaysChart.ChartAreas.Add(chartArea2);
+			legend2.Name = "Legend1";
+			percentageToDaysChart.Legends.Add(legend2);
 			percentageToDaysChart.Location = new Point(8, 198);
 			percentageToDaysChart.Name = "percentageToDaysChart";
 			percentageToDaysChart.PaletteCustomColors = new Color[]
 	{
 	Color.FromArgb(0, 0, 0, 44)
 	};
-			series1.ChartArea = "ChartArea1";
-			series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-			series1.Font = new Font("Microsoft YaHei UI", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			series1.IsValueShownAsLabel = true;
-			series1.Legend = "Legend1";
-			series1.MarkerColor = Color.Red;
-			series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-			series1.Name = "Series1";
-			series1.YValuesPerPoint = 10;
-			percentageToDaysChart.Series.Add(series1);
+			series2.ChartArea = "ChartArea1";
+			series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+			series2.Font = new Font("Microsoft YaHei UI", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			series2.IsValueShownAsLabel = true;
+			series2.Legend = "Legend1";
+			series2.MarkerColor = Color.Red;
+			series2.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+			series2.Name = "Series1";
+			series2.YValuesPerPoint = 10;
+			percentageToDaysChart.Series.Add(series2);
 			percentageToDaysChart.Size = new Size(599, 231);
 			percentageToDaysChart.TabIndex = 17;
 			// 

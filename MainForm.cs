@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace ToDoList_C_
 
 			UpdateGridView();
 			await HideBars();
-			await SetupChart((int)chooseLastDaysCB.SelectedItem);
+			await SetupPlot((int)chooseLastDaysCB.SelectedItem);
 
 			gridView.Columns[3].ReadOnly = true;
 		}
@@ -103,7 +104,7 @@ namespace ToDoList_C_
 		{
 			if (chooseLastDaysCB.SelectedItem is int days)
 			{
-				await SetupChart(days);
+				await SetupPlot(days);
 			}
 		}
 
@@ -122,7 +123,7 @@ namespace ToDoList_C_
 			mainTabControl.TabPages.Add(trainingTab);
 		}
 
-		private async Task SetupChart(int days)
+		private async Task SetupPlot(int days)
 		{
 			percentageToDaysChart.Series.Clear();
 			percentageToDaysChart.ChartAreas.Clear();
@@ -134,12 +135,12 @@ namespace ToDoList_C_
 			{
 				ChartType = SeriesChartType.Spline,
 				MarkerStyle = MarkerStyle.Circle,
-				BorderWidth = 2,
+				BorderWidth = 3,
 				MarkerColor = Color.Red,
 				IsValueShownAsLabel = true,// shows numbers above columns
 				MarkerSize = 6,
 			};
-			percentageToDaysChart.ChartAreas[0].AxisX.LabelStyle.Format = "dd/MM";
+			percentageToDaysChart.Legends.Clear();
 
 			List<DateTime> dates = new();
 			List<int> percentages;
@@ -149,10 +150,12 @@ namespace ToDoList_C_
 				await dbContext.Database.EnsureCreatedAsync();
 				try
 				{
-					dates = await dbContext.lists.OrderByDescending(l => l.CreationDate)
-					.Select(l => l.CreationDate)
-					.Take(days)
-					.ToListAsync();
+					dates = await dbContext.lists
+					   .AsNoTracking()
+					   .OrderByDescending(l => l.CreationDate)
+					   .Select(l => l.CreationDate)
+					   .Take(days)
+					   .ToListAsync();
 				}
 				catch (Exception e)
 				{
@@ -162,9 +165,11 @@ namespace ToDoList_C_
 
 				try
 				{
-					percentages = await dbContext.lists.OrderByDescending(l => l.CreationDate)
+					percentages = await dbContext.lists
+						.AsNoTracking()
+						.OrderByDescending(l => l.CreationDate)
 						.Select(l => l.DonePercentage)
-						.Take(days + 1)
+						.Take(days)
 						.ToListAsync();
 				}
 				catch (Exception e)
@@ -181,17 +186,23 @@ namespace ToDoList_C_
 				else
 					days = percentages.Count;
 			}
-
+			dates.Reverse();
+			percentages.Reverse();
 			for (int i = 0; i < days; i++)
 			{
-				if (dates[i] == null)
-				{
-					break;
-				}
-				series.Points.AddXY(dates[i], percentages[i]);
+				series.Points.AddXY(i, percentages[i]);
+				percentageToDaysChart.ChartAreas[0].AxisX.CustomLabels.Add(
+				i - 0.5,
+				i + 0.5,
+				dates[i].ToString("dd.MM"));
 			}
 
 			percentageToDaysChart.Series.Add(series);
+		}
+
+		private List<string> FuckingParseDateTimesIntoString(List<DateTime> dates)
+		{
+			return dates.Select(d => d.ToString("dd.MM")).ToList();
 		}
 
 		private async Task LoadUserDBAsync()
@@ -203,7 +214,7 @@ namespace ToDoList_C_
 				try
 				{
 					loadedUser = await db.users
-						.Include(u => u.stars)
+						.Include(u => u.stars).AsNoTracking()
 						.FirstOrDefaultAsync() ?? new User();
 				}
 				catch (Exception ex)
@@ -632,26 +643,6 @@ namespace ToDoList_C_
 			}
 		}
 
-		private List<string> LoadAllListNames()
-		{
-			List<string> list = new List<string>();
-			using (TaskListDBContext dBContext = new TaskListDBContext())
-			{
-				list.AddRange(dBContext.lists.Select(l => l.Name).ToList());
-			}
-			return list;
-		}
-
-		private bool IsUsedName(string s)
-		{
-			List<string> list = LoadAllListNames();
-			if (list.Contains(s))
-			{
-				return true;
-			}
-			return false;
-		}
-
 		private void ResetTaskList()
 		{
 			taskList.taskList.Clear();
@@ -674,11 +665,6 @@ namespace ToDoList_C_
 					}
 					else if (getListNameForm.ShowDialog() == DialogResult.OK)
 					{
-						if (IsUsedName(getListNameForm.enteredName))
-						{
-							MessageBox.Show("Invalid Name");
-							continue;
-						}
 						if (taskList != null)
 						{
 							ResetTaskList();
@@ -823,7 +809,7 @@ namespace ToDoList_C_
 			AnimateButton(SaveButton, Color.ForestGreen, 60);
 			await RefreshStatisticsInfo();
 			chooseLastDaysCB.SelectedIndex = 0;
-			await SetupChart(chooseLastDaysCB.SelectedIndex);
+			await SetupPlot(chooseLastDaysCB.SelectedIndex);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
